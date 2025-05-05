@@ -25,7 +25,9 @@ struct JahitApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+//            ContentView()
+            SplashScreenView()
+                
         }
         .modelContainer(sharedModelContainer)
     }
