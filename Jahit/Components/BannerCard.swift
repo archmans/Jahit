@@ -9,8 +9,8 @@ import SwiftUI
 
 struct BannerCard: View {
     var body: some View {
-        HStack {
-            Image("banner")  
+        HStack(alignment: .center) {
+            Image("banner")
         }
     }
 }

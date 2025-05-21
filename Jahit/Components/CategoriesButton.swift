@@ -12,7 +12,6 @@ struct CategoriesButton: View {
         HStack(alignment: .center) {
             ForEach(["atasan", "bawahan", "terusan", "perbaikan"], id: \.self) { imageName in
                 Button(action: {
-                    // Action
                 }) {
                     Image(imageName)
                         .resizable()
