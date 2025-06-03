@@ -18,7 +18,7 @@ struct TabBarView: View {
             case 1:
                 ChatView()
             case 2:
-                Text("Transaksi")
+                SearchView(searchTitle: .constant("Terekomendasi"))
             case 3:
                 Text("Profil")
             default:
