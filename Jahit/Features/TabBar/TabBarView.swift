@@ -18,7 +18,7 @@ struct TabBarView: View {
             case 1:
                 ChatView()
             case 2:
-                Text("Transaksi")
+                TransactionView()
             case 3:
                 Text("Profil")
             default:
