@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @Binding var searchTitle: String
+    @StateObject private var filterViewModel = FilterViewModel()
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
             ZStack (alignment: .top) {
@@ -31,7 +32,9 @@ struct SearchView: View {
             
             // filter button
             HStack {
-                Button(action: {}) {
+                Button(action: {
+                    filterViewModel.isShowingFilter.toggle()
+                }) {
                     Image("filter")
                         .foregroundColor(.black)
                         .font(.system(size: 30))
@@ -94,7 +97,9 @@ struct SearchView: View {
                 .padding(.top, 8)
             }
             .padding(.top, 8)
-            .padding(.bottom, 70)
+        }
+        .sheet(isPresented: $filterViewModel.isShowingFilter) {
+            FilterModalView(viewModel: filterViewModel)
         }
     }
 }
