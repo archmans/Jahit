@@ -16,7 +16,7 @@ struct TabBarView: View {
             case 0:
                 HomeView()
             case 1:
-                ChatView()
+                TransactionView()
             case 2:
                 TransactionView()
             case 3:
