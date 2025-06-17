@@ -17,20 +17,42 @@ struct CartView: View {
                 headerView
                 
                 // Cart Items
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        // Tailor Header
-                        tailorHeaderView
-                        
-                        // Cart Items
-                        ForEach(viewModel.cartItems) { item in
-                            cartItemView(item: item)
+                if viewModel.tailorCarts.flatMap({ $0.items }).isEmpty {
+                    Spacer()
+                    VStack {
+                        Image(systemName: "cart")
+                            .resizable()
+                            .frame(width: 60, height: 60)
+                            .foregroundColor(.gray.opacity(0.3))
+                        Text("Keranjang kosong")
+                            .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.medium))
+                            .foregroundColor(.gray)
+                    }
+                    Spacer()
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(viewModel.tailorCarts) { tailorCart in
+                                VStack(spacing: 0) {
+                                    tailorHeaderView(
+                                        tailor: tailorCart.tailor,
+                                        isSelectAll: tailorCart.isSelectAll,
+                                        onSelectAll: { viewModel.toggleSelectAll(for: tailorCart.id) }
+                                    )
+                                    Divider()
+                                    ForEach(tailorCart.items) { item in
+                                        cartItemView(item: item)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
                 
                 // Bottom Section
-                bottomSectionView
+                if !viewModel.tailorCarts.flatMap({ $0.items }).isEmpty {
+                    bottomSectionView
+                }
             }
             .background(Color(UIColor.systemGroupedBackground))
             .sheet(isPresented: $viewModel.showingCustomization) {
@@ -42,7 +64,10 @@ struct CartView: View {
     
     private var headerView: some View {
         HStack {
-            Button(action: {}) {
+            Button(action: {
+                // go to home
+                
+            }) {
                 Image(systemName: "arrow.left")
                     .foregroundColor(.black)
                     .font(.system(size: 24, weight: .medium))
@@ -59,23 +84,18 @@ struct CartView: View {
         .background(Color.white)
     }
     
-    private var tailorHeaderView: some View {
+    private func tailorHeaderView(tailor: Tailor, isSelectAll: Bool, onSelectAll: @escaping () -> Void) -> some View {
         HStack(spacing: 8) {
-            Button(action: {
-                viewModel.toggleSelectAll()
-            }) {
-                Image(systemName: viewModel.isSelectAll ? "checkmark.square.fill" : "square")
-                    .foregroundColor(viewModel.isSelectAll ? .blue : .gray)
+            Button(action: onSelectAll) {
+                Image(systemName: isSelectAll ? "checkmark.square.fill" : "square")
+                    .foregroundColor(isSelectAll ? .blue : .gray)
                     .font(.system(size: 20))
             }
-            
             Image("shop")
                 .foregroundColor(.gray)
-            
-            Text("Alfa Tailor")
+            Text(tailor.name)
                 .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
                 .foregroundColor(.black)
-            
             Spacer()
         }
         .padding(.horizontal, 20)
@@ -144,6 +164,7 @@ struct CartView: View {
             )
         }
         .padding(.horizontal, 20)
+        .padding(.leading, 16)
         .padding(.vertical, 12)
         .background(Color.white)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -200,7 +221,7 @@ struct CartView: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 20)
         .background(Color.white)
-//        .cornerRadius(20, corners: [.topLeft, .topRight])
+        .cornerRadius(20, corners: [.topLeft, .topRight])
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
     }
 }

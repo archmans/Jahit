@@ -7,22 +7,6 @@
 
 import Foundation
 
-struct CartItem: Identifiable, Hashable {
-    let id = UUID()
-    let tailorId: String
-    let tailorName: String
-    let category: String
-    let itemName: String
-    let image: String
-    var quantity: Int
-    let basePrice: Double
-    var isSelected: Bool = false
-    
-    var totalPrice: Double {
-        return Double(quantity) * basePrice
-    }
-}
-
 struct CustomizationOrder: Identifiable {
     let id = UUID()
     let tailorId: String
@@ -84,7 +68,6 @@ enum TimeSlot: String, CaseIterable {
 enum PaymentMethod: String, CaseIterable {
     case creditCard = "Kartu Kredit Atau Debit"
     case qris = "QRIS"
-    case gopay = "Gopay"
     case cod = "Tunai/COD"
     
     var displayName: String {
@@ -95,7 +78,6 @@ enum PaymentMethod: String, CaseIterable {
         switch self {
         case .creditCard: return "creditcard"
         case .qris: return "qrcode"
-        case .gopay: return "circle.fill"
         case .cod: return "banknote"
         }
     }
@@ -107,13 +89,6 @@ enum PaymentMethod: String, CaseIterable {
         default: return nil
         }
     }
-}
-
-extension CartItem {
-    static let sampleItems = [
-        CartItem(tailorId: "1", tailorName: "Alfa Tailor", category: "Atasan", itemName: "Blazer", image: "blazer", quantity: 2, basePrice: 90000),
-        CartItem(tailorId: "1", tailorName: "Alfa Tailor", category: "Bawahan", itemName: "Celana", image: "blazer", quantity: 1, basePrice: 75000)
-    ]
 }
 
 extension OrderItem {
