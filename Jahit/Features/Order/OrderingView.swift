@@ -298,7 +298,7 @@ struct OrderingView: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 20)
         .background(Color.white)
-//        .cornerRadius(20, corners: [.topLeft, .topRight])
+        .cornerRadius(20, corners: [.topLeft, .topRight])
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
     }
 }

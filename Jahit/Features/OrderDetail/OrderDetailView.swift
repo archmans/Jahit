@@ -60,7 +60,7 @@ struct OrderDetailView: View {
                                 .font(.system(size: 16))
                         }
                         
-                        Text(index == 1 ? "Sedang\ndijahit" : status.rawValue.replacingOccurrences(of: " ", with: "\n"))
+                        Text(status.rawValue)
                             .font(.custom("PlusJakartaSans-Regular", size: 10))
                             .foregroundColor(index <= viewModel.currentStepIndex ? .blue : .gray)
                             .multilineTextAlignment(.center)

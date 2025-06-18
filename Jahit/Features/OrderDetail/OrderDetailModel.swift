@@ -27,7 +27,7 @@ enum OrderStatus: String, CaseIterable {
     case confirmed = "Pesanan dikonfirmasi"
     case inProgress = "Sedang dijahit"
     case shipping = "Sedang dikirim"
-    case completed = "Selesai"
+    case completed = "Pesanan Selesai"
     
     var stepIndex: Int {
         switch self {

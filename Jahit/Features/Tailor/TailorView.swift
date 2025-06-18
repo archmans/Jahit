@@ -26,8 +26,6 @@ struct TailorDetailView: View {
         .padding(.top, 16)
         .padding(.bottom, 16)
         
-        Divider()
-        
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 headerView

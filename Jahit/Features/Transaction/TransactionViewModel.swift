@@ -32,15 +32,15 @@ class TransactionViewModel: ObservableObject {
 
     private func loadSampleData() {
         tasks = [
-            Transaction(name: "Alfa Tailor", subtitle: "Atasan, Bawahan", imageName: "penjahit", price: 180_000, isCompleted: false),
+            Transaction(name: "Alfa Tailor", subtitle: "Batik", imageName: "penjahit", price: 180_000, isCompleted: false),
             Transaction(name: "Beta Tailor", subtitle: "Gamis, Mukena",    imageName: "penjahit", price: 220_000, isCompleted: false),
             Transaction(name: "Gamma Tailor", subtitle: "Jaket, Mantel",   imageName: "penjahit", price: 350_000, isCompleted: true),
             Transaction(name: "Delta Tailor", subtitle: "Kemeja, Celana",  imageName: "penjahit", price: 150_000, isCompleted: true),
-            Transaction(name: "Alfa Tailor", subtitle: "Atasan, Bawahan", imageName: "penjahit", price: 180_000, isCompleted: false),
+            Transaction(name: "Alfa Tailor", subtitle: "Batik", imageName: "penjahit", price: 180_000, isCompleted: false),
             Transaction(name: "Beta Tailor", subtitle: "Gamis, Mukena",    imageName: "penjahit", price: 220_000, isCompleted: false),
             Transaction(name: "Gamma Tailor", subtitle: "Jaket, Mantel",   imageName: "penjahit", price: 350_000, isCompleted: true),
             Transaction(name: "Delta Tailor", subtitle: "Kemeja, Celana",  imageName: "penjahit", price: 150_000, isCompleted: true),
-            Transaction(name: "Alfa Tailor", subtitle: "Atasan, Bawahan", imageName: "penjahit", price: 180_000, isCompleted: false),
+            Transaction(name: "Alfa Tailor", subtitle: "Batik", imageName: "penjahit", price: 180_000, isCompleted: false),
             Transaction(name: "Beta Tailor", subtitle: "Gamis, Mukena",    imageName: "penjahit", price: 220_000, isCompleted: false),
             Transaction(name: "Gamma Tailor", subtitle: "Jaket, Mantel",   imageName: "penjahit", price: 350_000, isCompleted: true),
             Transaction(name: "Delta Tailor", subtitle: "Kemeja, Celana",  imageName: "penjahit", price: 150_000, isCompleted: true)
