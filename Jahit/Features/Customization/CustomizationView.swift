@@ -22,46 +22,44 @@ struct CustomizationView: View {
     }
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Header
-                headerView
-                
-                // Content
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        // Tailor Name
-                        tailorNameView
-                        
-                        Divider()
-                        
-                        // Category
-                        categoryView
-                        
-                        // Item Selection
-                        itemSelectionView
-                        
-                        // Description
-                        descriptionView
-                        
-                        // Reference Images
-                        referenceImagesView
-                        
-                        Spacer(minLength: 100)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 20)
+        VStack(spacing: 0) {
+            // Header
+            headerView
+            
+            // Content
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Tailor Name
+                    tailorNameView
+                    
+                    Divider()
+                    
+                    // Category
+                    categoryView
+                    
+                    // Item Selection
+                    itemSelectionView
+                    
+                    // Description
+                    descriptionView
+                    
+                    // Reference Images
+                    referenceImagesView
+                    
+                    Spacer(minLength: 100)
                 }
-                
-                bottomSectionView
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
             }
-            .background(Color(UIColor.systemGroupedBackground))
-            .sheet(isPresented: $viewModel.showingItemPicker) {
-                ItemPickerView(viewModel: viewModel)
-            }
-//            .sheet(isPresented: $viewModel.showingOrdering) {
-//                OrderingView()
-//            }
+            
+            bottomSectionView
+        }
+        .background(Color(UIColor.systemGroupedBackground))
+        .sheet(isPresented: $viewModel.showingItemPicker) {
+            ItemPickerView(viewModel: viewModel)
+        }
+        .navigationDestination(isPresented: $viewModel.showingOrdering) {
+            OrderingView(customizationOrder: viewModel.customizationOrder)
         }
         .navigationBarHidden(true)
         .onAppear {
