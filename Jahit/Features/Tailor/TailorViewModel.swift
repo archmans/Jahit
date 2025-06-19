@@ -11,12 +11,15 @@ import Combine
 class TailorViewModel: ObservableObject {
     @Published var tailor: Tailor
     @Published var selectedTab: TailorTab = .services
-    @Published var currentImageIndex: Int = 0
+    @Published var serviceImageIndices: [String: Int] = [:]
     @Published var isLoading = false
     
-    // fix this
     init(tailor: Tailor = Tailor.sampleTailors.first!) {
         self.tailor = tailor
+        // Initialize image indices for all services
+        for service in tailor.services {
+            serviceImageIndices[service.id] = 0
+        }
     }
     
     var formattedRating: String {
@@ -27,28 +30,38 @@ class TailorViewModel: ObservableObject {
         return tailor.services.first
     }
     
-    var formattedStartingPrice: String {
-        guard let service = currentService else { return "Rp0" }
+    func formattedStartingPrice(for service: TailorService) -> String {
         return NumberFormatter.priceFormatter.string(from: NSNumber(value: service.startingPrice)) ?? "Rp0"
+    }
+    
+    func getCurrentImageIndex(for serviceId: String) -> Int {
+        return serviceImageIndices[serviceId] ?? 0
+    }
+    
+    func setCurrentImageIndex(_ index: Int, for serviceId: String) {
+        serviceImageIndices[serviceId] = index
     }
     
     func selectTab(_ tab: TailorTab) {
         selectedTab = tab
     }
     
-    func nextImage() {
-        guard let service = currentService else { return }
-        currentImageIndex = (currentImageIndex + 1) % service.images.count
+    func nextImage(for serviceId: String) {
+        guard let service = tailor.services.first(where: { $0.id == serviceId }) else { return }
+        let currentIndex = serviceImageIndices[serviceId] ?? 0
+        serviceImageIndices[serviceId] = (currentIndex + 1) % service.images.count
     }
     
-    func previousImage() {
-        guard let service = currentService else { return }
-        currentImageIndex = currentImageIndex > 0 ? currentImageIndex - 1 : service.images.count - 1
+    func previousImage(for serviceId: String) {
+        guard let service = tailor.services.first(where: { $0.id == serviceId }) else { return }
+        let currentIndex = serviceImageIndices[serviceId] ?? 0
+        serviceImageIndices[serviceId] = currentIndex > 0 ? currentIndex - 1 : service.images.count - 1
     }
     
-    func goToImage(at index: Int) {
-        guard let service = currentService, index < service.images.count else { return }
-        currentImageIndex = index
+    func goToImage(at index: Int, for serviceId: String) {
+        guard let service = tailor.services.first(where: { $0.id == serviceId }), 
+              index < service.images.count else { return }
+        serviceImageIndices[serviceId] = index
     }
     
     func contactViaWhatsApp() {

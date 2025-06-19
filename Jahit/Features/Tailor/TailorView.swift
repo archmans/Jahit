@@ -141,7 +141,7 @@ struct TailorDetailView: View {
     
     var servicesTabView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if let service = viewModel.currentService {
+            ForEach(viewModel.tailor.services, id: \.id) { service in
                 NavigationLink(destination: CustomizationView(tailor: viewModel.tailor, service: service)) {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
@@ -160,7 +160,7 @@ struct TailorDetailView: View {
                                         .font(.custom("PlusJakartaSans-Regular", size: 14))
                                         .foregroundColor(.black)
                                     
-                                    Text(viewModel.formattedStartingPrice)
+                                    Text(viewModel.formattedStartingPrice(for: service))
                                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                                         .foregroundColor(.black)
                                 }
@@ -173,7 +173,7 @@ struct TailorDetailView: View {
                                 .font(.system(size: 16))
                         }
                         
-                        imageCarouselView(images: service.images)
+                        imageCarouselView(images: service.images, serviceId: service.id)
                     }
                     .padding(16)
                     .background(Color.white)
@@ -185,11 +185,15 @@ struct TailorDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    func imageCarouselView(images: [String]) -> some View {
+    func imageCarouselView(images: [String], serviceId: String) -> some View {
         let indices = images.indices.map { $0 }
+        let currentIndex = viewModel.getCurrentImageIndex(for: serviceId)
         
         return VStack(spacing: 12) {
-            TabView(selection: $viewModel.currentImageIndex) {
+            TabView(selection: Binding(
+                get: { currentIndex },
+                set: { viewModel.setCurrentImageIndex($0, for: serviceId) }
+            )) {
                 ForEach(indices, id: \.self) { index in
                     Image(images[index])
                         .resizable()
@@ -207,10 +211,10 @@ struct TailorDetailView: View {
             HStack(spacing: 8) {
                 ForEach(indices, id: \.self) { index in
                     Circle()
-                        .fill(index == viewModel.currentImageIndex ? Color.blue : Color.gray.opacity(0.3))
+                        .fill(index == currentIndex ? Color.blue : Color.gray.opacity(0.3))
                         .frame(width: 8, height: 8)
                         .onTapGesture {
-                            viewModel.goToImage(at: index)
+                            viewModel.setCurrentImageIndex(index, for: serviceId)
                         }
                 }
             }

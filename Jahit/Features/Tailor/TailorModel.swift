@@ -85,6 +85,18 @@ extension Tailor {
                         TailorServiceItem(id: "i5", name: "Rok A-Line", image: "bawahan", price: 85000, description: "Rok A-line untuk berbagai acara"),
                         TailorServiceItem(id: "i6", name: "Celana Jeans Custom", image: "bawahan", price: 130000, description: "Jeans custom sesuai ukuran")
                     ]
+                ),
+                TailorService(
+                    id: "s3", 
+                    name: "Perbaikan", 
+                    description: "Layanan perbaikan dan alterasi pakaian", 
+                    startingPrice: 25000, 
+                    images: ["perbaikan"],
+                    items: [
+                        TailorServiceItem(id: "i10", name: "Perbaikan Sobek", image: "perbaikan", price: 35000, description: "Memperbaiki pakaian yang sobek"),
+                        TailorServiceItem(id: "i11", name: "Mengecilkan Ukuran", image: "perbaikan", price: 45000, description: "Mengecilkan ukuran pakaian yang kebesaran"),
+                        TailorServiceItem(id: "i12", name: "Ganti Kancing", image: "perbaikan", price: 15000, description: "Mengganti kancing yang lepas atau rusak")
+                    ]
                 )
             ],
             reviews: [
