@@ -14,7 +14,8 @@ class TailorViewModel: ObservableObject {
     @Published var currentImageIndex: Int = 0
     @Published var isLoading = false
     
-    init(tailor: Tailor = Tailor.sampleTailor) {
+    // fix this
+    init(tailor: Tailor = Tailor.sampleTailors.first!) {
         self.tailor = tailor
     }
     

@@ -8,36 +8,43 @@
 import SwiftUI
 
 struct TailorDetailView: View {
-    @StateObject private var viewModel = TailorViewModel()
+    @StateObject private var viewModel: TailorViewModel
+    @Environment(\.dismiss) private var dismiss
+    
+    init(tailor: Tailor) {
+        _viewModel = StateObject(wrappedValue: TailorViewModel(tailor: tailor))
+    }
     
     var body: some View {
-        HStack {
-            Button(action: {
-                viewModel.goBack()
-            }) {
-                Image(systemName: "arrow.left")
-                    .foregroundColor(.black)
-                    .font(.system(size: 24, weight: .medium))
+        VStack {
+            HStack {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image(systemName: "arrow.left")
+                        .foregroundColor(.black)
+                        .font(.system(size: 24, weight: .medium))
+                }
+                
+                Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 16)
             
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 16)
-        .padding(.bottom, 16)
-        
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                headerView
-                tabNavigationView
-                tabContentView
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    headerView
+                    tabNavigationView
+                    tabContentView
+                }
             }
+            .background(Color(UIColor.systemGroupedBackground))
         }
-        .background(Color(UIColor.systemGroupedBackground))
         .navigationBarHidden(true)
     }
     
-    private var headerView: some View {
+    var headerView: some View {
         VStack(spacing: 16) {
             HStack(spacing: 12) {
                 Image(viewModel.tailor.profileImage)
@@ -91,7 +98,7 @@ struct TailorDetailView: View {
         .background(Color.white)
     }
     
-    private var tabNavigationView: some View {
+    var tabNavigationView: some View {
         HStack(spacing: 0) {
             ForEach(TailorTab.allCases, id: \.self) { tab in
                 Button(action: {
@@ -113,7 +120,7 @@ struct TailorDetailView: View {
         .background(Color.white)
     }
     
-    private var tabContentView: some View {
+    var tabContentView: some View {
         Group {
             switch viewModel.selectedTab {
             case .services:
@@ -127,7 +134,7 @@ struct TailorDetailView: View {
         .padding(.top, 16)
     }
     
-    private var servicesTabView: some View {
+    var servicesTabView: some View {
         VStack(alignment: .leading, spacing: 16) {
             if let service = viewModel.currentService {
                 VStack(alignment: .leading, spacing: 12) {
@@ -170,11 +177,13 @@ struct TailorDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    private func imageCarouselView(images: [String]) -> some View {
-        VStack(spacing: 12) {
+    func imageCarouselView(images: [String]) -> some View {
+        let indices = images.indices.map { $0 }
+        
+        return VStack(spacing: 12) {
             TabView(selection: $viewModel.currentImageIndex) {
-                ForEach(Array(images.enumerated()), id: \.offset) { index, imageName in
-                    Image(imageName)
+                ForEach(indices, id: \.self) { index in
+                    Image(images[index])
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(height: 200)
@@ -188,7 +197,7 @@ struct TailorDetailView: View {
             .frame(height: 200)
             
             HStack(spacing: 8) {
-                ForEach(0..<images.count, id: \.self) { index in
+                ForEach(indices, id: \.self) { index in
                     Circle()
                         .fill(index == viewModel.currentImageIndex ? Color.blue : Color.gray.opacity(0.3))
                         .frame(width: 8, height: 8)
@@ -200,7 +209,7 @@ struct TailorDetailView: View {
         }
     }
     
-    private var reviewsTabView: some View {
+    var reviewsTabView: some View {
         VStack(alignment: .leading, spacing: 16) {
             ForEach(viewModel.tailor.reviews, id: \.id) { review in
                 reviewItemView(review: review)
@@ -209,7 +218,7 @@ struct TailorDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    private func reviewItemView(review: Review) -> some View {
+    func reviewItemView(review: Review) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(review.userName)
@@ -250,38 +259,43 @@ struct TailorDetailView: View {
         .cornerRadius(12)
     }
     
-    private var aboutTabView: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            // Description Section
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Deskripsi")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                    .foregroundColor(.black)
+    var aboutTabView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                // Description Section
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Deskripsi")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                        .foregroundColor(.black)
+                    
+                    Text(viewModel.tailor.description)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 
-                Text(viewModel.tailor.description)
-                    .font(.custom("PlusJakartaSans-Regular", size: 14))
-                    .foregroundColor(.black)
-                    .lineLimit(nil)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Lokasi")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                    .foregroundColor(.black)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Lokasi")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                        .foregroundColor(.black)
+                    
+                    Text(viewModel.tailor.locationDescription)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 
-                Text(viewModel.tailor.locationDescription)
-                    .font(.custom("PlusJakartaSans-Regular", size: 14))
-                    .foregroundColor(.black)
-                    .lineLimit(nil)
+                Spacer(minLength: 0)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(Color.white)
+            .cornerRadius(12)
         }
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(12)
         .padding(.horizontal, 16)
     }
 }
 
 #Preview {
-    TailorDetailView()
+    TailorDetailView(tailor: Tailor.sampleTailors.first!)
 }

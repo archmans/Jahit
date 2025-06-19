@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Tailor {
+struct Tailor: Identifiable, Hashable {
     let id: String
     let name: String
     let profileImage: String
@@ -20,7 +20,7 @@ struct Tailor {
     let locationDescription: String
 }
 
-struct TailorService {
+struct TailorService: Identifiable, Hashable {
     let id: String
     let name: String
     let description: String
@@ -28,7 +28,7 @@ struct TailorService {
     let images: [String]
 }
 
-struct Review {
+struct Review: Identifiable, Hashable {
     let id: String
     let userName: String
     let rating: Int
@@ -44,43 +44,76 @@ enum TailorTab: String, CaseIterable {
 }
 
 extension Tailor {
-    static let sampleTailor = Tailor(
-        id: "1",
-        name: "Alfa Tailor",
-        profileImage: "penjahit",
-        location: "Jalan Sekoloa",
-        rating: 4.9,
-        maxRating: 5,
-        services: [
-            TailorService(
-                id: "1",
-                name: "Atasan",
-                description: "Baju Kantor, Baju Kerja, Kemeja, Blazer, Sweater, Knitting, dll",
-                startingPrice: 45000,
-                images: ["blazer", "blazer", "blazer"]
-            )
-        ],
-        reviews: [
-            Review(
-                id: "1",
-                userName: "User",
-                rating: 5,
-                comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                timeAgo: "3 hari yang lalu",
-                userImage: "blazer"
-            ),
-            Review(
-                id: "2",
-                userName: "User",
-                rating: 5,
-                comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                timeAgo: "3 hari yang lalu",
-                userImage: "blazer"
-            )
-        ],
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
-        locationDescription: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    )
+    static let sampleTailors: [Tailor] = [
+        Tailor(
+            id: "1",
+            name: "Alfa Tailor",
+            profileImage: "penjahit",
+            location: "Bandung",
+            rating: 4.8,
+            maxRating: 5,
+            services: [
+                TailorService(id: "s1", name: "Atasan", description: "Jasa jahit atasan", startingPrice: 90000, images: ["blazer"]),
+                TailorService(id: "s2", name: "Bawahan", description: "Jasa jahit bawahan", startingPrice: 75000, images: ["blazer"])
+            ],
+            reviews: [
+                Review(id: "r1", userName: "Budi", rating: 5, comment: "Bagus sekali!", timeAgo: "2 hari lalu", userImage: nil)
+            ],
+            description: "Penjahit profesional.",
+            locationDescription: "Dekat ITB"
+        ),
+        Tailor(
+            id: "2",
+            name: "Beta Tailor",
+            profileImage: "penjahit",
+            location: "Jakarta",
+            rating: 4.7,
+            maxRating: 5,
+            services: [
+                TailorService(id: "s1", name: "Atasan", description: "Jasa jahit atasan", startingPrice: 90000, images: ["blazer"]),
+                TailorService(id: "s2", name: "Bawahan", description: "Jasa jahit bawahan", startingPrice: 75000, images: ["blazer"])
+            ],
+            reviews: [
+                Review(id: "r2", userName: "Siti", rating: 4, comment: "Pelayanan baik!", timeAgo: "1 hari lalu", userImage: nil)
+            ],
+            description: "Penjahit profesional.",
+            locationDescription: "Dekat UI"
+        ),
+        Tailor(
+            id: "3",
+            name: "Gamma Tailor",
+            profileImage: "penjahit",
+            location: "Surabaya",
+            rating: 4.6,
+            maxRating: 5,
+            services: [
+                TailorService(id: "s1", name: "Atasan", description: "Jasa jahit atasan", startingPrice: 90000, images: ["blazer","blazer"]),
+                TailorService(id: "s2", name: "Bawahan", description: "Jasa jahit bawahan", startingPrice: 75000, images: ["blazer","blazer"])
+            ],
+            reviews: [
+                Review(id: "r3", userName: "Andi", rating: 5, comment: "Cepat dan rapi!", timeAgo: "5 hari lalu", userImage: nil)
+            ],
+            description: "Penjahit profesional.",
+            locationDescription: "Dekat ITS"
+        ),
+        Tailor(
+            id: "4",
+            name: "Delta Tailor",
+            profileImage: "penjahit",
+            location: "Yogyakarta",
+            rating: 4.5,
+            maxRating: 5,
+            services: [
+                TailorService(id: "s1", name: "Atasan", description: "Jasa jahit atasan", startingPrice: 90000, images: ["blazer"]),
+                TailorService(id: "s2", name: "Bawahan", description: "Jasa jahit bawahan", startingPrice: 75000, images: ["blazer"])
+            ],
+            reviews: [
+                Review(id: "r4", userName: "Rina", rating: 4, comment: "Hasil memuaskan!", timeAgo: "3 hari lalu", userImage: nil)
+            ],
+            description: "Penjahit profesional.",
+            locationDescription: "Dekat UGM"
+        )
+    ]
 }
 
 extension NumberFormatter {
