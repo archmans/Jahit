@@ -21,6 +21,7 @@ struct TailorDetailView: View {
             HStack {
                 Button(action: {
                     dismiss()
+                    tabBarVM.show()
                 }) {
                     Image(systemName: "arrow.left")
                         .foregroundColor(.black)
@@ -45,9 +46,6 @@ struct TailorDetailView: View {
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
-        }
-        .onDisappear {
-            tabBarVM.show()
         }
     }
     

@@ -20,7 +20,6 @@ struct OptionalStringIdentifiable: Identifiable, Equatable, Hashable {
 }
 
 struct HomeView: View {
-    @StateObject private var tabBarVM = TabBarViewModel.shared
     @StateObject private var viewModel = HomeViewModel()
     @State private var selectedTailorId: OptionalStringIdentifiable? = nil
     @State private var searchTitle: String = ""
@@ -74,9 +73,6 @@ struct HomeView: View {
             .navigationDestination(isPresented: $isSearchViewPresented) {
                 SearchView(searchTitle: $searchTitle)
             }
-        }
-        .onAppear {
-            tabBarVM.show()
         }
     }
 }

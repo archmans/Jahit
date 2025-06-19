@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @StateObject private var tabBarVM = TabBarViewModel.shared
-    
     var body: some View {
         VStack(spacing: 20) {
             // Header
@@ -47,9 +45,7 @@ struct ProfileView: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .navigationBarHidden(true)
-        .onAppear {
-            tabBarVM.show()
-        }
+
     }
 }
 

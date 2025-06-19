@@ -18,7 +18,7 @@ struct TabBarView: View {
             case 1:
                 TransactionView()
             case 2:
-                Text("Profil")
+                ProfileView()
             default:
                 HomeView()
             }
