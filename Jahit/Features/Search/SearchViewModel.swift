@@ -12,12 +12,15 @@ class SearchViewModel: ObservableObject {
     private func loadTailors(category: String?) {
         isLoading = true
         // Simulate network delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            guard let self = self else { return }
+            
             if let category = category?.lowercased(), category != "semua penjahit" {
                 self.tailors = self.database.getTailorsByCategory(category)
             } else {
                 self.tailors = self.database.getTailors()
             }
+            
             self.isLoading = false
         }
     }
