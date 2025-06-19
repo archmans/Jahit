@@ -11,6 +11,7 @@ struct SearchView: View {
     @Binding var searchTitle: String
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: SearchViewModel
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     
     init(searchTitle: Binding<String>) {
         self._searchTitle = searchTitle
@@ -62,6 +63,12 @@ struct SearchView: View {
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            tabBarVM.hide()
+        }
+        .onDisappear {
+            tabBarVM.show()
+        }
     }
 }
 

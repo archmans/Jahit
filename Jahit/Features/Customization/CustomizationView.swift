@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CustomizationView: View {
     @StateObject private var viewModel = CustomizationViewModel()
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -54,6 +55,12 @@ struct CustomizationView: View {
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            tabBarVM.hide()
+        }
+        .onDisappear {
+            tabBarVM.show()
+        }
     }
     
     private var headerView: some View {

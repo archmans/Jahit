@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TailorDetailView: View {
     @StateObject private var viewModel: TailorViewModel
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     @Environment(\.dismiss) private var dismiss
     
     init(tailor: Tailor) {
@@ -42,6 +43,12 @@ struct TailorDetailView: View {
             .background(Color(UIColor.systemGroupedBackground))
         }
         .navigationBarHidden(true)
+        .onAppear {
+            tabBarVM.hide()
+        }
+        .onDisappear {
+            tabBarVM.show()
+        }
     }
     
     var headerView: some View {

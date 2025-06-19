@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CartView: View {
     @StateObject private var viewModel = CartViewModel()
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     
     var body: some View {
         NavigationView {
@@ -60,6 +61,12 @@ struct CartView: View {
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            tabBarVM.hide()
+        }
+        .onDisappear {
+            tabBarVM.show()
+        }
     }
     
     private var headerView: some View {

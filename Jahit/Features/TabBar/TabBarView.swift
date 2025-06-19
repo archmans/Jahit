@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @ObservedObject var tabBarVM = TabBarViewModel()
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     
     var body: some View {
         ZStack {
@@ -23,9 +23,10 @@ struct TabBarView: View {
                 HomeView()
             }
             
-            VStack {
-                Spacer()
-                HStack {
+            if tabBarVM.isVisible {
+                VStack {
+                    Spacer()
+                    HStack {
                     TabButton(isSelected: tabBarVM.selectedTab == 0, title: "Home", icon: "home", filledIcon: "home.fill") {
                         withAnimation {
                             tabBarVM.selectedTab = 0
@@ -48,10 +49,11 @@ struct TabBarView: View {
                 .padding(.horizontal, 12)
                 .background(Color.white)
                 .shadow(color: Color.black.opacity(0.15), radius: 3, x: 0, y: -2)
+                }
+                .navigationTitle("")
+                .navigationBarHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
-            .navigationTitle("")
-            .navigationBarHidden(true)
-            .navigationBarBackButtonHidden(true)
         }
     }
 }
