@@ -38,7 +38,7 @@ struct TabBarView: View {
                     }
                     TabButton(isSelected: tabBarVM.selectedTab == 2, title: "Profil", icon: "profile", filledIcon: "profile.fill") {
                         withAnimation {
-                            tabBarVM.selectedTab = 3
+                            tabBarVM.selectedTab = 2
                         }
                     }
                     

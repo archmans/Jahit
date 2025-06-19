@@ -39,24 +39,8 @@ struct SearchView: View {
             }
             .frame(height: 70)
             
-            // Filter button
-            HStack {
-                Button(action: {}) {
-                    Image("filter")
-                        .foregroundColor(.black)
-                        .font(.system(size: 30))
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(Color(red: 0.82, green: 0.89, blue: 1.0))
-                .cornerRadius(15)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
             ScrollView {
-                VStack(alignment: .leading, spacing: 8) {
+                LazyVStack(alignment: .leading, spacing: 8) {
                     if viewModel.isLoading {
                         ForEach(0..<5, id: \.self) { _ in
                             TailorListItemSkeleton()
@@ -73,6 +57,8 @@ struct SearchView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
+                .animation(.default, value: viewModel.isLoading)
+                .animation(.default, value: viewModel.tailors)
             }
         }
         .navigationBarHidden(true)

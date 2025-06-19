@@ -10,18 +10,25 @@ class SearchViewModel: ObservableObject {
     }
     
     private func loadTailors(category: String?) {
+        // Start with loading state
         isLoading = true
-        // Simulate network delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+        tailors = []
+        
+        // Get data from database
+        let tailorsData: [Tailor]
+        if let category = category?.lowercased(), category != "semua penjahit" {
+            tailorsData = database.getTailorsByCategory(category)
+        } else {
+            tailorsData = database.getTailors()
+        }
+        
+        // Update UI on main thread after a brief delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             guard let self = self else { return }
-            
-            if let category = category?.lowercased(), category != "semua penjahit" {
-                self.tailors = self.database.getTailorsByCategory(category)
-            } else {
-                self.tailors = self.database.getTailors()
+            withAnimation {
+                self.tailors = tailorsData
+                self.isLoading = false
             }
-            
-            self.isLoading = false
         }
     }
 }
