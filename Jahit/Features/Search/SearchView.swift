@@ -40,8 +40,30 @@ struct SearchView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(height: 70)
-                    ScrollView {
-                        VStack(alignment: .leading) {
+                
+                // Filter button
+                HStack {
+                    Button(action: {}) {
+                        Image("filter")
+                            .foregroundColor(.black)
+                            .font(.system(size: 30))
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .background(Color(red: 0.82, green: 0.89, blue: 1.0))
+                    .cornerRadius(15)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 8) {
+                        if viewModel.isLoading {
+                            ForEach(0..<5, id: \.self) { _ in
+                                TailorListItemSkeleton()
+                            }
+                        } else {
                             ForEach(viewModel.tailors) { tailor in
                                 Button(action: {
                                     selectedTailorId = tailor.id
@@ -54,7 +76,7 @@ struct SearchView: View {
                                             .cornerRadius(8)
                                             .frame(width: 99, height: 99)
                                             .padding(.leading, 4)
-                                        VStack (spacing: 4) {
+                                        VStack(spacing: 4) {
                                             Text(tailor.name)
                                                 .font(Font.custom("Plus Jakarta Sans", size: 12).weight(.semibold))
                                                 .foregroundColor(.black)
@@ -90,9 +112,9 @@ struct SearchView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
                 }
             }
             .navigationBarHidden(true)
@@ -103,6 +125,7 @@ struct SearchView: View {
             }
         }
     }
+}
 
 #Preview {
     SearchView(searchTitle: .constant("Terekomendasi"))
