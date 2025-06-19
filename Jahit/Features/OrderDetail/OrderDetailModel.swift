@@ -74,13 +74,13 @@ extension DateFormatter {
     }()
 }
 
-extension NumberFormatter {
-    static let currencyFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "IDR"
-        formatter.currencySymbol = "Rp"
-        formatter.maximumFractionDigits = 0
-        return formatter
-    }()
-}
+//extension NumberFormatter {
+//    static let currencyFormatter: NumberFormatter = {
+//        let formatter = NumberFormatter()
+//        formatter.numberStyle = .currency
+//        formatter.currencyCode = "IDR"
+//        formatter.currencySymbol = "Rp"
+//        formatter.maximumFractionDigits = 0
+//        return formatter
+//    }()
+//}

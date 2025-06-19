@@ -144,41 +144,44 @@ struct TailorDetailView: View {
     var servicesTabView: some View {
         VStack(alignment: .leading, spacing: 16) {
             if let service = viewModel.currentService {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(service.name)
-                                .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
-                                .foregroundColor(.black)
-                            
-                            Text(service.description)
-                                .font(.custom("PlusJakartaSans-Regular", size: 14))
-                                .foregroundColor(.gray)
-                                .lineLimit(2)
-                            
-                            HStack {
-                                Text("Mulai dari")
-                                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+                NavigationLink(destination: CustomizationView(tailor: viewModel.tailor, service: service)) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(service.name)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
                                     .foregroundColor(.black)
                                 
-                                Text(viewModel.formattedStartingPrice)
-                                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                                    .foregroundColor(.black)
+                                Text(service.description)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+                                    .foregroundColor(.gray)
+                                    .lineLimit(2)
+                                
+                                HStack {
+                                    Text("Mulai dari")
+                                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                                        .foregroundColor(.black)
+                                    
+                                    Text(viewModel.formattedStartingPrice)
+                                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                        .foregroundColor(.black)
+                                }
                             }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.system(size: 16))
                         }
                         
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
-                            .font(.system(size: 16))
+                        imageCarouselView(images: service.images)
                     }
-                    
-                    imageCarouselView(images: service.images)
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(12)
                 }
-                .padding(16)
-                .background(Color.white)
-                .cornerRadius(12)
+                .buttonStyle(PlainButtonStyle())
             }
         }
         .padding(.horizontal, 16)

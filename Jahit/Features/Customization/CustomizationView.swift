@@ -8,9 +8,18 @@
 import SwiftUI
 
 struct CustomizationView: View {
-    @StateObject private var viewModel = CustomizationViewModel()
+    @StateObject private var viewModel: CustomizationViewModel
     @StateObject private var tabBarVM = TabBarViewModel.shared
     @Environment(\.dismiss) private var dismiss
+    
+    let tailor: Tailor
+    let service: TailorService
+    
+    init(tailor: Tailor, service: TailorService) {
+        self.tailor = tailor
+        self.service = service
+        self._viewModel = StateObject(wrappedValue: CustomizationViewModel(tailor: tailor, service: service))
+    }
     
     var body: some View {
         NavigationView {
@@ -50,16 +59,13 @@ struct CustomizationView: View {
             .sheet(isPresented: $viewModel.showingItemPicker) {
                 ItemPickerView(viewModel: viewModel)
             }
-            .sheet(isPresented: $viewModel.showingOrdering) {
-                OrderingView()
-            }
+//            .sheet(isPresented: $viewModel.showingOrdering) {
+//                OrderingView()
+//            }
         }
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
-        }
-        .onDisappear {
-            tabBarVM.show()
         }
     }
     
@@ -288,5 +294,7 @@ struct CustomizationView: View {
 }
 
 #Preview {
-    CustomizationView()
+    let sampleTailor = Tailor.sampleTailors.first!
+    let sampleService = sampleTailor.services.first!
+    return CustomizationView(tailor: sampleTailor, service: sampleService)
 }

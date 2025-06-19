@@ -9,11 +9,20 @@ import SwiftUI
 import Combine
 
 class CustomizationViewModel: ObservableObject {
-    @Published var customizationOrder = CustomizationOrder(tailorId: "1", tailorName: "Alfa Tailor", category: "Atasan")
-    @Published var availableItems: [OrderItem] = OrderItem.sampleItems
+    @Published var customizationOrder: CustomizationOrder
+    @Published var availableItems: [TailorServiceItem] = []
     @Published var showingItemPicker: Bool = false
     @Published var showingImagePicker: Bool = false
     @Published var showingOrdering: Bool = false
+    
+    init(tailor: Tailor, service: TailorService) {
+        self.customizationOrder = CustomizationOrder(
+            tailorId: tailor.id,
+            tailorName: tailor.name,
+            category: service.name
+        )
+        self.availableItems = service.items
+    }
     
     var selectedItemName: String {
         return customizationOrder.selectedItem?.name ?? "Pilih Item"
@@ -25,7 +34,7 @@ class CustomizationViewModel: ObservableObject {
         return NumberFormatter.currencyFormatter.string(from: NSNumber(value: totalPrice)) ?? "Rp0"
     }
     
-    func selectItem(_ item: OrderItem) {
+    func selectItem(_ item: TailorServiceItem) {
         customizationOrder.selectedItem = item
         showingItemPicker = false
     }
