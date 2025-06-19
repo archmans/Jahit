@@ -9,15 +9,19 @@ import SwiftUI
 
 struct SearchView: View {
     @Binding var searchTitle: String
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
             ZStack (alignment: .top) {
                 HeaderBackground()
-                HStack {
-                    Button(action: {}) {
+                HStack(spacing: 12) {
+                    Button(action: {
+                        dismiss()
+                    }) {
                         Image(systemName: "arrow.left")
                             .foregroundColor(.white)
-                            .font(.system(size: 30))
+                            .font(.system(size: 24, weight: .medium))
                     }
                     Text(searchTitle)
                         .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
@@ -28,26 +32,10 @@ struct SearchView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(height: 70)
+        }
+        .navigationBarHidden(true)
             
-            // filter button
-            HStack {
-                Button(action: {}) {
-                    Image("filter")
-                        .foregroundColor(.black)
-                        .font(.system(size: 30))
-                    
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(Color(red: 0.82, green: 0.89, blue: 1.0))
-                .cornerRadius(15)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            // list of tailors
-            ScrollView {
+        ScrollView {
                 VStack(alignment: .leading) {
                     ForEach(0..<8) { _ in
                         Button(action: {}) {
@@ -94,10 +82,9 @@ struct SearchView: View {
                 .padding(.top, 8)
             }
             .padding(.top, 8)
-            .padding(.bottom, 70)
-        }
     }
 }
+
 
 #Preview {
     SearchView(searchTitle: .constant("Terekomendasi"))

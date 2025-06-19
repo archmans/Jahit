@@ -18,8 +18,6 @@ struct TabBarView: View {
             case 1:
                 TransactionView()
             case 2:
-                TransactionView()
-            case 3:
                 Text("Profil")
             default:
                 HomeView()
@@ -33,17 +31,12 @@ struct TabBarView: View {
                             tabBarVM.selectedTab = 0
                         }
                     }
-                    TabButton(isSelected: tabBarVM.selectedTab == 1, title: "Chat", icon: "chat", filledIcon: "chat.fill") {
+                    TabButton(isSelected: tabBarVM.selectedTab == 1, title: "Transaksi", icon: "transaction", filledIcon: "transaction.fill") {
                         withAnimation {
                             tabBarVM.selectedTab = 1
                         }
                     }
-                    TabButton(isSelected: tabBarVM.selectedTab == 2, title: "Transaksi", icon: "transaction", filledIcon: "transaction.fill") {
-                        withAnimation {
-                            tabBarVM.selectedTab = 2
-                        }
-                    }
-                    TabButton(isSelected: tabBarVM.selectedTab == 3, title: "Profil", icon: "profile", filledIcon: "profile.fill") {
+                    TabButton(isSelected: tabBarVM.selectedTab == 2, title: "Profil", icon: "profile", filledIcon: "profile.fill") {
                         withAnimation {
                             tabBarVM.selectedTab = 3
                         }

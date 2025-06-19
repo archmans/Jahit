@@ -22,6 +22,8 @@ struct OptionalStringIdentifiable: Identifiable, Equatable, Hashable {
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var selectedTailorId: OptionalStringIdentifiable? = nil
+    @State private var searchTitle: String = ""
+    @State private var isSearchViewPresented = false
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
@@ -36,13 +38,17 @@ struct HomeView: View {
                             .padding(.top, 8)
                             .padding(.horizontal, 20)
                         CategoriesButton(categories: viewModel.model.categories) { category in
-                            // To Do
+                            searchTitle = category.capitalized
+                            isSearchViewPresented = true
                         }
                         HStack {
                             Text("Penjahit terekemondasi")
                                 .font(.headline)
                             Spacer()
-                            Button("Lihat semua") {}
+                            Button("Lihat semua") {
+                                searchTitle = "Semua Penjahit"
+                                isSearchViewPresented = true
+                            }
                                 .font(.subheadline)
                                 .padding(8)
                         }
@@ -59,11 +65,14 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .navigationDestination(item: $selectedTailorId, destination: { idObj in
+            .navigationDestination(item: $selectedTailorId) { idObj in
                 if let id = idObj.value, let tailor = viewModel.filteredTailors.first(where: { $0.id == id }) {
                     TailorDetailView(tailor: tailor)
                 }
-            })
+            }
+            .navigationDestination(isPresented: $isSearchViewPresented) {
+                SearchView(searchTitle: $searchTitle)
+            }
         }
     }
 }
