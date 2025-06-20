@@ -207,8 +207,8 @@ struct CustomizationView: View {
                         ZStack(alignment: .topTrailing) {
                             // Try to load saved image first, fallback to bundled image
                             Group {
-                                if let savedImage = Image(savedImageNamed: imageName) {
-                                    savedImage
+                                if let uiImage = ImageManager.shared.loadImage(named: imageName) {
+                                    Image(uiImage: uiImage)
                                         .resizable()
                                         .aspectRatio(1, contentMode: .fill)
                                 } else {

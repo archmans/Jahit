@@ -11,6 +11,7 @@ struct CartView: View {
     @EnvironmentObject var userManager: UserManager
     @StateObject private var tabBarVM = TabBarViewModel.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var showingCheckout = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -52,6 +53,9 @@ struct CartView: View {
             }
         }
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $showingCheckout) {
+            CartCheckoutView(selectedItems: userManager.currentUser.selectedCartItems)
+        }
         .onAppear {
             tabBarVM.hide()
         }
@@ -188,51 +192,6 @@ struct CartView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            
-            // Additional details for custom orders
-            if item.isCustomOrder {
-                VStack(alignment: .leading, spacing: 8) {
-                    if let description = item.customDescription, !description.isEmpty {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Deskripsi Custom:")
-                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.semibold))
-                                .foregroundColor(.gray)
-                            
-                            Text(description)
-                                .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                .foregroundColor(.black)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(6)
-                        }
-                    }
-                    
-                    if !item.referenceImages.isEmpty {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Gambar Referensi:")
-                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.semibold))
-                                .foregroundColor(.gray)
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(item.referenceImages, id: \.self) { imageName in
-                                        Image(imageName)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 40, height: 40)
-                                            .clipped()
-                                            .cornerRadius(6)
-                                    }
-                                }
-                                .padding(.horizontal, 8)
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
-            }
         }
         .background(Color.white)
     }
@@ -252,8 +211,7 @@ struct CartView: View {
             }
             
             Button(action: {
-                // Navigate to checkout
-                print("Proceed to checkout")
+                showingCheckout = true
             }) {
                 Text("Lanjut ke Pembayaran")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))

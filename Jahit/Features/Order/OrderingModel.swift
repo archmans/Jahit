@@ -43,7 +43,7 @@ enum TimeSlot: String, CaseIterable {
     }
 }
 
-enum PaymentMethod: String, CaseIterable {
+enum PaymentMethod: String, CaseIterable, Hashable {
     case creditCard = "Kartu Kredit Atau Debit"
     case qris = "QRIS"
     case cod = "Tunai/COD"

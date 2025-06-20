@@ -182,6 +182,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         return currentUser.hasLocation
     }
     
+    
     func addToCart(_ item: CartItem) {
         // Check if tailor cart already exists
         if let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == item.tailorId }) {

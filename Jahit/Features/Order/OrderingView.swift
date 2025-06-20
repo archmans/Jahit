@@ -267,6 +267,65 @@ struct OrderingView: View {
                 }
             }
             
+            // Custom Order Details
+            if !customizationOrder.description.isEmpty || !customizationOrder.referenceImages.isEmpty {
+                Divider()
+                
+                Text("Detail Kustomisasi")
+                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                    .foregroundColor(.black)
+                
+                // Description
+                if !customizationOrder.description.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Deskripsi:")
+                            .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
+                            .foregroundColor(.gray)
+                        
+                        Text(customizationOrder.description)
+                            .font(.custom("PlusJakartaSans-Regular", size: 12))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 6)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(6)
+                    }
+                }
+                
+                // Reference Images
+                if !customizationOrder.referenceImages.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Gambar Referensi (\(customizationOrder.referenceImages.count)):")
+                            .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
+                            .foregroundColor(.gray)
+                        
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
+                            ForEach(customizationOrder.referenceImages, id: \.self) { imageName in
+                                Group {
+                                    if let uiImage = ImageManager.shared.loadImage(named: imageName) {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .aspectRatio(1, contentMode: .fill)
+                                    } else {
+                                        // Fallback to bundled image if saved image not found
+                                        Image(imageName)
+                                            .resizable()
+                                            .aspectRatio(1, contentMode: .fill)
+                                    }
+                                }
+                                .frame(width: 50, height: 50)
+                                .clipped()
+                                .cornerRadius(6)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            
             Divider()
             
             HStack {
