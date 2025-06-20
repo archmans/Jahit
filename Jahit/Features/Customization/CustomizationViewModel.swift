@@ -15,8 +15,11 @@ class CustomizationViewModel: ObservableObject {
     @Published var showingImagePicker: Bool = false
     @Published var showingOrdering: Bool = false
     @Published var showingCartSuccess: Bool = false
+    @Published var selectedImages: [UIImage] = []
+    @Published var isUploadingImages: Bool = false
     
     private let userManager = UserManager.shared
+    private let imageManager = ImageManager.shared
     
     init(tailor: Tailor, service: TailorService) {
         self.customizationOrder = CustomizationOrder(
@@ -77,9 +80,53 @@ class CustomizationViewModel: ObservableObject {
         }
     }
     
-    func removeReferenceImage(at index: Int) {
-        if index < customizationOrder.referenceImages.count {
-            customizationOrder.referenceImages.remove(at: index)
+    func uploadImages(_ images: [UIImage]) {
+        guard !images.isEmpty else { return }
+        
+        print("Uploading \(images.count) images")
+        isUploadingImages = true
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            
+            let savedImageNames = self.imageManager.saveImages(images)
+            print("Saved \(savedImageNames.count) images with names: \(savedImageNames)")
+            
+            DispatchQueue.main.async {
+                self.isUploadingImages = false
+                
+                for imageName in savedImageNames {
+                    self.addReferenceImage(imageName)
+                }
+                
+                // Clear selected images after upload
+                self.selectedImages.removeAll()
+                self.showingImagePicker = false
+            }
         }
+    }
+    
+    func uploadSingleImage(_ image: UIImage) {
+        uploadImages([image])
+    }
+    
+    func removeReferenceImage(at index: Int) {
+        guard index < customizationOrder.referenceImages.count else { return }
+        
+        let imageName = customizationOrder.referenceImages[index]
+        
+        // Delete from storage
+        _ = imageManager.deleteImage(named: imageName)
+        
+        // Remove from array
+        customizationOrder.referenceImages.remove(at: index)
+    }
+    
+    func clearAllReferenceImages() {
+        // Delete all images from storage
+        imageManager.deleteImages(named: customizationOrder.referenceImages)
+        
+        // Clear the array
+        customizationOrder.referenceImages.removeAll()
     }
 }

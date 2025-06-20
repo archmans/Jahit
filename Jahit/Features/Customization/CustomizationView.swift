@@ -55,8 +55,19 @@ struct CustomizationView: View {
             bottomSectionView
         }
         .background(Color(UIColor.systemGroupedBackground))
+        .sheet(isPresented: $viewModel.showingImagePicker) {
+            ImagePicker(
+                selectedImages: $viewModel.selectedImages,
+                maxSelection: 10 - viewModel.customizationOrder.referenceImages.count
+            )
+        }
         .sheet(isPresented: $viewModel.showingItemPicker) {
             ItemPickerView(viewModel: viewModel)
+        }
+        .onChange(of: viewModel.selectedImages) { _, newImages in
+            if !newImages.isEmpty {
+                viewModel.uploadImages(newImages)
+            }
         }
         .navigationDestination(isPresented: $viewModel.showingOrdering) {
             OrderingView(customizationOrder: viewModel.customizationOrder)
@@ -154,9 +165,18 @@ struct CustomizationView: View {
     
     private var referenceImagesView: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Gambar atau Referensi (Max 10)")
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-                .foregroundColor(.black)
+            HStack {
+                Text("Gambar atau Referensi (Max 10)")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                if viewModel.isUploadingImages {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                }
+            }
             
             if viewModel.customizationOrder.referenceImages.isEmpty {
                 Button(action: {
@@ -167,7 +187,7 @@ struct CustomizationView: View {
                             .foregroundColor(.blue)
                             .font(.system(size: 24))
                         
-                        Text("Upload Image")
+                        Text(viewModel.isUploadingImages ? "Uploading..." : "Upload Image")
                             .font(.custom("PlusJakartaSans-Regular", size: 14))
                             .foregroundColor(.blue)
                     }
@@ -180,16 +200,26 @@ struct CustomizationView: View {
                             .stroke(Color.blue, style: StrokeStyle(lineWidth: 2, dash: [5]))
                     )
                 }
+                .disabled(viewModel.isUploadingImages)
             } else {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 12) {
                     ForEach(Array(viewModel.customizationOrder.referenceImages.enumerated()), id: \.offset) { index, imageName in
                         ZStack(alignment: .topTrailing) {
-                            Image(imageName)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(height: 80)
-                                .clipped()
-                                .cornerRadius(8)
+                            // Try to load saved image first, fallback to bundled image
+                            Group {
+                                if let savedImage = Image(savedImageNamed: imageName) {
+                                    savedImage
+                                        .resizable()
+                                        .aspectRatio(1, contentMode: .fill)
+                                } else {
+                                    Image(imageName)
+                                        .resizable()
+                                        .aspectRatio(1, contentMode: .fill)
+                                }
+                            }
+                            .frame(width: 90, height: 90)
+                            .clipped()
+                            .cornerRadius(8)
                             
                             Button(action: {
                                 viewModel.removeReferenceImage(at: index)
@@ -198,8 +228,9 @@ struct CustomizationView: View {
                                     .foregroundColor(.red)
                                     .background(Color.white)
                                     .clipShape(Circle())
+                                    .font(.system(size: 20))
                             }
-                            .offset(x: 5, y: -5)
+                            .offset(x: 8, y: -8)
                         }
                     }
                     
@@ -207,18 +238,25 @@ struct CustomizationView: View {
                         Button(action: {
                             viewModel.showingImagePicker = true
                         }) {
-                            Image(systemName: "plus")
-                                .foregroundColor(.blue)
-                                .font(.system(size: 20))
-                                .frame(height: 80)
-                                .frame(maxWidth: .infinity)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.blue, style: StrokeStyle(lineWidth: 2, dash: [5]))
-                                )
+                            VStack(spacing: 4) {
+                                Image(systemName: "plus")
+                                    .foregroundColor(.blue)
+                                    .font(.system(size: 20))
+                                
+                                if viewModel.isUploadingImages {
+                                    ProgressView()
+                                        .scaleEffect(0.6)
+                                }
+                            }
+                            .frame(width: 90, height: 90)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.blue, style: StrokeStyle(lineWidth: 2, dash: [5]))
+                            )
                         }
+                        .disabled(viewModel.isUploadingImages)
                     }
                 }
             }
