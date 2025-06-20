@@ -26,10 +26,13 @@ struct HomeView: View {
     @State private var selectedTailorId: OptionalStringIdentifiable? = nil
     @State private var searchTitle: String = ""
     @State private var isSearchViewPresented = false
+    @State private var isCartViewPresented = false
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
-                SearchFieldHome(searchText: $viewModel.searchText)
+                SearchFieldHome(searchText: $viewModel.searchText) {
+                    isCartViewPresented = true
+                }
                 ScrollView {
                     VStack(alignment: .leading, spacing: 8) {
                         LocationLabel()
@@ -74,6 +77,9 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $isSearchViewPresented) {
                 SearchView(searchTitle: $searchTitle)
+            }
+            .navigationDestination(isPresented: $isCartViewPresented) {
+                CartView()
             }
         }
         .onAppear {

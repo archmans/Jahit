@@ -181,4 +181,96 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func hasValidLocation() -> Bool {
         return currentUser.hasLocation
     }
+    
+    func addToCart(_ item: CartItem) {
+        // Check if tailor cart already exists
+        if let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == item.tailorId }) {
+            // Check if same item already exists
+            if let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.itemId == item.itemId && $0.isCustomOrder == item.isCustomOrder }) {
+                // Update quantity for existing item
+                currentUser.cart[tailorCartIndex].items[itemIndex].quantity += item.quantity
+            } else {
+                // Add new item to existing tailor cart
+                currentUser.cart[tailorCartIndex].items.append(item)
+            }
+        } else {
+            // Create new tailor cart
+            let newTailorCart = TailorCart(tailorId: item.tailorId, tailorName: item.tailorName, items: [item])
+            currentUser.cart.append(newTailorCart)
+        }
+        
+        saveUserToStorage()
+        print("Added item to cart: \(item.itemName)")
+    }
+    
+    func addCustomizationToCart(_ customizationOrder: CustomizationOrder) {
+        guard let cartItem = CartItem.fromCustomizationOrder(customizationOrder) else {
+            print("Failed to create cart item from customization order")
+            return
+        }
+        
+        addToCart(cartItem)
+        print("Added customization to cart: \(cartItem.itemName)")
+    }
+    
+    func removeFromCart(itemId: String, tailorId: String) {
+        guard let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == tailorId }) else { return }
+        
+        currentUser.cart[tailorCartIndex].items.removeAll { $0.id == itemId }
+        
+        // Remove tailor cart if no items left
+        if currentUser.cart[tailorCartIndex].items.isEmpty {
+            currentUser.cart.remove(at: tailorCartIndex)
+        }
+        
+        saveUserToStorage()
+        print("Removed item from cart")
+    }
+    
+    func updateCartItemQuantity(itemId: String, tailorId: String, quantity: Int) {
+        guard let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == tailorId }),
+              let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.id == itemId }) else { return }
+        
+        if quantity <= 0 {
+            removeFromCart(itemId: itemId, tailorId: tailorId)
+        } else {
+            currentUser.cart[tailorCartIndex].items[itemIndex].quantity = quantity
+            saveUserToStorage()
+        }
+    }
+    
+    func toggleCartItemSelection(itemId: String, tailorId: String) {
+        guard let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == tailorId }),
+              let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.id == itemId }) else { return }
+        
+        currentUser.cart[tailorCartIndex].items[itemIndex].isSelected.toggle()
+        saveUserToStorage()
+    }
+    
+    func toggleSelectAllForTailor(tailorId: String) {
+        guard let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == tailorId }) else { return }
+        
+        let newSelectionState = !currentUser.cart[tailorCartIndex].isSelectAll
+        currentUser.cart[tailorCartIndex].isSelectAll = newSelectionState
+        
+        for itemIndex in currentUser.cart[tailorCartIndex].items.indices {
+            currentUser.cart[tailorCartIndex].items[itemIndex].isSelected = newSelectionState
+        }
+        
+        saveUserToStorage()
+    }
+    
+    func clearCart() {
+        currentUser.cart.removeAll()
+        saveUserToStorage()
+        print("Cart cleared")
+    }
+    
+    func getCartItemsCount() -> Int {
+        return currentUser.totalCartItems
+    }
+    
+    func getSelectedCartItems() -> [CartItem] {
+        return currentUser.selectedCartItems
+    }
 }

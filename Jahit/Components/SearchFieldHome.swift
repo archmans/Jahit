@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SearchFieldHome: View {
     @Binding var searchText: String
+    @EnvironmentObject var userManager: UserManager
+    var onCartTapped: () -> Void = {}
     
     var body: some View {
         ZStack (alignment: .top) {
@@ -30,11 +32,24 @@ struct SearchFieldHome: View {
                 .cornerRadius(12)
                 
                 Button(action: {
-                    print("Cart tapped")
+                    onCartTapped()
                 }) {
-                    Image(systemName: "cart")
-                        .foregroundColor(.white)
-                        .font(.system(size: 24))
+                    ZStack {
+                        Image(systemName: "cart")
+                            .foregroundColor(.white)
+                            .font(.system(size: 24))
+                        
+                        // Cart badge
+                        if userManager.currentUser.totalCartItems > 0 {
+                            Text("\(userManager.currentUser.totalCartItems)")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
+                                .foregroundColor(.white)
+                                .frame(minWidth: 20, minHeight: 20)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 12, y: -10)
+                        }
+                    }
                 }
             }
             .padding(.vertical, 4)
@@ -50,4 +65,5 @@ struct SearchFieldHome: View {
 
 #Preview {
     SearchFieldHome(searchText: .constant("Cari Penjahit"))
+        .environmentObject(UserManager.shared)
 }

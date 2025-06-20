@@ -17,6 +17,7 @@ struct User: Identifiable, Codable {
     var latitude: Double?
     var longitude: Double?
     var profileImage: String?
+    var cart: [TailorCart] = []
     
     init(
         id: String = UUID().uuidString,
@@ -26,7 +27,8 @@ struct User: Identifiable, Codable {
         address: String? = nil,
         latitude: Double? = nil,
         longitude: Double? = nil,
-        profileImage: String? = nil
+        profileImage: String? = nil,
+        cart: [TailorCart] = []
     ) {
         self.id = id
         self.name = name
@@ -36,6 +38,7 @@ struct User: Identifiable, Codable {
         self.latitude = latitude
         self.longitude = longitude
         self.profileImage = profileImage
+        self.cart = cart
     }
     
     var coordinate: CLLocationCoordinate2D? {
@@ -45,6 +48,19 @@ struct User: Identifiable, Codable {
     
     var hasLocation: Bool {
         return latitude != nil && longitude != nil && address != nil
+    }
+    
+    // Cart related computed properties
+    var totalCartItems: Int {
+        return cart.reduce(0) { $0 + $1.items.count }
+    }
+    
+    var totalCartPrice: Double {
+        return cart.reduce(0) { $0 + $1.totalPrice }
+    }
+    
+    var selectedCartItems: [CartItem] {
+        return cart.flatMap { $0.items.filter { $0.isSelected } }
     }
 }
 

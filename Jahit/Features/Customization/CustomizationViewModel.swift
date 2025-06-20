@@ -14,6 +14,9 @@ class CustomizationViewModel: ObservableObject {
     @Published var showingItemPicker: Bool = false
     @Published var showingImagePicker: Bool = false
     @Published var showingOrdering: Bool = false
+    @Published var showingCartSuccess: Bool = false
+    
+    private let userManager = UserManager.shared
     
     init(tailor: Tailor, service: TailorService) {
         self.customizationOrder = CustomizationOrder(
@@ -48,7 +51,18 @@ class CustomizationViewModel: ObservableObject {
     }
     
     func addToCart() {
-        print("Adding customization to cart")
+        guard customizationOrder.isValid else {
+            print("Invalid customization order")
+            return
+        }
+        
+        userManager.addCustomizationToCart(customizationOrder)
+        showingCartSuccess = true
+        
+        // Auto dismiss after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.showingCartSuccess = false
+        }
     }
     
     func proceedToOrder() {

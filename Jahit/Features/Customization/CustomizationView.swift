@@ -61,6 +61,11 @@ struct CustomizationView: View {
         .navigationDestination(isPresented: $viewModel.showingOrdering) {
             OrderingView(customizationOrder: viewModel.customizationOrder)
         }
+        .alert("Berhasil ditambahkan!", isPresented: $viewModel.showingCartSuccess) {
+            Button("OK") { }
+        } message: {
+            Text("Item berhasil ditambahkan ke keranjang")
+        }
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
