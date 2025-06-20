@@ -65,9 +65,6 @@ struct OrderingView: View {
                 viewModel.updateAddress(userAddress)
             }
         }
-        .onDisappear {
-            tabBarVM.show()
-        }
         .sheet(isPresented: $viewModel.showingDatePicker) {
             DatePickerView(selectedDate: $viewModel.order.pickupDate, onDateSelected: viewModel.updatePickupDate)
         }

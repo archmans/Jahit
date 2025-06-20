@@ -25,6 +25,7 @@ struct SearchView: View {
                 HStack(spacing: 12) {
                     Button(action: {
                         dismiss()
+                        tabBarVM.show()
                     }) {
                         Image(systemName: "arrow.left")
                             .foregroundColor(.white)
@@ -65,9 +66,6 @@ struct SearchView: View {
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
-        }
-        .onDisappear {
-            tabBarVM.show()
         }
     }
 }
