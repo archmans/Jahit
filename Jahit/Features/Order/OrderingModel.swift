@@ -1,33 +1,11 @@
 //
-//  OrderModel.swift
+//  OrderingModel.swift
 //  Jahit
 //
 //  Created by Muhamad Salman Hakim Alfarisi on 14/06/25.
 //
 
 import Foundation
-
-struct CustomizationOrder: Identifiable {
-    let id = UUID()
-    let tailorId: String
-    let tailorName: String
-    let category: String
-    var selectedItem: TailorServiceItem?
-    var description: String = ""
-    var referenceImages: [String] = []
-    var quantity: Int = 1
-    
-    var isValid: Bool {
-        return selectedItem != nil
-    }
-}
-
-// struct OrderItem: Identifiable, Hashable {
-//     let id = UUID()
-//     let name: String
-//     let price: Double
-//     let category: String
-// }
 
 struct Ordering: Identifiable {
     let id = UUID()
@@ -90,13 +68,3 @@ enum PaymentMethod: String, CaseIterable {
         }
     }
 }
-
-// extension OrderItem {
-//     static let sampleItems = [
-//         OrderItem(name: "Blazer", price: 90000, category: "Atasan"),
-//         OrderItem(name: "Kemeja", price: 65000, category: "Atasan"),
-//         OrderItem(name: "Sweater", price: 85000, category: "Atasan"),
-//         OrderItem(name: "Celana Panjang", price: 75000, category: "Bawahan"),
-//         OrderItem(name: "Celana Pendek", price: 60000, category: "Bawahan")
-//     ]
-// }

@@ -9,9 +9,16 @@ import SwiftUI
 
 @main
 struct JahitApp: App {
+    @StateObject private var userManager = UserManager.shared
+    
     var body: some Scene {
         WindowGroup {
             SplashScreenView()
+                .environmentObject(userManager)
+                .onAppear {
+                    // Request location only once when app launches
+                    userManager.requestLocationOnAppLaunch()
+                }
         }
     }
 }

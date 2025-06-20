@@ -10,6 +10,7 @@ import SwiftUI
 struct OrderingView: View {
     @StateObject private var viewModel: OrderingViewModel
     @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
     
     let customizationOrder: CustomizationOrder
@@ -59,6 +60,13 @@ struct OrderingView: View {
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
+            // Sync user's current address to the order
+            if let userAddress = userManager.currentUser.address {
+                viewModel.updateAddress(userAddress)
+            }
+        }
+        .onDisappear {
+            tabBarVM.show()
         }
         .sheet(isPresented: $viewModel.showingDatePicker) {
             DatePickerView(selectedDate: $viewModel.order.pickupDate, onDateSelected: viewModel.updatePickupDate)
@@ -113,16 +121,41 @@ struct OrderingView: View {
     
     private var addressView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Alamat")
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-                .foregroundColor(.black)
+            HStack {
+                Text("Alamat")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                if userManager.isLocationLoading {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                } else {
+                    Button(action: {
+                        userManager.forceUpdateLocation()
+                    }) {
+                        Image(systemName: "location.circle")
+                            .foregroundColor(.blue)
+                            .font(.system(size: 20))
+                    }
+                }
+            }
             
             Divider()
             
             HStack {
                 TextField("Masukkan alamat Anda", text: Binding(
-                    get: { viewModel.order.address },
-                    set: { viewModel.updateAddress($0) }
+                    get: { 
+                        // Use user's current address if available, otherwise use order address
+                        return userManager.currentUser.address ?? viewModel.order.address 
+                    },
+                    set: { newAddress in
+                        viewModel.updateAddress(newAddress)
+                        // Optionally update user's address too
+                        userManager.currentUser.address = newAddress
+                        userManager.saveUserToStorage()
+                    }
                 ))
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.black)
@@ -134,6 +167,13 @@ struct OrderingView: View {
                         .foregroundColor(.gray)
                         .font(.system(size: 16))
                 }
+            }
+            
+            // Show location error if any
+            if let error = userManager.locationError {
+                Text(error)
+                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                    .foregroundColor(.red)
             }
         }
         .padding(16)
@@ -344,4 +384,5 @@ struct OrderingView: View {
         category: "Atasan"
     )
     return OrderingView(customizationOrder: sampleOrder)
+        .environmentObject(UserManager.shared)
 }

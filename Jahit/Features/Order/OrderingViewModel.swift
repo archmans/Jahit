@@ -21,9 +21,12 @@ class OrderingViewModel: ObservableObject {
             price: customizationOrder.selectedItem?.price ?? 0
         )
         
+        // Try to get user's current address, fallback to default
+        let userAddress = UserManager.shared.currentUser.address ?? "Alamat belum diset"
+        
         self.order = Ordering(
             tailorName: customizationOrder.tailorName,
-            address: "Alamat akan diset nanti", // This can be updated later
+            address: userAddress,
             items: [orderItem]
         )
     }

@@ -20,7 +20,9 @@ struct OptionalStringIdentifiable: Identifiable, Equatable, Hashable {
 }
 
 struct HomeView: View {
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     @StateObject private var viewModel = HomeViewModel()
+    @EnvironmentObject var userManager: UserManager
     @State private var selectedTailorId: OptionalStringIdentifiable? = nil
     @State private var searchTitle: String = ""
     @State private var isSearchViewPresented = false
@@ -74,9 +76,13 @@ struct HomeView: View {
                 SearchView(searchTitle: $searchTitle)
             }
         }
+        .onAppear {
+            tabBarVM.show()
+        }
     }
 }
 
 #Preview {
     HomeView()
+        .environmentObject(UserManager.shared)
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabBarView: View {
     @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
         ZStack {
@@ -60,4 +61,5 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView()
+        .environmentObject(UserManager.shared)
 }
