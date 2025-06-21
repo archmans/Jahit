@@ -3,9 +3,28 @@ class LocalDatabase: ObservableObject {
     static let shared = LocalDatabase()
     
     @Published var tailors: [Tailor] = []
+    private let userDefaults = UserDefaults.standard
+    private let tailorsKey = "savedTailors"
     
     private init() {
-        self.tailors = Tailor.sampleTailors
+        loadTailorsFromStorage()
+    }
+    
+    private func loadTailorsFromStorage() {
+        if let tailorsData = userDefaults.data(forKey: tailorsKey),
+           let savedTailors = try? JSONDecoder().decode([Tailor].self, from: tailorsData) {
+            self.tailors = savedTailors
+        } else {
+            // First time launch - use sample data
+            self.tailors = Tailor.sampleTailors
+            saveTailorsToStorage()
+        }
+    }
+    
+    private func saveTailorsToStorage() {
+        if let tailorsData = try? JSONEncoder().encode(tailors) {
+            userDefaults.set(tailorsData, forKey: tailorsKey)
+        }
     }
     
     func getTailors() -> [Tailor] {
@@ -70,6 +89,9 @@ class LocalDatabase: ObservableObject {
         
         print("Added review to tailor \(tailorId). New rating: \(newRating)")
         print("Tailor now has \(updatedReviews.count) reviews")
+        
+        // Save to persistent storage
+        saveTailorsToStorage()
         
         // Trigger UI update by explicitly updating the published property
         DispatchQueue.main.async {

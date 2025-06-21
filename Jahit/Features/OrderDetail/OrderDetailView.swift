@@ -119,11 +119,6 @@ struct OrderDetailView: View {
                 // Items (updated to show all items with details)
                 itemsListView
                 
-                // Description (only if there's a general description)
-                if !viewModel.order.description.isEmpty && viewModel.order.description != "-" {
-                    orderDetailRow(title: "Catatan Umum", value: viewModel.order.description)
-                }
-                
                 // Payment Method
                 orderDetailRow(title: "Metode Pembayaran", value: viewModel.order.paymentMethod)
                 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Tailor: Identifiable, Hashable {
+struct Tailor: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let profileImage: String
@@ -20,7 +20,7 @@ struct Tailor: Identifiable, Hashable {
     let locationDescription: String
 }
 
-struct TailorService: Identifiable, Hashable {
+struct TailorService: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let description: String
@@ -29,7 +29,7 @@ struct TailorService: Identifiable, Hashable {
     let items: [TailorServiceItem]
 }
 
-struct TailorServiceItem: Identifiable, Hashable {
+struct TailorServiceItem: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let image: String
@@ -37,7 +37,7 @@ struct TailorServiceItem: Identifiable, Hashable {
     let description: String?
 }
 
-struct TailorReview: Identifiable, Hashable {
+struct TailorReview: Identifiable, Hashable, Codable {
     let id: String
     let userName: String
     let rating: Int
