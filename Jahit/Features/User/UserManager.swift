@@ -33,6 +33,10 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         if let userData = userDefaults.data(forKey: userKey),
            let user = try? JSONDecoder().decode(User.self, from: userData) {
             currentUser = user
+        } else {
+            // If no saved user data, use default user with sample transactions
+            currentUser = User.defaultUser
+            saveUserToStorage()
         }
     }
     
@@ -388,5 +392,13 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func getCompletedTransactions() -> [Transaction] {
         return currentUser.completedTransactions
+    }
+    
+    // MARK: - Development/Testing Methods
+    
+    func resetToDefaultUserWithSampleData() {
+        currentUser = User.defaultUser
+        saveUserToStorage()
+        print("User reset to default with sample transactions")
     }
 }

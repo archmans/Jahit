@@ -79,6 +79,164 @@ struct User: Identifiable, Codable {
 extension User {
     static let defaultUser = User(
         name: "Guest User",
-        address: "Location not set"
+        address: "Location not set",
+        transactions: [
+            // Completed transaction
+            Transaction(
+                id: "TXN-001",
+                tailorId: "tailor-1",
+                tailorName: "Alfa Tailor",
+                items: [
+                    TransactionItem(
+                        id: "item-1",
+                        name: "Blazer Formal",
+                        category: "Atasan",
+                        quantity: 1,
+                        basePrice: 150000,
+                        totalPrice: 150000,
+                        isCustomOrder: true,
+                        customDescription: "Blazer formal untuk acara resmi, warna navy dengan kancing emas",
+                        referenceImages: ["blazer", "atasan"]
+                    ),
+                    TransactionItem(
+                        id: "item-2",
+                        name: "Celana Bahan",
+                        category: "Bawahan",
+                        quantity: 1,
+                        basePrice: 100000,
+                        totalPrice: 100000,
+                        isCustomOrder: false,
+                        customDescription: nil,
+                        referenceImages: ["bawahan"]
+                    )
+                ],
+                totalPrice: 250000,
+                pickupDate: Calendar.current.date(byAdding: .day, value: -3, to: Date()) ?? Date(),
+                pickupTime: "14:00",
+                paymentMethod: "GoPay",
+                customerAddress: "Jl. Ganesha No. 10, Bandung",
+                orderDate: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
+                status: .completed
+            ),
+            
+            // In progress transaction
+            Transaction(
+                id: "TXN-002",
+                tailorId: "tailor-2",
+                tailorName: "Beta Tailor",
+                items: [
+                    TransactionItem(
+                        id: "item-3",
+                        name: "Dress Custom",
+                        category: "Terusan",
+                        quantity: 1,
+                        basePrice: 200000,
+                        totalPrice: 200000,
+                        isCustomOrder: true,
+                        customDescription: "Dress untuk pesta pernikahan, model A-line dengan detail bordir di bagian dada",
+                        referenceImages: ["terusan", "banner"]
+                    )
+                ],
+                totalPrice: 200000,
+                pickupDate: Calendar.current.date(byAdding: .day, value: 2, to: Date()) ?? Date(),
+                pickupTime: "16:00",
+                paymentMethod: "Kartu Debit",
+                customerAddress: "Jl. Dipatiukur No. 35, Bandung",
+                orderDate: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(),
+                status: .inProgress
+            ),
+            
+            // Ready for pickup transaction
+            Transaction(
+                id: "TXN-003",
+                tailorId: "tailor-1",
+                tailorName: "Alfa Tailor",
+                items: [
+                    TransactionItem(
+                        id: "item-4",
+                        name: "Kemeja Batik",
+                        category: "Atasan",
+                        quantity: 2,
+                        basePrice: 80000,
+                        totalPrice: 160000,
+                        isCustomOrder: true,
+                        customDescription: "Kemeja batik untuk acara formal kantor, motif parang dengan kombinasi warna biru",
+                        referenceImages: ["atasan", "blazer"]
+                    )
+                ],
+                totalPrice: 160000,
+                pickupDate: Date(),
+                pickupTime: "10:00",
+                paymentMethod: "GoPay",
+                customerAddress: "Jl. Ganesha No. 10, Bandung",
+                orderDate: Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date(),
+                status: .readyForPickup
+            ),
+            
+            // Pending transaction
+            Transaction(
+                id: "TXN-004",
+                tailorId: "tailor-3",
+                tailorName: "Gamma Tailor",
+                items: [
+                    TransactionItem(
+                        id: "item-5",
+                        name: "Jas Pengantin",
+                        category: "Atasan",
+                        quantity: 1,
+                        basePrice: 500000,
+                        totalPrice: 500000,
+                        isCustomOrder: true,
+                        customDescription: "Jas pengantin warna hitam dengan detail emas, menggunakan bahan wool premium",
+                        referenceImages: ["blazer", "atasan"]
+                    ),
+                    TransactionItem(
+                        id: "item-6",
+                        name: "Celana Jas",
+                        category: "Bawahan",
+                        quantity: 1,
+                        basePrice: 200000,
+                        totalPrice: 200000,
+                        isCustomOrder: true,
+                        customDescription: "Celana jas matching dengan jas pengantin",
+                        referenceImages: ["bawahan"]
+                    )
+                ],
+                totalPrice: 700000,
+                pickupDate: Calendar.current.date(byAdding: .day, value: 14, to: Date()) ?? Date(),
+                pickupTime: "15:00",
+                paymentMethod: "Transfer Bank",
+                customerAddress: "Jl. Asia Afrika No. 8, Bandung",
+                orderDate: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                status: .pending
+            ),
+            
+            // Another completed transaction
+            Transaction(
+                id: "TXN-005",
+                tailorId: "tailor-2",
+                tailorName: "Beta Tailor",
+                items: [
+                    TransactionItem(
+                        id: "item-7",
+                        name: "Kebaya Modern",
+                        category: "Terusan",
+                        quantity: 1,
+                        basePrice: 300000,
+                        totalPrice: 300000,
+                        isCustomOrder: true,
+                        customDescription: "Kebaya modern untuk wisuda, warna cream dengan detail payet",
+                        referenceImages: ["terusan"]
+                    )
+                ],
+                totalPrice: 300000,
+                pickupDate: Calendar.current.date(byAdding: .day, value: -15, to: Date()) ?? Date(),
+                pickupTime: "13:00",
+                paymentMethod: "GoPay",
+                customerAddress: "Jl. Dipatiukur No. 35, Bandung",
+                orderDate: Calendar.current.date(byAdding: .day, value: -20, to: Date()) ?? Date(),
+                status: .completed
+            )
+        ]
     )
 }

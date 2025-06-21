@@ -28,4 +28,9 @@ class TransactionViewModel: ObservableObject {
     func refreshTransactions() {
         objectWillChange.send()
     }
+    
+    func loadSampleData() {
+        userManager.resetToDefaultUserWithSampleData()
+        objectWillChange.send()
+    }
 }
