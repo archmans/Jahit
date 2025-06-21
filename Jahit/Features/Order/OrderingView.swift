@@ -415,7 +415,10 @@ struct OrderingView: View {
             }
             
             Button(action: {
-                viewModel.confirmOrder()
+                let success = viewModel.confirmOrder()
+                if success {
+                    dismiss()
+                }
             }) {
                 Text("Konfirmasi")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))

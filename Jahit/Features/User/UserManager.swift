@@ -274,4 +274,119 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func getSelectedCartItems() -> [CartItem] {
         return currentUser.selectedCartItems
     }
+    
+    func createTransactionFromCart(
+        selectedItems: [CartItem],
+        pickupDate: Date,
+        pickupTime: TimeSlot,
+        paymentMethod: PaymentMethod
+    ) -> Bool {
+        guard !selectedItems.isEmpty,
+              let userAddress = currentUser.address else {
+            print("Cannot create transaction: missing items or address")
+            return false
+        }
+        
+        // Group items by tailor
+        let groupedItems = Dictionary(grouping: selectedItems, by: { $0.tailorId })
+        
+        // Create a transaction for each tailor
+        for (tailorId, items) in groupedItems {
+            guard let firstItem = items.first else { continue }
+            
+            let transactionItems = items.map { TransactionItem(from: $0) }
+            let totalPrice = items.reduce(0) { $0 + $1.totalPrice }
+            
+            let transaction = Transaction(
+                id: UUID().uuidString,
+                tailorId: tailorId,
+                tailorName: firstItem.tailorName,
+                items: transactionItems,
+                totalPrice: totalPrice,
+                pickupDate: pickupDate,
+                pickupTime: pickupTime.displayName,
+                paymentMethod: paymentMethod.displayName,
+                customerAddress: userAddress,
+                orderDate: Date(),
+                status: .pending
+            )
+            
+            currentUser.transactions.append(transaction)
+        }
+        
+        // Remove items from cart
+        for item in selectedItems {
+            removeFromCart(itemId: item.id, tailorId: item.tailorId)
+        }
+        
+        saveUserToStorage()
+        print("Created \(groupedItems.count) transactions from cart")
+        return true
+    }
+    
+    func createTransactionFromCustomization(
+        _ customizationOrder: CustomizationOrder,
+        pickupDate: Date,
+        pickupTime: TimeSlot,
+        paymentMethod: PaymentMethod
+    ) -> Bool {
+        guard let userAddress = currentUser.address else {
+            print("Cannot create transaction: missing address")
+            return false
+        }
+        
+        // Calculate the total price from the selected item and quantity
+        let basePrice = customizationOrder.selectedItem?.price ?? 0
+        let totalPrice = basePrice * Double(customizationOrder.quantity)
+        
+        let transactionItem = TransactionItem(
+            id: UUID().uuidString,
+            name: customizationOrder.selectedItem?.name ?? customizationOrder.category,
+            category: customizationOrder.category,
+            quantity: customizationOrder.quantity,
+            basePrice: basePrice,
+            totalPrice: totalPrice,
+            isCustomOrder: true,
+            customDescription: customizationOrder.description.isEmpty ? nil : customizationOrder.description,
+            referenceImages: customizationOrder.referenceImages
+        )
+        
+        let transaction = Transaction(
+            id: UUID().uuidString,
+            tailorId: customizationOrder.tailorId,
+            tailorName: customizationOrder.tailorName,
+            items: [transactionItem],
+            totalPrice: totalPrice,
+            pickupDate: pickupDate,
+            pickupTime: pickupTime.displayName,
+            paymentMethod: paymentMethod.displayName,
+            customerAddress: userAddress,
+            orderDate: Date(),
+            status: .pending
+        )
+        
+        currentUser.transactions.append(transaction)
+        saveUserToStorage()
+        print("Created transaction from customization order")
+        return true
+    }
+    
+    func updateTransactionStatus(transactionId: String, newStatus: TransactionStatus) {
+        guard let index = currentUser.transactions.firstIndex(where: { $0.id == transactionId }) else {
+            print("Transaction not found")
+            return
+        }
+        
+        currentUser.transactions[index].status = newStatus
+        saveUserToStorage()
+        print("Updated transaction status to \(newStatus.rawValue)")
+    }
+    
+    func getOngoingTransactions() -> [Transaction] {
+        return currentUser.ongoingTransactions
+    }
+    
+    func getCompletedTransactions() -> [Transaction] {
+        return currentUser.completedTransactions
+    }
 }

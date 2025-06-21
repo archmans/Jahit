@@ -14,7 +14,11 @@ class OrderingViewModel: ObservableObject {
     @Published var showingTimePicker: Bool = false
     @Published var selectedPaymentMethod: PaymentMethod = .creditCard
     
+    private let customizationOrder: CustomizationOrder
+    
     init(customizationOrder: CustomizationOrder) {
+        self.customizationOrder = customizationOrder
+        
         let orderItem = OrderSummaryItem(
             name: customizationOrder.selectedItem?.name ?? "Unknown Item",
             quantity: customizationOrder.quantity,
@@ -61,9 +65,29 @@ class OrderingViewModel: ObservableObject {
         order.paymentMethod = method
     }
     
-    func confirmOrder() {
-        print("Order confirmed with payment method: \(selectedPaymentMethod.displayName)")
-        print("Total amount: \(formattedTotalPrice)")
-        print("Items: \(order.items.map { "\($0.name) x\($0.quantity)" }.joined(separator: ", "))")
+    func confirmOrder() -> Bool {
+        // Validate required fields
+        guard UserManager.shared.currentUser.address != nil else {
+            print("Cannot confirm order: missing address")
+            return false
+        }
+        
+        // Create transaction from customization order
+        let success = UserManager.shared.createTransactionFromCustomization(
+            customizationOrder,
+            pickupDate: order.pickupDate,
+            pickupTime: order.pickupTime,
+            paymentMethod: selectedPaymentMethod
+        )
+        
+        if success {
+            print("Order confirmed with payment method: \(selectedPaymentMethod.displayName)")
+            print("Total amount: \(formattedTotalPrice)")
+            print("Items: \(order.items.map { "\($0.name) x\($0.quantity)" }.joined(separator: ", "))")
+        } else {
+            print("Failed to confirm order")
+        }
+        
+        return success
     }
 }

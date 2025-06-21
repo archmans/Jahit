@@ -412,21 +412,34 @@ struct CartCheckoutView: View {
     }
     
     private func processOrder() {
-        // Process the order here
-        print("Processing order for \(selectedItems.count) items")
-        print("Total: \(formattedTotalPrice)")
-        print("Pickup Date: \(formattedPickupDate)")
-        print("Pickup Time: \(pickupTime.displayName)")
-        print("Payment Method: \(selectedPaymentMethod.displayName)")
-        
-        // TODO: Implement actual order processing
-        // Remove items from cart after successful order
-        for item in selectedItems {
-            userManager.removeFromCart(itemId: item.id, tailorId: item.tailorId)
+        // Validate required fields
+        guard !selectedItems.isEmpty,
+              userManager.currentUser.address != nil else {
+            print("Cannot process order: missing items or address")
+            return
         }
         
-        // Navigate back or show success
-        dismiss()
+        // Create transaction from cart items
+        let success = userManager.createTransactionFromCart(
+            selectedItems: selectedItems,
+            pickupDate: pickupDate,
+            pickupTime: pickupTime,
+            paymentMethod: selectedPaymentMethod
+        )
+        
+        if success {
+            print("Order processed successfully!")
+            print("Total: \(formattedTotalPrice)")
+            print("Pickup Date: \(formattedPickupDate)")
+            print("Pickup Time: \(pickupTime.displayName)")
+            print("Payment Method: \(selectedPaymentMethod.displayName)")
+            
+            // Navigate back
+            dismiss()
+        } else {
+            print("Failed to process order")
+            // TODO: Show error alert to user
+        }
     }
 }
 

@@ -45,13 +45,11 @@ struct TransactionView: View {
                 ForEach(TransactionTab.allCases) { tab in
                     ScrollView {
                         VStack(spacing: 0) {
-                            ForEach(viewModel.filteredTasks) { task in
+                            ForEach(viewModel.filteredTransactions) { transaction in
                                 if tab == .ongoing {
-                                    OngoingTransactionRow(task: task)
+                                    OngoingTransactionRow(transaction: transaction, viewModel: viewModel)
                                 } else {
-                                    CompletedTransactionRow(task: task) {
-                                        viewModel.toggleCompletion(of: task)
-                                    }
+                                    CompletedTransactionRow(transaction: transaction, viewModel: viewModel)
                                 }
                             }
                         }
@@ -63,15 +61,19 @@ struct TransactionView: View {
         }
         .padding(.bottom, 65)
         .background(Color(white: 0.95).edgesIgnoringSafeArea(.all))
+        .onAppear {
+            viewModel.refreshTransactions()
+        }
     }
 }
 
 struct OngoingTransactionRow: View {
-    let task: Transaction
+    let transaction: Transaction
+    let viewModel: TransactionViewModel
 
     var body: some View {
         HStack(spacing: 16) {
-            Image(task.imageName)
+            Image("penjahit")
                 .resizable()
                 .aspectRatio(1, contentMode: .fill)
                 .frame(width: 120, height: 99)
@@ -79,20 +81,30 @@ struct OngoingTransactionRow: View {
                 .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(task.name)
+                Text(transaction.tailorName)
                     .font(.headline)
-                Text(task.subtitle)
+                Text(transaction.itemsSummary)
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                Text(task.price.idrFormatted)
+                    .lineLimit(2)
+                Text(transaction.totalPrice.idrFormatted)
                     .font(.title3)
                     .fontWeight(.semibold)
+                
+                Text(transaction.status.rawValue)
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(4)
             }
 
             Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.headline)
-                    .foregroundColor(.gray)
+            
+            Image(systemName: "chevron.right")
+                .font(.headline)
+                .foregroundColor(.gray)
         }
         .padding(.horizontal)
         .padding(.vertical, 12)
@@ -102,12 +114,12 @@ struct OngoingTransactionRow: View {
 }
 
 struct CompletedTransactionRow: View {
-    let task: Transaction
-    let onRate: () -> Void
+    let transaction: Transaction
+    let viewModel: TransactionViewModel
 
     var body: some View {
         HStack(spacing: 16) {
-            Image(task.imageName)
+            Image("penjahit")
                 .resizable()
                 .aspectRatio(1, contentMode: .fill)
                 .frame(width: 120, height: 99)
@@ -115,21 +127,32 @@ struct CompletedTransactionRow: View {
                 .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(task.name)
+                Text(transaction.tailorName)
                     .font(.headline)
-                Text(task.subtitle)
+                Text(transaction.itemsSummary)
                     .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
+                Text(transaction.totalPrice.idrFormatted)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                
+                Text(transaction.formattedOrderDate)
+                    .font(.caption)
                     .foregroundColor(.gray)
             }
 
             Spacer()
 
-            Button("Nilai", action: onRate)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
-                .frame(width: 84, height: 36)
-                .background(Color.blue)
-                .cornerRadius(18)
+            Button("Nilai") {
+                // TODO: Implement rating functionality
+                print("Rating transaction: \(transaction.id)")
+            }
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundColor(.white)
+            .frame(width: 84, height: 36)
+            .background(Color.blue)
+            .cornerRadius(18)
         }
         .padding(.horizontal)
         .padding(.vertical, 12)
