@@ -108,6 +108,48 @@ struct Transaction: Identifiable, Codable {
         let itemNames = items.map { $0.name }
         return itemNames.joined(separator: ", ")
     }
+    
+    // Convert Transaction to Order for OrderDetailView compatibility
+    func toOrder() -> Order {
+        // Map TransactionStatus to OrderStatus
+        let orderStatus: OrderStatus = {
+            switch self.status {
+            case .pending:
+                return .pending
+            case .confirmed:
+                return .confirmed
+            case .inProgress:
+                return .inProgress
+            case .readyForPickup:
+                return .readyForPickup
+            case .completed:
+                return .completed
+            case .cancelled:
+                return .pending // Fallback to pending for cancelled orders
+            }
+        }()
+        
+        // Get first item for basic details (can be expanded for multiple items)
+        let firstItem = items.first
+        let allReferenceImages = items.flatMap { $0.referenceImages }
+        let customDescriptions = items.compactMap { $0.customDescription }.joined(separator: "\n")
+        
+        return Order(
+            id: self.id,
+            tailorName: self.tailorName,
+            category: firstItem?.category ?? "Unknown",
+            item: firstItem?.name ?? "Multiple Items",
+            referenceImages: allReferenceImages,
+            description: customDescriptions.isEmpty ? "-" : customDescriptions,
+            paymentMethod: self.paymentMethod,
+            pickupAddress: self.customerAddress,
+            orderNumber: self.id,
+            paymentTime: self.orderDate,
+            confirmationTime: self.orderDate,
+            totalAmount: self.totalPrice,
+            status: orderStatus
+        )
+    }
 }
 
 extension Double {

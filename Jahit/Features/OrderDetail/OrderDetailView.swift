@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct OrderDetailView: View {
-    @StateObject private var viewModel = OrderDetailViewModel()
+    @StateObject private var viewModel: OrderDetailViewModel
+    @Environment(\.dismiss) private var dismiss
+    
+    init(order: Order? = nil) {
+        self._viewModel = StateObject(wrappedValue: OrderDetailViewModel(order: order ?? Order.sampleOrder))
+    }
     
     var body: some View {
         headerView
@@ -28,7 +33,7 @@ struct OrderDetailView: View {
     private var headerView: some View {
         HStack {
             Button(action: {
-                viewModel.goBack()
+                dismiss()
             }) {
                 Image(systemName: "arrow.left")
                     .foregroundColor(.black)
@@ -47,9 +52,10 @@ struct OrderDetailView: View {
     
     private var progressStepsView: some View {
         VStack(spacing: 16) {
-            HStack {
-                ForEach(Array(OrderStatus.allCases.enumerated()), id: \.offset) { index, status in
-                    VStack(spacing: 8) {
+            ForEach(Array(OrderStatus.allCases.enumerated()), id: \.offset) { index, status in
+                HStack(spacing: 16) {
+                    // Step circle with connecting line
+                    VStack(spacing: 0) {
                         ZStack {
                             Circle()
                                 .fill(index <= viewModel.currentStepIndex ? Color.blue : Color.gray.opacity(0.3))
@@ -60,24 +66,33 @@ struct OrderDetailView: View {
                                 .font(.system(size: 16))
                         }
                         
-                        Text(status.rawValue)
-                            .font(.custom("PlusJakartaSans-Regular", size: 10))
-                            .foregroundColor(index <= viewModel.currentStepIndex ? .blue : .gray)
-                            .multilineTextAlignment(.center)
-                            .lineLimit(2)
-                    }
-                    .frame(maxWidth: .infinity)
-                    
-                    if index < OrderStatus.allCases.count - 1 {
-                        HStack(spacing: 2) {
-                            ForEach(0..<8, id: \.self) { _ in
-                                Circle()
-                                    .fill(index < viewModel.currentStepIndex ? Color.blue : Color.gray.opacity(0.3))
-                                    .frame(width: 3, height: 3)
+                        // Connecting line (except for last item)
+                        if index < OrderStatus.allCases.count - 1 {
+                            VStack(spacing: 2) {
+                                ForEach(0..<6, id: \.self) { _ in
+                                    Circle()
+                                        .fill(index < viewModel.currentStepIndex ? Color.blue : Color.gray.opacity(0.3))
+                                        .frame(width: 3, height: 3)
+                                }
                             }
+                            .frame(height: 24)
                         }
-                        .frame(maxWidth: .infinity)
                     }
+                    
+                    // Status text
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(status.rawValue)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                            .foregroundColor(index <= viewModel.currentStepIndex ? .blue : .gray)
+                        
+                        if index <= viewModel.currentStepIndex {
+                            Text("Completed")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.green)
+                        }
+                    }
+                    
+                    Spacer()
                 }
             }
         }
@@ -101,30 +116,13 @@ struct OrderDetailView: View {
                 // Category
                 orderDetailRow(title: "Kategori", value: viewModel.order.category)
                 
-                // Item
-                orderDetailRow(title: "Item", value: viewModel.order.item)
+                // Items (updated to show all items with details)
+                itemsListView
                 
-                // Reference Images
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Referensi Gambar")
-                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
-                        .foregroundColor(.black)
-                    
-                    HStack(spacing: 12) {
-                        ForEach(viewModel.order.referenceImages, id: \.self) { imageName in
-                            Image(imageName)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 80, height: 80)
-                                .clipped()
-                                .cornerRadius(8)
-                        }
-                        Spacer()
-                    }
+                // Description (only if there's a general description)
+                if !viewModel.order.description.isEmpty && viewModel.order.description != "-" {
+                    orderDetailRow(title: "Catatan Umum", value: viewModel.order.description)
                 }
-                
-                // Description
-                orderDetailRow(title: "Deskripsi", value: viewModel.order.description)
                 
                 // Payment Method
                 orderDetailRow(title: "Metode Pembayaran", value: viewModel.order.paymentMethod)
@@ -185,6 +183,18 @@ struct OrderDetailView: View {
         }
     }
     
+    private var itemsListView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Item Pesanan")
+                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                .foregroundColor(.black)
+            
+            ForEach(viewModel.transactionItems, id: \.id) { item in
+                TransactionItemRowView(item: item, isLast: item.id == viewModel.transactionItems.last?.id)
+            }
+        }
+    }
+    
     private func orderDetailRow(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
@@ -194,6 +204,120 @@ struct OrderDetailView: View {
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.black)
         }
+    }
+}
+
+struct TransactionItemRowView: View {
+    let item: TransactionItem
+    let isLast: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            itemHeaderView
+            
+            if let description = item.customDescription, !description.isEmpty {
+                itemDescriptionView(description: description)
+            }
+            
+            if !item.referenceImages.isEmpty {
+                itemImagesView
+            }
+            
+            if !isLast {
+                Divider()
+                    .padding(.vertical, 4)
+            }
+        }
+    }
+    
+    private var itemHeaderView: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.name)
+                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                    .foregroundColor(.black)
+                
+                Text("\(item.category) • Qty: \(item.quantity)")
+                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                    .foregroundColor(.gray)
+                
+                if item.isCustomOrder {
+                    customOrderBadge
+                }
+            }
+            
+            Spacer()
+            
+            Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")
+                .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                .foregroundColor(.black)
+        }
+    }
+    
+    private var customOrderBadge: some View {
+        Text("Custom Order")
+            .font(.custom("PlusJakartaSans-Regular", size: 10))
+            .foregroundColor(.blue)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.blue.opacity(0.1))
+            .cornerRadius(4)
+    }
+    
+    private func itemDescriptionView(description: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Deskripsi:")
+                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
+                .foregroundColor(.gray)
+            
+            Text(description)
+                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                .foregroundColor(.black)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(6)
+        }
+    }
+    
+    private var itemImagesView: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Referensi Gambar (\(item.referenceImages.count)):")
+                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
+                .foregroundColor(.gray)
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
+                ForEach(item.referenceImages, id: \.self) { imageName in
+                    ItemImageView(imageName: imageName)
+                }
+            }
+        }
+    }
+}
+
+struct ItemImageView: View {
+    let imageName: String
+    
+    var body: some View {
+        Group {
+            if let uiImage = ImageManager.shared.loadImage(named: imageName) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(1, contentMode: .fill)
+            } else {
+                // Fallback to bundled image if saved image not found
+                Image(imageName)
+                    .resizable()
+                    .aspectRatio(1, contentMode: .fill)
+            }
+        }
+        .frame(width: 60, height: 60)
+        .clipped()
+        .cornerRadius(6)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+        )
     }
 }
 

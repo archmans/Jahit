@@ -20,29 +20,32 @@ struct Order {
     let paymentTime: Date
     let confirmationTime: Date
     let totalAmount: Double
-    let status: OrderStatus
+    var status: OrderStatus
 }
 
 enum OrderStatus: String, CaseIterable {
+    case pending = "Menunggu Konfirmasi"
     case confirmed = "Pesanan dikonfirmasi"
     case inProgress = "Sedang dijahit"
-    case shipping = "Sedang dikirim"
+    case readyForPickup = "Siap diambil"
     case completed = "Pesanan Selesai"
     
     var stepIndex: Int {
         switch self {
-        case .confirmed: return 0
-        case .inProgress: return 1
-        case .shipping: return 2
-        case .completed: return 3
+        case .pending: return 0
+        case .confirmed: return 1
+        case .inProgress: return 2
+        case .readyForPickup: return 3
+        case .completed: return 4
         }
     }
     
     var icon: String {
         switch self {
+        case .pending: return "clock"
         case .confirmed: return "doc.text"
         case .inProgress: return "scissors"
-        case .shipping: return "checkmark.shield"
+        case .readyForPickup: return "checkmark.shield"
         case .completed: return "checkmark.circle"
         }
     }
@@ -73,14 +76,3 @@ extension DateFormatter {
         return formatter
     }()
 }
-
-//extension NumberFormatter {
-//    static let currencyFormatter: NumberFormatter = {
-//        let formatter = NumberFormatter()
-//        formatter.numberStyle = .currency
-//        formatter.currencyCode = "IDR"
-//        formatter.currencySymbol = "Rp"
-//        formatter.maximumFractionDigits = 0
-//        return formatter
-//    }()
-//}
