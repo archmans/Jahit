@@ -81,6 +81,7 @@ struct Transaction: Identifiable, Codable {
     let customerAddress: String
     let orderDate: Date
     var status: TransactionStatus
+    var review: Review?
     
     var isCompleted: Bool {
         return status == .completed
@@ -90,6 +91,18 @@ struct Transaction: Identifiable, Codable {
         return ![.completed, .cancelled].contains(status)
     }
     
+    var hasReview: Bool {
+        return review != nil
+    }
+    
+    func addingReview(_ review: Review) -> Transaction {
+        var updatedTransaction = self
+        updatedTransaction.review = review
+        return updatedTransaction
+    }
+}
+
+extension Transaction {
     var formattedOrderDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy, HH:mm"

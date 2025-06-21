@@ -15,7 +15,6 @@ struct TabButton: View {
     var didSelect: () -> Void
     var body: some View {
         Button {
-            debugPrint("TabButton pressed")
             didSelect()
         } label: {
             VStack {

@@ -100,4 +100,8 @@ class OrderDetailViewModel: ObservableObject {
     func goBack() {
         print("Going back...")
     }
+    
+    var orderReview: Review? {
+        return getOriginalTransaction()?.review
+    }
 }

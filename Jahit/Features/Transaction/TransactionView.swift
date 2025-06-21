@@ -123,6 +123,7 @@ struct OngoingTransactionRow: View {
 struct CompletedTransactionRow: View {
     let transaction: Transaction
     let viewModel: TransactionViewModel
+    @State private var showingRatingPopup = false
 
     var body: some View {
         NavigationLink(destination: OrderDetailView(order: transaction.toOrder())) {
@@ -154,20 +155,36 @@ struct CompletedTransactionRow: View {
 
                 Spacer()
 
-                Button("Nilai") {
-                    // TODO: Implement rating functionality
-                    print("Rating transaction: \(transaction.id)")
+                if !transaction.hasReview {
+                    Button("Nilai") {
+                        showingRatingPopup = true
+                    }
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 84, height: 36)
+                    .background(Color.blue)
+                    .cornerRadius(18)
+                } else {
+                    Text("Dinilai")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.gray)
+                        .frame(width: 84, height: 36)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(18)
                 }
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
-                .frame(width: 84, height: 36)
-                .background(Color.blue)
-                .cornerRadius(18)
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
         }
         .buttonStyle(PlainButtonStyle())
+        .sheet(isPresented: $showingRatingPopup) {
+            RatingPopupView(
+                isPresented: $showingRatingPopup,
+                transaction: transaction
+            ) { review in
+                UserManager.shared.addReviewToTransaction(review: review)
+            }
+        }
 
         Divider()
     }

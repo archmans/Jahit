@@ -230,7 +230,7 @@ struct TailorDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    func reviewItemView(review: Review) -> some View {
+    func reviewItemView(review: TailorReview) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(review.userName)

@@ -14,12 +14,26 @@ class TailorViewModel: ObservableObject {
     @Published var serviceImageIndices: [String: Int] = [:]
     @Published var isLoading = false
     
+    private let localDatabase = LocalDatabase.shared
+    private var cancellables = Set<AnyCancellable>()
+    
     init(tailor: Tailor = Tailor.sampleTailors.first!) {
         self.tailor = tailor
         // Initialize image indices for all services
         for service in tailor.services {
             serviceImageIndices[service.id] = 0
         }
+        
+        // Observe LocalDatabase changes to update tailor data
+        localDatabase.$tailors
+            .sink { [weak self] updatedTailors in
+                if let updatedTailor = updatedTailors.first(where: { $0.id == self?.tailor.id }) {
+                    DispatchQueue.main.async {
+                        self?.tailor = updatedTailor
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
     
     var formattedRating: String {
@@ -65,10 +79,10 @@ class TailorViewModel: ObservableObject {
     }
     
     func contactViaWhatsApp() {
-        print("Contacting \(tailor.name) via WhatsApp")
+        // Implementation for WhatsApp contact
     }
     
     func goBack() {
-        print("Going back...")
+        // Implementation for going back
     }
 }

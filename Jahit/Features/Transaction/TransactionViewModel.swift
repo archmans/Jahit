@@ -6,11 +6,24 @@
 //
 
 import SwiftUI
+import Combine
 
 class TransactionViewModel: ObservableObject {
     @Published var selectedTab: TransactionTab = .ongoing
     
     private let userManager = UserManager.shared
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        // Observe UserManager changes to automatically update UI
+        userManager.$currentUser
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+    }
     
     var filteredTransactions: [Transaction] {
         switch selectedTab {

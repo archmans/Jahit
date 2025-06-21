@@ -84,7 +84,7 @@ extension User {
             // Completed transaction
             Transaction(
                 id: "TXN-001",
-                tailorId: "tailor-1",
+                tailorId: "1",
                 tailorName: "Alfa Tailor",
                 items: [
                     TransactionItem(
@@ -122,7 +122,7 @@ extension User {
             // In progress transaction
             Transaction(
                 id: "TXN-002",
-                tailorId: "tailor-2",
+                tailorId: "2",
                 tailorName: "Beta Tailor",
                 items: [
                     TransactionItem(
@@ -149,7 +149,7 @@ extension User {
             // Ready for pickup transaction
             Transaction(
                 id: "TXN-003",
-                tailorId: "tailor-1",
+                tailorId: "1",
                 tailorName: "Alfa Tailor",
                 items: [
                     TransactionItem(
@@ -176,7 +176,7 @@ extension User {
             // Pending transaction
             Transaction(
                 id: "TXN-004",
-                tailorId: "tailor-3",
+                tailorId: "3",
                 tailorName: "Gamma Tailor",
                 items: [
                     TransactionItem(
@@ -214,7 +214,7 @@ extension User {
             // Another completed transaction
             Transaction(
                 id: "TXN-005",
-                tailorId: "tailor-2",
+                tailorId: "2",
                 tailorName: "Beta Tailor",
                 items: [
                     TransactionItem(

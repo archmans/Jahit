@@ -15,7 +15,7 @@ struct Tailor: Identifiable, Hashable {
     let rating: Double
     let maxRating: Int
     let services: [TailorService]
-    let reviews: [Review]
+    let reviews: [TailorReview]
     let description: String
     let locationDescription: String
 }
@@ -37,7 +37,7 @@ struct TailorServiceItem: Identifiable, Hashable {
     let description: String?
 }
 
-struct Review: Identifiable, Hashable {
+struct TailorReview: Identifiable, Hashable {
     let id: String
     let userName: String
     let rating: Int
@@ -100,7 +100,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                Review(id: "r1", userName: "Budi", rating: 5, comment: "Bagus sekali!", timeAgo: "2 hari lalu", userImage: nil)
+                TailorReview(id: "r1", userName: "Budi", rating: 5, comment: "Bagus sekali!", timeAgo: "2 hari lalu", userImage: nil)
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat ITB"
@@ -139,7 +139,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                Review(id: "r2", userName: "Siti", rating: 4, comment: "Pelayanan baik!", timeAgo: "1 hari lalu", userImage: nil)
+                TailorReview(id: "r2", userName: "Siti", rating: 4, comment: "Pelayanan baik!", timeAgo: "1 hari lalu", userImage: nil)
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat UI"
@@ -178,7 +178,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                Review(id: "r3", userName: "Andi", rating: 5, comment: "Cepat dan rapi!", timeAgo: "5 hari lalu", userImage: nil)
+                TailorReview(id: "r3", userName: "Andi", rating: 5, comment: "Cepat dan rapi!", timeAgo: "5 hari lalu", userImage: nil)
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat ITS"
@@ -217,7 +217,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                Review(id: "r4", userName: "Rina", rating: 4, comment: "Hasil memuaskan!", timeAgo: "3 hari lalu", userImage: nil)
+                TailorReview(id: "r4", userName: "Rina", rating: 4, comment: "Hasil memuaskan!", timeAgo: "3 hari lalu", userImage: nil)
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat UGM"

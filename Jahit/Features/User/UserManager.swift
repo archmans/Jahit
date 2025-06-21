@@ -394,6 +394,38 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         return currentUser.completedTransactions
     }
     
+    // MARK: - Review Management
+    
+    func addReviewToTransaction(review: Review) {
+        guard let index = currentUser.transactions.firstIndex(where: { $0.id == review.transactionId }) else {
+            print("Transaction not found for review: \(review.transactionId)")
+            return
+        }
+        
+        currentUser.transactions[index].review = review
+        saveUserToStorage()
+        
+        // Trigger published property update for UI refresh
+        DispatchQueue.main.async {
+            self.objectWillChange.send()
+        }
+        
+        // Also add the review to the tailor
+        print("✅ Adding review to transaction \(review.transactionId)")
+        print("📝 Review content: \(review.rating) stars - \(review.comment)")
+        LocalDatabase.shared.addReviewToTailor(tailorId: review.tailorId, review: review)
+        
+        print("✅ Review added to transaction \(review.transactionId) and tailor \(review.tailorId)")
+    }
+    
+    func getReviewForTransaction(transactionId: String) -> Review? {
+        return currentUser.transactions.first { $0.id == transactionId }?.review
+    }
+    
+    func hasReviewForTransaction(transactionId: String) -> Bool {
+        return getReviewForTransaction(transactionId: transactionId) != nil
+    }
+    
     // MARK: - Development/Testing Methods
     
     func resetToDefaultUserWithSampleData() {

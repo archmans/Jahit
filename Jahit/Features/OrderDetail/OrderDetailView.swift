@@ -174,6 +174,16 @@ struct OrderDetailView: View {
                         .foregroundColor(.black)
                 }
                 .padding(.top, 8)
+                
+                // Review Section (only show if there's a review)
+                if let review = viewModel.orderReview {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Divider()
+                            .padding(.vertical, 8)
+                        
+                        ReviewCardView(review: review)
+                    }
+                }
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 20)
