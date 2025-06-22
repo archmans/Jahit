@@ -62,30 +62,34 @@ struct CartView: View {
     }
     
     private var headerView: some View {
-        HStack {
-            Button(action: {
-                dismiss()
-            }) {
-                Image(systemName: "arrow.left")
-                    .foregroundColor(.black)
-                    .font(.system(size: 24, weight: .medium))
-            }
-            
-            Spacer()
-            
+        ZStack {
             Text("Keranjang")
                 .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
                 .foregroundColor(.black)
             
-            Spacer()
-            
-            // Delete selected items button - only show when items are selected
-            if !userManager.currentUser.selectedCartItems.isEmpty {
+            HStack {
                 Button(action: {
-                    deleteSelectedItems()
+                    dismiss()
+                    tabBarVM.show()
                 }) {
+                    Image(systemName: "arrow.left")
+                        .foregroundColor(.black)
+                        .font(.system(size: 24, weight: .medium))
+                }
+                
+                Spacer()
+                
+                if !userManager.currentUser.selectedCartItems.isEmpty {
+                    Button(action: {
+                        deleteSelectedItems()
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                            .font(.system(size: 20))
+                    }
+                } else {
                     Image(systemName: "trash")
-                        .foregroundColor(.red)
+                        .foregroundColor(.clear)
                         .font(.system(size: 20))
                 }
             }
@@ -140,18 +144,12 @@ struct CartView: View {
                         .foregroundColor(.black)
                     
                     Text(item.category)
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.gray)
-                    
-                    if item.isCustomOrder {
-                        Text("Custom Order")
-                            .font(.custom("PlusJakartaSans-Regular", size: 12))
+                        .font(.custom("PlusJakartaSans-Regular", size: 12))
                             .foregroundColor(.blue)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
                             .background(Color.blue.opacity(0.1))
                             .cornerRadius(4)
-                    }
                     
                     Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.basePrice)) ?? "Rp0")
                         .font(.custom("PlusJakartaSans-Regular", size: 14))
