@@ -6,6 +6,6 @@ struct HomeModel {
     
     static let example = HomeModel(
         tailors: Tailor.sampleTailors,
-        categories: ["atasan", "bawahan", "terusan"]
+        categories: ["atasan", "bawahan", "terusan", "perbaikan"]
     )
 }
