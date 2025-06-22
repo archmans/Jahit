@@ -36,11 +36,19 @@ class LocalDatabase: ObservableObject {
     }
     
     func getTailorsByCategory(_ category: String) -> [Tailor] {
-        return tailors.filter { tailor in
-            tailor.services.contains { service in
+        print("LocalDatabase: Filtering tailors by category: '\(category)'")
+        
+        let filtered = tailors.filter { tailor in
+            let hasMatchingService = tailor.services.contains { service in
                 service.name.lowercased() == category.lowercased()
             }
+            return hasMatchingService
         }
+        
+        print("LocalDatabase: Found \(filtered.count) tailors for category '\(category)'")
+        print("LocalDatabase: Available services in all tailors: \(tailors.flatMap { $0.services.map { $0.name } }.unique())")
+        
+        return filtered
     }
     
     func addReviewToTailor(tailorId: String, review: Review) {
@@ -123,5 +131,12 @@ class LocalDatabase: ObservableObject {
     
     func refreshData() {
         objectWillChange.send()
+    }
+}
+
+extension Array where Element: Hashable {
+    func unique() -> [Element] {
+        var seen: Set<Element> = []
+        return filter { seen.insert($0).inserted }
     }
 }

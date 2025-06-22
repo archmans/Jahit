@@ -16,6 +16,7 @@ struct SearchView: View {
     init(searchTitle: Binding<String>) {
         self._searchTitle = searchTitle
         self._viewModel = StateObject(wrappedValue: SearchViewModel(category: searchTitle.wrappedValue))
+        print("SearchView: Initializing with category: \(searchTitle.wrappedValue)")
     }
     
     var body: some View {
@@ -48,23 +49,34 @@ struct SearchView: View {
                             TailorListItemSkeleton()
                                 .padding(.vertical, 6)
                         }
+                    } else if viewModel.tailors.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "person.3")
+                                .font(.system(size: 48))
+                                .foregroundColor(.gray)
+                            Text("Tidak ada penjahit ditemukan")
+                                .font(.custom("PlusJakartaSans-Regular", size: 16))
+                                .foregroundColor(.gray)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 50)
                     } else {
                         ForEach(viewModel.tailors) { tailor in
                             NavigationLink(destination: TailorDetailView(tailor: tailor)) {
                                 TailorListItem(tailor: tailor)
                                     .padding(.vertical, 6)
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
-                .animation(.default, value: viewModel.isLoading)
-                .animation(.default, value: viewModel.tailors)
             }
         }
         .navigationBarHidden(true)
         .onAppear {
+            print("SearchView: onAppear called")
             tabBarVM.hide()
         }
     }
@@ -72,6 +84,11 @@ struct SearchView: View {
 
 struct TailorListItem: View {
     let tailor: Tailor
+    
+    // Computed property to cache the services string
+    private var servicesText: String {
+        tailor.services.map { $0.name }.joined(separator: ", ")
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
@@ -84,7 +101,7 @@ struct TailorListItem: View {
                 .padding(.leading, 4)
             VStack(spacing: 4) {
                 Text(tailor.name)
-                    .font(Font.custom("Plus Jakarta Sans", size: 12).weight(.semibold))
+                    .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.semibold))
                     .foregroundColor(.black)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 HStack(spacing: 2) {
@@ -92,16 +109,16 @@ struct TailorListItem: View {
                         .foregroundColor(.yellow)
                         .font(.system(size: 12))
                     Text(String(format: "%.1f", tailor.rating))
-                        .font(Font.custom("PlusJakartaSans-Regular", size: 10))
+                        .font(.custom("PlusJakartaSans-Regular", size: 10))
                         .foregroundColor(.black)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                Text(tailor.services.map { $0.name }.joined(separator: ", "))
-                    .font(Font.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
+                Text(servicesText)
+                    .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
                     .foregroundColor(.black)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(tailor.location)
-                    .font(Font.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
+                    .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
                     .foregroundColor(.black)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
