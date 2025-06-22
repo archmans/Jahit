@@ -40,6 +40,11 @@ struct CustomizationView: View {
                     // Item Selection
                     itemSelectionView
                     
+                    // Selected Item Card
+                    if viewModel.customizationOrder.selectedItem != nil {
+                        selectedItemCardView
+                    }
+                    
                     // Description
                     descriptionView
                     
@@ -114,9 +119,15 @@ struct CustomizationView: View {
     }
     
     private var categoryView: some View {
-        Text(viewModel.customizationOrder.category)
-            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-            .foregroundColor(.black)
+        HStack(spacing: 4) {
+            Text(viewModel.customizationOrder.category)
+                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                .foregroundColor(.black)
+            
+            Text("*")
+                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                .foregroundColor(.red)
+        }
     }
     
     private var itemSelectionView: some View {
@@ -187,7 +198,7 @@ struct CustomizationView: View {
                             .foregroundColor(.blue)
                             .font(.system(size: 24))
                         
-                        Text(viewModel.isUploadingImages ? "Uploading..." : "Upload Image")
+                        Text(viewModel.isUploadingImages ? "Mengunggah..." : "Unggah Referensi Gambar")
                             .font(.custom("PlusJakartaSans-Regular", size: 14))
                             .foregroundColor(.blue)
                     }
@@ -263,72 +274,113 @@ struct CustomizationView: View {
         }
     }
     
+    private var selectedItemCardView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 12) {
+                // Item Image
+                if let product = viewModel.customizationOrder.selectedItem {
+                    Image(product.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipped()
+                        .cornerRadius(8)
+                    
+                    // Item Details
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(product.name)
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                            .foregroundColor(.black)
+                            .lineLimit(2)
+                        
+                        Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.price)) ?? "Rp0")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Spacer()
+                    
+                    // Quantity Selection in bottom right
+                    VStack(spacing: 8) {
+                        Spacer()
+                        
+                        HStack(spacing: 8) {
+                            Button(action: {
+                                viewModel.updateQuantity(viewModel.customizationOrder.quantity - 1)
+                            }) {
+                                Image(systemName: "minus")
+                                    .foregroundColor(.gray)
+                                    .font(.system(size: 14))
+                                    .frame(width: 30, height: 30)
+                                    .background(Color.gray.opacity(0.1))
+                                    .cornerRadius(6)
+                            }
+                            .disabled(viewModel.customizationOrder.quantity <= 1)
+                            
+                            Text("\(viewModel.customizationOrder.quantity)")
+                                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                                .foregroundColor(.black)
+                                .frame(minWidth: 25)
+                            
+                            Button(action: {
+                                viewModel.updateQuantity(viewModel.customizationOrder.quantity + 1)
+                            }) {
+                                Image(systemName: "plus")
+                                    .foregroundColor(.gray)
+                                    .font(.system(size: 14))
+                                    .frame(width: 30, height: 30)
+                                    .background(Color.gray.opacity(0.1))
+                                    .cornerRadius(6)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(16)
+        }
+        .background(Color.white)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+        )
+    }
+    
     private var bottomSectionView: some View {
         HStack(spacing: 16) {
-            HStack(spacing: 8) {
-                Button(action: {
-                    viewModel.addToCart()
-                }) {
+            Button(action: {
+                viewModel.addToCart()
+            }) {
+                HStack(spacing: 8) {
                     Image(systemName: "plus")
-                        .foregroundColor(.blue)
+                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? .blue : .gray)
                         .font(.system(size: 16))
                     
                     Image(systemName: "cart")
-                        .foregroundColor(.blue)
+                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? .blue : .gray)
                         .font(.system(size: 16))
                 }
-                .padding(12)
-                .background(Color.blue.opacity(0.1))
+                .padding(16)
+                .background((viewModel.customizationOrder.selectedItem != nil ? Color.blue : Color.gray).opacity(0.1))
                 .cornerRadius(8)
             }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Jumlah Pembelian")
-                    .font(.custom("PlusJakartaSans-Regular", size: 12))
-                    .foregroundColor(.gray)
-                
-                HStack(spacing: 8) {
-                    Button(action: {
-                        viewModel.updateQuantity(viewModel.customizationOrder.quantity - 1)
-                    }) {
-                        Image(systemName: "minus")
-                            .foregroundColor(.gray)
-                            .font(.system(size: 14))
-                    }
-                    .disabled(viewModel.customizationOrder.quantity <= 1)
-                    
-                    Text("\(viewModel.customizationOrder.quantity)")
-                        .font(.custom("PlusJakartaSans-Regular", size: 16))
-                        .foregroundColor(.black)
-                        .frame(minWidth: 20)
-                    
-                    Button(action: {
-                        viewModel.updateQuantity(viewModel.customizationOrder.quantity + 1)
-                    }) {
-                        Image(systemName: "plus")
-                            .foregroundColor(.gray)
-                            .font(.system(size: 14))
-                    }
-                }
-            }
-            
-            Spacer()
+            .disabled(viewModel.customizationOrder.selectedItem == nil)
             
             Button(action: {
                 viewModel.proceedToOrder()
             }) {
-                Text("Pesan")
+                Text("Pembayaran")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
                     .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
                     .background(viewModel.customizationOrder.isValid ? Color.blue : Color.gray)
                     .cornerRadius(8)
             }
             .disabled(!viewModel.customizationOrder.isValid)
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 16)
+        .padding(.vertical, 20)
         .background(Color.white)
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: -2)
     }
