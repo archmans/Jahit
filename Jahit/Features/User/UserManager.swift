@@ -394,7 +394,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         return currentUser.completedTransactions
     }
     
-    // MARK: - Review Management
+
     
     func addReviewToTransaction(review: Review) {
         guard let index = currentUser.transactions.firstIndex(where: { $0.id == review.transactionId }) else {
@@ -425,8 +425,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func hasReviewForTransaction(transactionId: String) -> Bool {
         return getReviewForTransaction(transactionId: transactionId) != nil
     }
-    
-    // MARK: - Development/Testing Methods
     
     func resetToDefaultUserWithSampleData() {
         currentUser = User.defaultUser
