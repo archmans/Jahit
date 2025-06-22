@@ -13,6 +13,8 @@ struct SearchKeywordView: View {
     @StateObject private var tabBarVM = TabBarViewModel.shared
     @State private var searchText: String = ""
     @State private var selectedTailorId: OptionalStringIdentifiable? = nil
+    @State private var selectedProductForCustomization: (ProductSearchResult, Tailor, TailorService)? = nil
+    @State private var showingCustomization = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -43,6 +45,16 @@ struct SearchKeywordView: View {
                }),
                case .tailor(let tailor) = result {
                 TailorDetailView(tailor: tailor)
+            }
+        }
+        .navigationDestination(isPresented: $showingCustomization) {
+            if let (product, tailor, service) = selectedProductForCustomization {
+                CustomizationView(tailor: tailor, service: service, preSelectedProduct: product)
+            }
+        }
+        .onChange(of: showingCustomization) { _, newValue in
+            if !newValue {
+                selectedProductForCustomization = nil
             }
         }
     }
@@ -168,7 +180,13 @@ struct SearchKeywordView: View {
             ForEach(viewModel.searchResults) { result in
                 switch result {
                 case .product(let product):
-                    ProductSearchCard(product: product)
+                    ProductSearchCard(product: product) {
+                        if let tailor = Tailor.sampleTailors.first(where: { $0.id == product.tailorId }),
+                           let service = tailor.services.first(where: { $0.name == product.category }) {
+                            selectedProductForCustomization = (product, tailor, service)
+                            showingCustomization = true
+                        }
+                    }
                 case .tailor(let tailor):
                     TailorSearchCard(tailor: tailor) {
                         selectedTailorId = OptionalStringIdentifiable(value: tailor.id)
@@ -182,37 +200,40 @@ struct SearchKeywordView: View {
 
 struct ProductSearchCard: View {
     let product: ProductSearchResult
+    let onTap: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Product Image
-            Image(product.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 120)
-                .clipped()
-                .cornerRadius(8)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                // Product Name
-                Text(product.name)
-                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
-                    .foregroundColor(.black)
-                    .lineLimit(2)
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 8) {
+                // Product Image
+                Image(product.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 120)
+                    .clipped()
+                    .cornerRadius(8)
                 
-                // Price
-                Text("Rp \(Int(product.price).formatted())")
-                    .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
-                    .foregroundColor(.blue)
-                
-                // Tailor Name
-                Text(product.tailorName)
-                    .font(.custom("PlusJakartaSans-Regular", size: 10))
-                    .foregroundColor(.gray)
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 4) {
+                    // Product Name
+                    Text(product.name)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                        .foregroundColor(.black)
+                        .lineLimit(2)
+                    
+                    // Price
+                    Text("Rp \(Int(product.price).formatted())")
+                        .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
+                        .foregroundColor(.blue)
+                    
+                    // Tailor Name
+                    Text(product.tailorName)
+                        .font(.custom("PlusJakartaSans-Regular", size: 10))
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
+                }
+                .padding(.horizontal, 8)
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, 8)
-            .padding(.bottom, 8)
         }
         .background(Color.white)
         .cornerRadius(12)
@@ -225,42 +246,43 @@ struct TailorSearchCard: View {
     let onTap: () -> Void
     
     var body: some View {
-        Button(action: onTap) {        VStack(alignment: .leading, spacing: 8) {
-            // Tailor Image
-            Image(tailor.profileImage)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 120)
-                .clipped()
-                .cornerRadius(8)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    // Tailor Name
-                    Text(tailor.name)
-                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
-                        .foregroundColor(.black)
-                        .lineLimit(2)
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 8) {
+                // Tailor Image
+                Image(tailor.profileImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 120)
+                    .clipped()
+                    .cornerRadius(8)
                     
-                    // Starting Price
-                    if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
-                        Text("Mulai dari Rp \(Int(minPrice).formatted())")
-                            .font(.custom("PlusJakartaSans-Regular", size: 12))
-                            .foregroundColor(.blue)
+                    VStack(alignment: .leading, spacing: 4) {
+                        // Tailor Name
+                        Text(tailor.name)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                            .foregroundColor(.black)
+                            .lineLimit(2)
+                        
+                        // Starting Price
+                        if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
+                            Text("Mulai dari Rp \(Int(minPrice).formatted())")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.blue)
+                        }
+                        
+                        // Rating
+                        HStack(spacing: 4) {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.yellow)
+                                .font(.system(size: 10))
+                            Text(String(format: "%.1f", tailor.rating))
+                                .font(.custom("PlusJakartaSans-Regular", size: 10))
+                                .foregroundColor(.gray)
+                        }
                     }
-                    
-                    // Rating
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .foregroundColor(.yellow)
-                            .font(.system(size: 10))
-                        Text(String(format: "%.1f", tailor.rating))
-                            .font(.custom("PlusJakartaSans-Regular", size: 10))
-                            .foregroundColor(.gray)
-                    }
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 8)
                 }
-                .padding(.horizontal, 8)
-                .padding(.bottom, 8)
-            }
         }
         .background(Color.white)
         .cornerRadius(12)

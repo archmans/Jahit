@@ -21,13 +21,19 @@ class CustomizationViewModel: ObservableObject {
     private let userManager = UserManager.shared
     private let imageManager = ImageManager.shared
     
-    init(tailor: Tailor, service: TailorService) {
+    init(tailor: Tailor, service: TailorService, preSelectedProduct: ProductSearchResult? = nil) {
         self.customizationOrder = CustomizationOrder(
             tailorId: tailor.id,
             tailorName: tailor.name,
             category: service.name
         )
         self.availableItems = service.items
+        
+        // Pre-select the product if provided
+        if let preSelectedProduct = preSelectedProduct,
+           let matchingItem = service.items.first(where: { $0.id == preSelectedProduct.id }) {
+            self.customizationOrder.selectedItem = matchingItem
+        }
     }
     
     var selectedItemName: String {

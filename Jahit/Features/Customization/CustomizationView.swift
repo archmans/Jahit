@@ -15,10 +15,10 @@ struct CustomizationView: View {
     let tailor: Tailor
     let service: TailorService
     
-    init(tailor: Tailor, service: TailorService) {
+    init(tailor: Tailor, service: TailorService, preSelectedProduct: ProductSearchResult? = nil) {
         self.tailor = tailor
         self.service = service
-        self._viewModel = StateObject(wrappedValue: CustomizationViewModel(tailor: tailor, service: service))
+        self._viewModel = StateObject(wrappedValue: CustomizationViewModel(tailor: tailor, service: service, preSelectedProduct: preSelectedProduct))
     }
     
     var body: some View {
