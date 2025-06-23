@@ -43,11 +43,15 @@ struct SearchView: View {
             .frame(height: 70)
             
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 8) {
+                LazyVStack(spacing: 16) {
                     if viewModel.isLoading {
-                        ForEach(0..<5, id: \.self) { _ in
-                            TailorListItemSkeleton()
-                                .padding(.vertical, 6)
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 10),
+                            GridItem(.flexible(), spacing: 10)
+                        ], spacing: 16) {
+                            ForEach(0..<6, id: \.self) { _ in
+                                TailorGridItemSkeleton()
+                            }
                         }
                     } else if viewModel.tailors.isEmpty {
                         VStack(spacing: 16) {
@@ -61,17 +65,21 @@ struct SearchView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.top, 50)
                     } else {
-                        ForEach(viewModel.tailors) { tailor in
-                            NavigationLink(destination: TailorDetailView(tailor: tailor)) {
-                                TailorListItem(tailor: tailor)
-                                    .padding(.vertical, 6)
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 10),
+                            GridItem(.flexible(), spacing: 10)
+                        ], spacing: 16) {
+                            ForEach(viewModel.tailors) { tailor in
+                                NavigationLink(destination: TailorDetailView(tailor: tailor)) {
+                                    TailorGridItem(tailor: tailor)
+                                }
+                                .buttonStyle(PlainButtonStyle())
                             }
-                            .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 8)
+                .padding(.top, 16)
             }
         }
         .navigationBarHidden(true)
@@ -79,6 +87,103 @@ struct SearchView: View {
             print("SearchView: onAppear called")
             tabBarVM.hide()
         }
+    }
+}
+
+struct TailorGridItem: View {
+    let tailor: Tailor
+    
+    // Computed property to cache the services string
+    private var servicesText: String {
+        tailor.services.map { $0.name }.joined(separator: ", ")
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Tailor Image
+            Image(tailor.profileImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 120)
+                .clipped()
+                .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                // Tailor Name
+                Text(tailor.name)
+                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                    .foregroundColor(.black)
+                    .lineLimit(2)
+                
+                // Starting Price
+                if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
+                    Text("Mulai dari Rp \(Int(minPrice).formatted())")
+                        .font(.custom("PlusJakartaSans-Regular", size: 12))
+                        .foregroundColor(.blue)
+                }
+                
+                // Rating
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 10))
+                    Text(String(format: "%.1f", tailor.rating))
+                        .font(.custom("PlusJakartaSans-Regular", size: 10))
+                        .foregroundColor(.gray)
+                }
+                
+                // Location
+                Text(tailor.location)
+                    .font(.custom("PlusJakartaSans-Regular", size: 10))
+                    .foregroundColor(.gray)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
+        }
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+}
+
+struct TailorGridItemSkeleton: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Image skeleton
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 120)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                // Name skeleton
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 14)
+                
+                // Price skeleton
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 100, height: 12)
+                
+                // Rating skeleton
+                HStack(spacing: 4) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 60, height: 10)
+                }
+                
+                // Location skeleton
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 80, height: 10)
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
+        }
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 

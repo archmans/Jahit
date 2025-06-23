@@ -18,50 +18,46 @@ struct ListTailorHorizontal: View {
                     Button(action: {
                         onTailorTap?(tailor)
                     }) {
-                        VStack(alignment: .center, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 8) {
                             Image(tailor.profileImage)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
+                                .frame(width: 140, height: 100)
                                 .clipped()
                                 .cornerRadius(8)
-                                .frame(width: 120)
 
-                            Text(tailor.name)
-                                .font(
-                                    Font.custom("Plus Jakarta Sans", size: 12)
-                                        .weight(.semibold)
-                                )
-                                .foregroundColor(.black)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Text("Mulai dari Rp\(Int(tailor.services.first?.startingPrice ?? 0))")
-                                .font(Font.custom("PlusJakartaSans-Regular", size: 10))
-                                .foregroundColor(.black)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            HStack(alignment: .center, spacing: 5) {
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
-                                Text(String(format: "%.1f", tailor.rating))
-                                    .font(Font.custom("PlusJakartaSans-Regular", size: 10))
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(tailor.name)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                                     .foregroundColor(.black)
+                                    .lineLimit(1)
+
+                                Text("Mulai dari Rp\(Int(tailor.services.first?.startingPrice ?? 0))")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.blue)
+
+                                HStack(spacing: 4) {
+                                    Image(systemName: "star.fill")
+                                        .foregroundColor(.yellow)
+                                        .font(.system(size: 10))
+                                    Text(String(format: "%.1f", tailor.rating))
+                                        .font(.custom("PlusJakartaSans-Regular", size: 10))
+                                        .foregroundColor(.gray)
+                                }
                             }
-                            .padding(0)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 8)
+                            .padding(.bottom, 8)
                         }
-                        .padding(8)
+                        .frame(width: 140)
+                        .background(Color.white)
                         .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .inset(by: 0.5)
-                                .stroke(.black.opacity(0.2), lineWidth: 1)
-                        )
+                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                     }
                 }
                 Spacer(minLength: 0)
             }
+            .padding(.vertical, 8)
         }
-        .padding(.top, 8)
         .frame(maxHeight: 197)
     }
 }
