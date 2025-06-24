@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomizationView: View {
     @StateObject private var viewModel: CustomizationViewModel
     @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
     
     let tailor: Tailor
@@ -85,6 +86,8 @@ struct CustomizationView: View {
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
+            // Update location each time CustomizationView appears
+            userManager.forceUpdateLocation()
         }
     }
     

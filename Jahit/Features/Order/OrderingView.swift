@@ -439,9 +439,6 @@ struct AddressEditSheet: View {
                 // Auto location button
                 Button(action: {
                     userManager.forceUpdateLocation()
-                    if let address = userManager.currentUser.address {
-                        addressText = address
-                    }
                 }) {
                     HStack(spacing: 12) {
                         Image(systemName: "location.circle.fill")
@@ -526,6 +523,18 @@ struct AddressEditSheet: View {
             }
             .navigationBarHidden(true)
             .background(Color(UIColor.systemBackground))
+            .onChange(of: userManager.currentUser.address) { _, newAddress in
+                // Update addressText when location is updated
+                if let newAddress = newAddress, !newAddress.isEmpty {
+                    addressText = newAddress
+                }
+            }
+            .onAppear {
+                // Sync current address when sheet appears
+                if let currentAddress = userManager.currentUser.address, !currentAddress.isEmpty {
+                    addressText = currentAddress
+                }
+            }
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
