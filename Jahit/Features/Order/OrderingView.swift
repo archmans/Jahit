@@ -12,6 +12,7 @@ struct OrderingView: View {
     @StateObject private var tabBarVM = TabBarViewModel.shared
     @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
+    @State private var showingAddressSheet = false
     
     let customizationOrder: CustomizationOrder
     
@@ -72,16 +73,6 @@ struct OrderingView: View {
             TimePickerView(selectedTime: $viewModel.order.pickupTime, onTimeSelected: viewModel.updatePickupTime)
         }
     }
-//             .background(Color(UIColor.systemGroupedBackground))
-//             .sheet(isPresented: $viewModel.showingDatePicker) {
-//                 DatePickerView(selectedDate: $viewModel.order.pickupDate, onDateSelected: viewModel.updatePickupDate)
-//             }
-//             .sheet(isPresented: $viewModel.showingTimePicker) {
-//                 TimePickerView(selectedTime: $viewModel.order.pickupTime, onTimeSelected: viewModel.updatePickupTime)
-//             }
-//         }
-//         .navigationBarHidden(true)
-//     }
     
     private var headerView: some View {
         HStack {
@@ -103,9 +94,6 @@ struct OrderingView: View {
         .padding(.vertical, 16)
         .background(Color.white)
     }
-//         .padding(.vertical, 16)
-//         .background(Color.white)
-//     }
     
     private var tailorNameView: some View {
         HStack(spacing: 12) {
@@ -125,57 +113,51 @@ struct OrderingView: View {
                 
                 Spacer()
                 
-                if userManager.isLocationLoading {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                } else {
-                    Button(action: {
-                        userManager.forceUpdateLocation()
-                    }) {
-                        Image(systemName: "location.circle")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 20))
-                    }
+                Button(action: {
+                    showingAddressSheet = true
+                }) {
+                    Text("Ubah Alamat")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.blue)
                 }
             }
             
             Divider()
             
-            HStack {
-                TextField("Masukkan alamat Anda", text: Binding(
-                    get: { 
-                        // Use user's current address if available, otherwise use order address
-                        return userManager.currentUser.address ?? viewModel.order.address 
-                    },
-                    set: { newAddress in
-                        viewModel.updateAddress(newAddress)
-                        // Optionally update user's address too
-                        userManager.currentUser.address = newAddress
-                        userManager.saveUserToStorage()
-                    }
-                ))
-                .font(.custom("PlusJakartaSans-Regular", size: 14))
-                .foregroundColor(.black)
-                
-                Spacer()
-                
-                Button(action: {}) {
-                    Image(systemName: "pencil")
-                        .foregroundColor(.gray)
-                        .font(.system(size: 16))
-                }
-            }
-            
-            // Show location error if any
-            if let error = userManager.locationError {
-                Text(error)
-                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+            // Default address display (non-clickable, like in home)
+            HStack(spacing: 8) {
+                Image("location")
                     .foregroundColor(.red)
+                
+                if userManager.isLocationLoading {
+                    Text("Mendapatkan alamat...")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                } else if let address = userManager.currentUser.address, !address.isEmpty {
+                    Text(address)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                } else {
+                    Text("Alamat belum diset")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                }
             }
         }
         .padding(16)
         .background(Color.white)
         .cornerRadius(12)
+        .sheet(isPresented: $showingAddressSheet) {
+            AddressEditSheet(
+                currentAddress: userManager.currentUser.address ?? "",
+                onSave: { newAddress in
+                    viewModel.updateAddress(newAddress)
+                    userManager.currentUser.address = newAddress
+                    userManager.saveUserToStorage()
+                }
+            )
+            .environmentObject(userManager)
+        }
     }
     
     private var dateSelectionView: some View {
@@ -235,9 +217,6 @@ struct OrderingView: View {
             }
         }
     }
-//             }
-//         }
-//     }
     
     private var orderSummaryView: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -344,9 +323,6 @@ struct OrderingView: View {
         .background(Color.white)
         .cornerRadius(12)
     }
-//         .background(Color.white)
-//         .cornerRadius(12)
-//     }
     
     private var paymentMethodView: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -395,10 +371,6 @@ struct OrderingView: View {
         .background(Color.white)
         .cornerRadius(12)
     }
-//         .padding(16)
-//         .background(Color.white)
-//         .cornerRadius(12)
-//     }
     
     private var bottomSectionView: some View {
         VStack(spacing: 16) {
@@ -433,6 +405,130 @@ struct OrderingView: View {
         .padding(.vertical, 20)
         .background(Color.white)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
+    }
+}
+
+struct AddressEditSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var userManager: UserManager
+    @State private var addressText: String
+    @State private var tempAddress: String = ""
+    
+    let onSave: (String) -> Void
+    
+    init(currentAddress: String, onSave: @escaping (String) -> Void) {
+        self._addressText = State(initialValue: currentAddress)
+        self.onSave = onSave
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Ubah Alamat")
+                        .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
+                        .foregroundColor(.black)
+                    
+                    Text("Pilih lokasi otomatis atau masukkan alamat secara manual")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                
+                // Auto location button
+                Button(action: {
+                    userManager.forceUpdateLocation()
+                    if let address = userManager.currentUser.address {
+                        addressText = address
+                    }
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "location.circle.fill")
+                            .foregroundColor(.blue)
+                            .font(.system(size: 24))
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Gunakan Lokasi Saat Ini")
+                                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                                .foregroundColor(.black)
+                            
+                            if userManager.isLocationLoading {
+                                Text("Mendapatkan lokasi...")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.gray)
+                            } else {
+                                Text("Otomatis mendeteksi alamat Anda")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        if userManager.isLocationLoading {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.system(size: 14))
+                        }
+                    }
+                    .padding(16)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
+                }
+                .disabled(userManager.isLocationLoading)
+                .padding(.horizontal, 20)
+                
+                // Manual address input
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Atau masukkan alamat manual")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                        .foregroundColor(.black)
+                    
+                    TextField("Masukkan alamat lengkap Anda", text: $addressText, axis: .vertical)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .padding(12)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                        .lineLimit(3...6)
+                }
+                .padding(.horizontal, 20)
+                
+                // Show location error if any
+                if let error = userManager.locationError {
+                    Text(error)
+                        .font(.custom("PlusJakartaSans-Regular", size: 12))
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 20)
+                }
+                
+                Spacer()
+                
+                // Save button
+                Button(action: {
+                    onSave(addressText)
+                    dismiss()
+                }) {
+                    Text("Simpan Alamat")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(addressText.isEmpty ? Color.gray : Color.blue)
+                        .cornerRadius(12)
+                }
+                .disabled(addressText.isEmpty)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+            }
+            .navigationBarHidden(true)
+            .background(Color(UIColor.systemBackground))
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 }
 
