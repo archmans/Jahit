@@ -140,7 +140,7 @@ struct ItemCard: View {
                     
                     Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.price)) ?? "Rp0")
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.bold))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.black)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     // Item description (optional)

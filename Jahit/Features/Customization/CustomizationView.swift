@@ -260,7 +260,7 @@ struct CustomizationView: View {
                                 }
                             }
                             .frame(width: 90, height: 90)
-                            .background(Color.gray.opacity(0.1))
+                            .background(Color.white)
                             .cornerRadius(8)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
@@ -295,7 +295,7 @@ struct CustomizationView: View {
                         
                         Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.price)) ?? "Rp0")
                             .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
-                            .foregroundColor(.blue)
+                            .foregroundColor(.black)
                     }
                     
                     Spacer()

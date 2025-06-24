@@ -34,7 +34,7 @@ struct ListTailorHorizontal: View {
 
                                 Text("Mulai dari Rp\(Int(tailor.services.first?.startingPrice ?? 0))")
                                     .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.black)
 
                                 HStack(spacing: 4) {
                                     Image(systemName: "star.fill")

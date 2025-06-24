@@ -223,7 +223,7 @@ struct ProductSearchCard: View {
                     // Price
                     Text("Rp \(Int(product.price).formatted())")
                         .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.black)
                     
                     // Tailor Name
                     Text(product.tailorName)
@@ -267,7 +267,7 @@ struct TailorSearchCard: View {
                         if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
                             Text("Mulai dari Rp \(Int(minPrice).formatted())")
                                 .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                .foregroundColor(.blue)
+                                .foregroundColor(.black)
                         }
                         
                         // Rating

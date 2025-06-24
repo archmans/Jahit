@@ -119,7 +119,7 @@ struct TailorGridItem: View {
                 if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
                     Text("Mulai dari Rp \(Int(minPrice).formatted())")
                         .font(.custom("PlusJakartaSans-Regular", size: 12))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.black)
                 }
                 
                 // Rating
