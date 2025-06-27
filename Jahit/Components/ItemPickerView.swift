@@ -142,16 +142,6 @@ struct ItemCard: View {
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.bold))
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    // Item description (optional)
-                    if let description = item.description {
-                        Text(description)
-                            .font(.custom("PlusJakartaSans-Regular", size: 12))
-                            .foregroundColor(.gray)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.leading)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
                 }
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
