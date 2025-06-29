@@ -19,6 +19,9 @@ struct User: Identifiable, Codable {
     var profileImage: String?
     var cart: [TailorCart] = []
     var transactions: [Transaction] = []
+    var isLoggedIn: Bool = false
+    var authProvider: String?
+    var hashedPassword: String?
     
     init(
         id: String = UUID().uuidString,
@@ -30,7 +33,10 @@ struct User: Identifiable, Codable {
         longitude: Double? = nil,
         profileImage: String? = nil,
         cart: [TailorCart] = [],
-        transactions: [Transaction] = []
+        transactions: [Transaction] = [],
+        isLoggedIn: Bool = false,
+        authProvider: String? = nil,
+        hashedPassword: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -42,6 +48,9 @@ struct User: Identifiable, Codable {
         self.profileImage = profileImage
         self.cart = cart
         self.transactions = transactions
+        self.isLoggedIn = isLoggedIn
+        self.authProvider = authProvider
+        self.hashedPassword = hashedPassword
     }
     
     var coordinate: CLLocationCoordinate2D? {

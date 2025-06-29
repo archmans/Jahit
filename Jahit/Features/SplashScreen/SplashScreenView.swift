@@ -15,7 +15,7 @@ struct SplashScreenView: View {
     
     var body: some View {
         if isActive {
-            TabBarView()
+            AuthenticationWrapper()
                 .environmentObject(userManager)
         } else {
             VStack(alignment: .center, spacing: 7) {

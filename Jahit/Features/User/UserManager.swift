@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreLocation
 import Combine
+import CryptoKit
 
 class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     static let shared = UserManager()
@@ -20,6 +21,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let geocoder = CLGeocoder()
     private let userDefaults = UserDefaults.standard
     private let userKey = "currentUser"
+    private let registeredUsersKey = "registeredUsers"
     
     override init() {
         super.init()
@@ -28,6 +30,93 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         loadUserFromStorage()
     }
     
+    func registerUser(email: String, phoneNumber: String, password: String) {
+        let hashedPassword = hashPassword(password)
+        let newUser = User(
+            name: "User",
+            email: email,
+            phoneNumber: phoneNumber,
+            transactions: User.defaultUser.transactions,
+            isLoggedIn: true,
+            authProvider: "email",
+            hashedPassword: hashedPassword
+        )
+        
+        // Save to registered users list
+        saveRegisteredUser(newUser)
+        
+        // Set as current user
+        currentUser = newUser
+        saveUserToStorage()
+    }
+    
+    func loginUser(identifier: String, password: String) {
+        let hashedPassword = hashPassword(password)
+        
+        // Check registered users
+        if let registeredUser = findRegisteredUser(identifier: identifier, password: hashedPassword) {
+            var user = registeredUser
+            user.isLoggedIn = true
+            
+            // Ensure user always has example transactions
+            if user.transactions.isEmpty {
+                user.transactions = User.defaultUser.transactions
+            }
+            
+            currentUser = user
+            saveUserToStorage()
+        }
+    }
+    
+    func loginWithSocialProvider(provider: AuthenticationProvider, email: String, name: String) {
+        let newUser = User(
+            name: name,
+            email: email,
+            transactions: User.defaultUser.transactions,
+            isLoggedIn: true,
+            authProvider: provider == .google ? "google" : "apple"
+        )
+        
+        currentUser = newUser
+        saveUserToStorage()
+    }
+    
+    func logout() {
+        currentUser.isLoggedIn = false
+        currentUser = User.defaultUser
+        saveUserToStorage()
+    }
+    
+    private func hashPassword(_ password: String) -> String {
+        let inputData = Data(password.utf8)
+        let hashed = SHA256.hash(data: inputData)
+        return hashed.compactMap { String(format: "%02x", $0) }.joined()
+    }
+    
+    private func saveRegisteredUser(_ user: User) {
+        var registeredUsers = getRegisteredUsers()
+        registeredUsers.append(user)
+        
+        if let data = try? JSONEncoder().encode(registeredUsers) {
+            userDefaults.set(data, forKey: registeredUsersKey)
+        }
+    }
+    
+    private func getRegisteredUsers() -> [User] {
+        guard let data = userDefaults.data(forKey: registeredUsersKey),
+              let users = try? JSONDecoder().decode([User].self, from: data) else {
+            return []
+        }
+        return users
+    }
+    
+    private func findRegisteredUser(identifier: String, password: String) -> User? {
+        let registeredUsers = getRegisteredUsers()
+        return registeredUsers.first { user in
+            (user.email?.lowercased() == identifier.lowercased() || user.phoneNumber == identifier) &&
+            user.hashedPassword == password
+        }
+    }
     
     func loadUserFromStorage() {
         if let userData = userDefaults.data(forKey: userKey),
