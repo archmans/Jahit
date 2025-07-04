@@ -128,10 +128,6 @@ class LocalDatabase: ObservableObject {
             return "\(days) hari lalu"
         }
     }
-    
-    func refreshData() {
-        objectWillChange.send()
-    }
 }
 
 extension Array where Element: Hashable {

@@ -25,6 +25,9 @@ struct LoginView: View {
                     
                     // Login Button
                     loginButton
+
+                    // Divider
+                    dividerSection
                     
                     // Social Login Options
                     socialLoginSection
@@ -33,7 +36,7 @@ struct LoginView: View {
                     registerLinkSection
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, 40)
+                .padding(.vertical, 20)
             }
             .background(Color.white)
             .navigationBarHidden(true)
@@ -57,23 +60,22 @@ struct LoginView: View {
     
     private var logoSection: some View {
         VStack(spacing: 16) {
-            Image("JahitLogo")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 80, height: 80)
-            
-            HStack(spacing: 8) {
+            HStack{
+                Image("JahitLogo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                
                 Text("Jahit")
                     .font(.custom("PlusJakartaSans-Regular", size: 32).weight(.bold))
                     .foregroundColor(.blue)
             }
-            
-            Text("Selamat datang kembali!")
+            Text("Selamat datang di Jahit!")
                 .font(.custom("PlusJakartaSans-Regular", size: 16))
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
         }
-        .padding(.top, 60)
+        .padding(.top, 40)
     }
     
     private var loginForm: some View {
@@ -156,6 +158,24 @@ struct LoginView: View {
         }
         .disabled(viewModel.isLoading)
     }
+
+        private var dividerSection: some View {
+        HStack {
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.gray.opacity(0.3))
+            
+            Text("atau register dengan")
+                .font(.custom("PlusJakartaSans-Regular", size: 14))
+                .foregroundColor(.gray)
+                .padding(.horizontal, 8)
+                .fixedSize()
+            
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.gray.opacity(0.3))
+        }
+    }
     
     private var socialLoginSection: some View {
         HStack(spacing: 20) {
@@ -163,9 +183,7 @@ struct LoginView: View {
             Button(action: {
                 viewModel.loginWithGoogle()
             }) {
-                Image(systemName: "globe")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 24))
+                Image("google")
                     .frame(width: 56, height: 56)
                     .background(Color.white)
                     .cornerRadius(28)
@@ -182,7 +200,7 @@ struct LoginView: View {
             }) {
                 Image(systemName: "applelogo")
                     .foregroundColor(.black)
-                    .font(.system(size: 24))
+                    .font(.system(size: 32))
                     .frame(width: 56, height: 56)
                     .background(Color.white)
                     .cornerRadius(28)
@@ -196,7 +214,7 @@ struct LoginView: View {
     }
     
     private var registerLinkSection: some View {
-        VStack(spacing: 8) {
+        HStack(spacing: 4) {
             Text("Belum punya akun?")
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.gray)
@@ -204,9 +222,10 @@ struct LoginView: View {
             Button(action: {
                 showRegisterView = true
             }) {
-                Text("Daftar di sini")
+                Text("Register di sini")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                     .foregroundColor(.blue)
+                    .underline()
             }
         }
         .padding(.bottom, 40)

@@ -78,15 +78,6 @@ class ImageManager: ObservableObject {
             _ = deleteImage(named: name)
         }
     }
-    
-    func imageExists(named name: String) -> Bool {
-        let imageURL = documentsDirectory.appendingPathComponent("\(name).jpg")
-        return fileManager.fileExists(atPath: imageURL.path)
-    }
-    
-    func getImageURL(named name: String) -> URL {
-        return documentsDirectory.appendingPathComponent("\(name).jpg")
-    }
 }
 
 extension Image {

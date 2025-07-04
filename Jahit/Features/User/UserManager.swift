@@ -262,15 +262,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
-    
-    func clearLocationData() {
-        currentUser.address = nil
-        currentUser.latitude = nil
-        currentUser.longitude = nil
-        saveUserToStorage()
-        print("Location data cleared")
-    }
-    
     func hasValidLocation() -> Bool {
         return currentUser.hasLocation
     }

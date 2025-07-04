@@ -36,7 +36,7 @@ struct RegisterView: View {
                     loginLinkSection
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, 40)
+                .padding(.vertical, 20)
             }
             .background(Color.white)
             .navigationBarHidden(true)
@@ -60,18 +60,17 @@ struct RegisterView: View {
     
     private var logoSection: some View {
         VStack(spacing: 16) {
-            Image("JahitLogo")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 80, height: 80)
-            
-            HStack(spacing: 8) {
+            HStack{
+                Image("JahitLogo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                
                 Text("Jahit")
                     .font(.custom("PlusJakartaSans-Regular", size: 32).weight(.bold))
                     .foregroundColor(.blue)
             }
-            
-            Text("Daftar untuk mulai menjahit impian Anda")
+            Text("Selamat datang di Jahit!")
                 .font(.custom("PlusJakartaSans-Regular", size: 16))
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
@@ -152,10 +151,6 @@ struct RegisterView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                 )
-                
-                Text("Minimal 6 karakter")
-                    .font(.custom("PlusJakartaSans-Regular", size: 12))
-                    .foregroundColor(.gray)
             }
         }
     }
@@ -170,7 +165,7 @@ struct RegisterView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(0.8)
                 } else {
-                    Text("Daftar")
+                    Text("Register")
                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
                         .foregroundColor(.white)
                 }
@@ -189,10 +184,11 @@ struct RegisterView: View {
                 .frame(height: 1)
                 .foregroundColor(.gray.opacity(0.3))
             
-            Text("atau daftar dengan")
+            Text("atau register dengan")
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.gray)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 8)
+                .fixedSize()
             
             Rectangle()
                 .frame(height: 1)
@@ -206,9 +202,7 @@ struct RegisterView: View {
             Button(action: {
                 viewModel.loginWithGoogle()
             }) {
-                Image(systemName: "globe")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 24))
+                Image("google")
                     .frame(width: 56, height: 56)
                     .background(Color.white)
                     .cornerRadius(28)
@@ -225,7 +219,7 @@ struct RegisterView: View {
             }) {
                 Image(systemName: "applelogo")
                     .foregroundColor(.black)
-                    .font(.system(size: 24))
+                    .font(.system(size: 32))
                     .frame(width: 56, height: 56)
                     .background(Color.white)
                     .cornerRadius(28)
@@ -239,7 +233,7 @@ struct RegisterView: View {
     }
     
     private var loginLinkSection: some View {
-        VStack(spacing: 8) {
+        HStack(spacing: 4) {
             Text("Sudah punya akun?")
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.gray)
@@ -250,6 +244,7 @@ struct RegisterView: View {
                 Text("Login di sini")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                     .foregroundColor(.blue)
+                    .underline()
             }
         }
         .padding(.bottom, 40)
