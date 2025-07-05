@@ -124,23 +124,39 @@ struct OrderingView: View {
             
             Divider()
             
-            // Default address display (non-clickable, like in home)
-            HStack(spacing: 8) {
-                Image("location")
-                    .foregroundColor(.red)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Text(userManager.currentUser.name.isEmpty ? "Nama belum diset" : userManager.currentUser.name)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                        .foregroundColor(userManager.currentUser.name.isEmpty ? .gray : .black)
+                    
+                    Text("-")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                    
+                    Text(userManager.currentUser.phoneNumber?.isEmpty != false ? "Nomor handphone belum diset" : userManager.currentUser.phoneNumber!)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(userManager.currentUser.phoneNumber?.isEmpty != false ? .gray : .black)
+                }
                 
-                if userManager.isLocationLoading {
-                    Text("Mendapatkan alamat...")
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.gray)
-                } else if let address = userManager.currentUser.address, !address.isEmpty {
-                    Text(address)
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.black)
-                } else {
-                    Text("Alamat belum diset")
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.gray)
+                // Address with location icon on separate line
+                HStack(spacing: 8) {
+                    Image("location")
+                        .foregroundColor(.red)
+                    
+                    if userManager.isLocationLoading {
+                        Text("Mendapatkan alamat...")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                    } else if let address = userManager.currentUser.address, !address.isEmpty {
+                        Text(address)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.black)
+                    } else {
+                        Text("Alamat belum diset")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                    }
                 }
             }
         }
@@ -150,9 +166,13 @@ struct OrderingView: View {
         .sheet(isPresented: $showingAddressSheet) {
             AddressEditSheet(
                 currentAddress: userManager.currentUser.address ?? "",
-                onSave: { newAddress in
+                currentName: userManager.currentUser.name,
+                currentPhone: userManager.currentUser.phoneNumber ?? "",
+                onSave: { newAddress, newName, newPhone in
                     viewModel.updateAddress(newAddress)
                     userManager.currentUser.address = newAddress
+                    userManager.currentUser.name = newName
+                    userManager.currentUser.phoneNumber = newPhone
                     userManager.saveUserToStorage()
                 }
             )
@@ -412,29 +432,86 @@ struct AddressEditSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var userManager: UserManager
     @State private var addressText: String
+    @State private var nameText: String
+    @State private var phoneText: String
     @State private var tempAddress: String = ""
     
-    let onSave: (String) -> Void
+    let onSave: (String, String, String) -> Void
     
-    init(currentAddress: String, onSave: @escaping (String) -> Void) {
+    init(currentAddress: String, currentName: String, currentPhone: String, onSave: @escaping (String, String, String) -> Void) {
         self._addressText = State(initialValue: currentAddress)
+        self._nameText = State(initialValue: currentName)
+        self._phoneText = State(initialValue: currentPhone)
         self.onSave = onSave
     }
     
     var body: some View {
-        NavigationView {
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 20) {
+            // Header with drag indicator
+            VStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 40, height: 4)
+                
+                HStack {
                     Text("Ubah Alamat")
                         .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
                         .foregroundColor(.black)
                     
-                    Text("Pilih lokasi otomatis atau masukkan alamat secara manual")
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.gray)
+                    Spacer()
+                    
+                    Button("Tutup") {
+                        dismiss()
+                    }
+                    .foregroundColor(.blue)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            
+            // Description
+            Text("Masukkan nama, nomor telepon, dan alamat lengkap")
+                .font(.custom("PlusJakartaSans-Regular", size: 14))
+                .foregroundColor(.gray)
+                .padding(.horizontal, 20)
+                
+                // Name and Phone Number fields
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Nama")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                            .foregroundColor(.black)
+                        
+                        TextField("Masukkan nama lengkap", text: $nameText)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .padding(12)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Nomor Handphone")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                            .foregroundColor(.black)
+                        
+                        TextField("Masukkan nomor handphone", text: $phoneText)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .keyboardType(.phonePad)
+                            .padding(12)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                    }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 20)
+                // Divider
+                Divider()
+                    .padding(.horizontal, 20)
+                
+                // Address Section Title
+                Text("Alamat")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 20)
                 
                 // Auto location button
                 Button(action: {
@@ -506,7 +583,7 @@ struct AddressEditSheet: View {
                 
                 // Save button
                 Button(action: {
-                    onSave(addressText)
+                    onSave(addressText, nameText, phoneText)
                     dismiss()
                 }) {
                     Text("Simpan Alamat")
@@ -514,14 +591,13 @@ struct AddressEditSheet: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(addressText.isEmpty ? Color.gray : Color.blue)
+                        .background((addressText.isEmpty || nameText.isEmpty || phoneText.isEmpty) ? Color.gray : Color.blue)
                         .cornerRadius(12)
                 }
-                .disabled(addressText.isEmpty)
+                .disabled(addressText.isEmpty || nameText.isEmpty || phoneText.isEmpty)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
             }
-            .navigationBarHidden(true)
             .background(Color(UIColor.systemBackground))
             .onChange(of: userManager.currentUser.address) { _, newAddress in
                 // Update addressText when location is updated
@@ -530,14 +606,15 @@ struct AddressEditSheet: View {
                 }
             }
             .onAppear {
-                // Sync current address when sheet appears
+                // Sync current data when sheet appears
                 if let currentAddress = userManager.currentUser.address, !currentAddress.isEmpty {
                     addressText = currentAddress
                 }
+                nameText = userManager.currentUser.name
+                phoneText = userManager.currentUser.phoneNumber ?? ""
             }
-        }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
+        .presentationDetents([.large])
+        .presentationDragIndicator(.hidden)
     }
 }
 

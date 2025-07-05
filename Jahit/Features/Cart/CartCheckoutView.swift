@@ -92,8 +92,12 @@ struct CartCheckoutView: View {
         .sheet(isPresented: $showingAddressSheet) {
             AddressEditSheet(
                 currentAddress: userManager.currentUser.address ?? "",
-                onSave: { newAddress in
+                currentName: userManager.currentUser.name,
+                currentPhone: userManager.currentUser.phoneNumber ?? "",
+                onSave: { newAddress, newName, newPhone in
                     userManager.currentUser.address = newAddress
+                    userManager.currentUser.name = newName
+                    userManager.currentUser.phoneNumber = newPhone
                     userManager.saveUserToStorage()
                 }
             )
@@ -142,23 +146,40 @@ struct CartCheckoutView: View {
             
             Divider()
             
-            // Default address display (non-clickable, like in home)
-            HStack(spacing: 8) {
-                Image("location")
-                    .foregroundColor(.red)
+            VStack(alignment: .leading, spacing: 8) {
+                // Name - Phone Number on same line
+                HStack(spacing: 8) {
+                    Text(userManager.currentUser.name.isEmpty ? "Nama belum diset" : userManager.currentUser.name)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                        .foregroundColor(userManager.currentUser.name.isEmpty ? .gray : .black)
+                    
+                    Text("-")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                    
+                    Text(userManager.currentUser.phoneNumber?.isEmpty != false ? "Nomor handphone belum diset" : userManager.currentUser.phoneNumber!)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(userManager.currentUser.phoneNumber?.isEmpty != false ? .gray : .black)
+                }
                 
-                if userManager.isLocationLoading {
-                    Text("Mendapatkan alamat...")
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.gray)
-                } else if let address = userManager.currentUser.address, !address.isEmpty {
-                    Text(address)
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.black)
-                } else {
-                    Text("Alamat belum diset")
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.gray)
+                // Address with location icon on separate line
+                HStack(spacing: 8) {
+                    Image("location")
+                        .foregroundColor(.red)
+                    
+                    if userManager.isLocationLoading {
+                        Text("Mendapatkan alamat...")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                    } else if let address = userManager.currentUser.address, !address.isEmpty {
+                        Text(address)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.black)
+                    } else {
+                        Text("Alamat belum diset")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                    }
                 }
             }
         }
