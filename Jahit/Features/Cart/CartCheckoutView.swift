@@ -18,6 +18,7 @@ struct CartCheckoutView: View {
     @State private var selectedPaymentMethod: PaymentMethod = .creditCard
     @State private var showingDatePicker = false
     @State private var showingTimePicker = false
+    @State private var showingAddressSheet = false
     
     var totalPrice: Double {
         return selectedItems.reduce(0) { $0 + $1.totalPrice }
@@ -88,6 +89,16 @@ struct CartCheckoutView: View {
                 showingTimePicker = false
             })
         }
+        .sheet(isPresented: $showingAddressSheet) {
+            AddressEditSheet(
+                currentAddress: userManager.currentUser.address ?? "",
+                onSave: { newAddress in
+                    userManager.currentUser.address = newAddress
+                    userManager.saveUserToStorage()
+                }
+            )
+            .environmentObject(userManager)
+        }
     }
     
     private var headerView: some View {
@@ -120,26 +131,34 @@ struct CartCheckoutView: View {
                 
                 Spacer()
                 
-                Button(action: {}) {
-                    Image(systemName: "location.circle")
+                Button(action: {
+                    showingAddressSheet = true
+                }) {
+                    Text("Ubah Alamat")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
                         .foregroundColor(.blue)
-                        .font(.system(size: 20))
                 }
             }
             
             Divider()
             
-            HStack {
-                Text(userManager.currentUser.address ?? "Alamat belum diset")
-                    .font(.custom("PlusJakartaSans-Regular", size: 14))
-                    .foregroundColor(.black)
+            // Default address display (non-clickable, like in home)
+            HStack(spacing: 8) {
+                Image("location")
+                    .foregroundColor(.red)
                 
-                Spacer()
-                
-                Button(action: {}) {
-                    Image(systemName: "pencil")
+                if userManager.isLocationLoading {
+                    Text("Mendapatkan alamat...")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
                         .foregroundColor(.gray)
-                        .font(.system(size: 16))
+                } else if let address = userManager.currentUser.address, !address.isEmpty {
+                    Text(address)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                } else {
+                    Text("Alamat belum diset")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
                 }
             }
         }

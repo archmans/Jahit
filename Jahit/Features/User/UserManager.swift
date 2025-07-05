@@ -278,6 +278,13 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 // Add new item to existing tailor cart
                 currentUser.cart[tailorCartIndex].items.append(item)
             }
+            
+            // Update tailor's isSelectAll based on item selections
+            let tailorCart = currentUser.cart[tailorCartIndex]
+            let selectedItemsCount = tailorCart.items.filter { $0.isSelected }.count
+            let totalItemsCount = tailorCart.items.count
+            
+            currentUser.cart[tailorCartIndex].isSelectAll = (selectedItemsCount == totalItemsCount && totalItemsCount > 0)
         } else {
             // Create new tailor cart
             let newTailorCart = TailorCart(tailorId: item.tailorId, tailorName: item.tailorName, items: [item])
@@ -306,6 +313,13 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // Remove tailor cart if no items left
         if currentUser.cart[tailorCartIndex].items.isEmpty {
             currentUser.cart.remove(at: tailorCartIndex)
+        } else {
+            // Update tailor's isSelectAll based on remaining items
+            let tailorCart = currentUser.cart[tailorCartIndex]
+            let selectedItemsCount = tailorCart.items.filter { $0.isSelected }.count
+            let totalItemsCount = tailorCart.items.count
+            
+            currentUser.cart[tailorCartIndex].isSelectAll = (selectedItemsCount == totalItemsCount && totalItemsCount > 0)
         }
         
         saveUserToStorage()
@@ -329,6 +343,17 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
               let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.id == itemId }) else { return }
         
         currentUser.cart[tailorCartIndex].items[itemIndex].isSelected.toggle()
+        
+        // Update tailor's isSelectAll based on item selections
+        let tailorCart = currentUser.cart[tailorCartIndex]
+        let selectedItemsCount = tailorCart.items.filter { $0.isSelected }.count
+        let totalItemsCount = tailorCart.items.count
+        
+        // If all items are selected, set isSelectAll to true
+        // If no items are selected, set isSelectAll to false
+        // If some items are selected, set isSelectAll to false (partial selection)
+        currentUser.cart[tailorCartIndex].isSelectAll = (selectedItemsCount == totalItemsCount && totalItemsCount > 0)
+        
         saveUserToStorage()
     }
     

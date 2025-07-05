@@ -46,10 +46,7 @@ struct CartView: View {
                     }
                 }
                 
-                // Bottom checkout section
-                if !userManager.currentUser.selectedCartItems.isEmpty {
-                    bottomCheckoutView
-                }
+                bottomCheckoutView
             }
         }
         .navigationBarHidden(true)
@@ -209,16 +206,20 @@ struct CartView: View {
             }
             
             Button(action: {
-                showingCheckout = true
+                if !userManager.currentUser.selectedCartItems.isEmpty {
+                    showingCheckout = true
+                }
+                // If no items selected, button does nothing (disabled state)
             }) {
-                Text("Lanjut ke Pembayaran")
+                Text(userManager.currentUser.selectedCartItems.isEmpty ? "Pilih item terlebih dahulu" : "Lanjut ke Pembayaran")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.blue)
+                    .background(userManager.currentUser.selectedCartItems.isEmpty ? Color.gray : Color.blue)
                     .cornerRadius(12)
             }
+            .disabled(userManager.currentUser.selectedCartItems.isEmpty)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
