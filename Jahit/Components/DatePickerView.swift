@@ -12,6 +12,10 @@ struct DatePickerView: View {
     let onDateSelected: (Date) -> Void
     @Environment(\.dismiss) private var dismiss
     
+    private var tomorrowDate: Date {
+        Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+    }
+    
     var body: some View {
         VStack(spacing: 20) {
             // Header
@@ -36,8 +40,9 @@ struct DatePickerView: View {
             .padding(.horizontal, 20)
             
             // Date Picker
-            DatePicker("", selection: $selectedDate, in: Date()..., displayedComponents: .date)
+            DatePicker("", selection: $selectedDate, in: tomorrowDate..., displayedComponents: .date)
                 .datePickerStyle(GraphicalDatePickerStyle())
+                .environment(\.locale, Locale(identifier: "id_ID"))
                 .padding(.horizontal, 20)
             
             // Confirm Button

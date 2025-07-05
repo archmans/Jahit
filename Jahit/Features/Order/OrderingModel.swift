@@ -11,7 +11,7 @@ struct Ordering: Identifiable {
     let id = UUID()
     let tailorName: String
     var address: String
-    var pickupDate: Date = Date()
+    var pickupDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
     var pickupTime: TimeSlot = .morning
     let items: [OrderSummaryItem]
     var paymentMethod: PaymentMethod = .creditCard

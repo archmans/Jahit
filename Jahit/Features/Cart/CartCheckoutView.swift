@@ -13,7 +13,7 @@ struct CartCheckoutView: View {
     @Environment(\.dismiss) private var dismiss
     
     let selectedItems: [CartItem]
-    @State private var pickupDate = Date()
+    @State private var pickupDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
     @State private var pickupTime: TimeSlot = .morning
     @State private var selectedPaymentMethod: PaymentMethod = .creditCard
     @State private var showingDatePicker = false
