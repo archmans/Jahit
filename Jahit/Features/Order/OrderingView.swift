@@ -107,9 +107,15 @@ struct OrderingView: View {
     private var addressView: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Alamat")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-                    .foregroundColor(.black)
+                HStack(spacing: 2) {
+                    Text("Alamat")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                        .foregroundColor(.black)
+                    
+                    Text("*")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                        .foregroundColor(.red)
+                }
                 
                 Spacer()
                 
@@ -182,10 +188,16 @@ struct OrderingView: View {
     
     private var dateSelectionView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Pilih Tanggal Jemput")
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-                .foregroundColor(.black)
-                .padding(.horizontal, 16)
+            HStack(spacing: 2) {
+                Text("Pilih Tanggal Jemput")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.black)
+                
+                Text("*")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.red)
+            }
+            .padding(.horizontal, 16)
             
             Button(action: {
                 viewModel.showingDatePicker = true
@@ -211,10 +223,16 @@ struct OrderingView: View {
     
     private var timeSelectionView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Pilih Jam Jemput")
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-                .foregroundColor(.black)
-                .padding(.horizontal, 16)
+            HStack(spacing: 2) {
+                Text("Pilih Jam Jemput")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.black)
+                
+                Text("*")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.red)
+            }
+            .padding(.horizontal, 16)
             
             Button(action: {
                 viewModel.showingTimePicker = true
@@ -346,9 +364,15 @@ struct OrderingView: View {
     
     private var paymentMethodView: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Metode Pembayaran")
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                .foregroundColor(.black)
+            HStack(spacing: 2) {
+                Text("Metode Pembayaran")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                    .foregroundColor(.black)
+                
+                Text("*")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                    .foregroundColor(.red)
+            }
             
             ForEach(PaymentMethod.allCases, id: \.self) { method in
                 Button(action: {
