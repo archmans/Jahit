@@ -238,7 +238,7 @@ struct OrderingView: View {
                 viewModel.showingTimePicker = true
             }) {
                 HStack {
-                    Text(viewModel.order.pickupTime.displayName)
+                    Text(viewModel.order.pickupTime?.displayName ?? "Belum dipilih")
                         .font(.custom("PlusJakartaSans-Regular", size: 16))
                         .foregroundColor(.white)
                     
@@ -441,9 +441,10 @@ struct OrderingView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.blue)
+                    .background(viewModel.isFormValid ? Color.blue : Color.gray)
                     .cornerRadius(12)
             }
+            .disabled(!viewModel.isFormValid)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 20)

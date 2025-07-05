@@ -11,10 +11,10 @@ struct Ordering: Identifiable {
     let id = UUID()
     let tailorName: String
     var address: String
-    var pickupDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
-    var pickupTime: TimeSlot = .morning
+    var pickupDate: Date? = nil
+    var pickupTime: TimeSlot? = nil
     let items: [OrderSummaryItem]
-    var paymentMethod: PaymentMethod = .creditCard
+    var paymentMethod: PaymentMethod? = nil
     
     var totalAmount: Double {
         return items.reduce(0) { $0 + $1.totalPrice }

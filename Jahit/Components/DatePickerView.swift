@@ -8,9 +8,18 @@
 import SwiftUI
 
 struct DatePickerView: View {
-    @Binding var selectedDate: Date
+    @Binding var selectedDate: Date?
     let onDateSelected: (Date) -> Void
     @Environment(\.dismiss) private var dismiss
+    @State private var internalDate: Date
+    
+    init(selectedDate: Binding<Date?>, onDateSelected: @escaping (Date) -> Void) {
+        self._selectedDate = selectedDate
+        self.onDateSelected = onDateSelected
+        // Initialize with tomorrow's date or existing selected date
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+        self._internalDate = State(initialValue: selectedDate.wrappedValue ?? tomorrow)
+    }
     
     private var tomorrowDate: Date {
         Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
@@ -40,14 +49,14 @@ struct DatePickerView: View {
             .padding(.horizontal, 20)
             
             // Date Picker
-            DatePicker("", selection: $selectedDate, in: tomorrowDate..., displayedComponents: .date)
+            DatePicker("", selection: $internalDate, in: tomorrowDate..., displayedComponents: .date)
                 .datePickerStyle(GraphicalDatePickerStyle())
                 .environment(\.locale, Locale(identifier: "id_ID"))
                 .padding(.horizontal, 20)
             
             // Confirm Button
             Button(action: {
-                onDateSelected(selectedDate)
+                onDateSelected(internalDate)
             }) {
                 Text("Pilih Tanggal")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))

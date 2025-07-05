@@ -13,9 +13,9 @@ struct CartCheckoutView: View {
     @Environment(\.dismiss) private var dismiss
     
     let selectedItems: [CartItem]
-    @State private var pickupDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
-    @State private var pickupTime: TimeSlot = .morning
-    @State private var selectedPaymentMethod: PaymentMethod = .creditCard
+    @State private var pickupDate: Date? = nil
+    @State private var pickupTime: TimeSlot? = nil
+    @State private var selectedPaymentMethod: PaymentMethod? = nil
     @State private var showingDatePicker = false
     @State private var showingTimePicker = false
     @State private var showingAddressSheet = false
@@ -29,6 +29,9 @@ struct CartCheckoutView: View {
     }
     
     var formattedPickupDate: String {
+        guard let pickupDate = pickupDate else {
+            return "Belum dipilih"
+        }
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
         formatter.locale = Locale(identifier: "id_ID")
@@ -38,6 +41,15 @@ struct CartCheckoutView: View {
     // Group items by tailor
     var groupedItems: [String: [CartItem]] {
         Dictionary(grouping: selectedItems, by: { $0.tailorName })
+    }
+    
+    var isFormValid: Bool {
+        let hasValidAddress = !(userManager.currentUser.address?.isEmpty ?? true)
+        let hasPickupDate = pickupDate != nil
+        let hasPickupTime = pickupTime != nil
+        let hasPaymentMethod = selectedPaymentMethod != nil
+        
+        return hasValidAddress && hasPickupDate && hasPickupTime && hasPaymentMethod
     }
     
     var body: some View {
@@ -246,7 +258,7 @@ struct CartCheckoutView: View {
                 showingTimePicker = true
             }) {
                 HStack {
-                    Text(pickupTime.displayName)
+                    Text(pickupTime?.displayName ?? "Belum dipilih")
                         .font(.custom("PlusJakartaSans-Regular", size: 16))
                         .foregroundColor(.white)
                     
@@ -465,9 +477,12 @@ struct CartCheckoutView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.blue)
+                    .background(isFormValid ? Color.blue : Color.gray)
                     .cornerRadius(12)
             }
+            .disabled(!isFormValid)
+            .disabled(!isFormValid)
+            .opacity(isFormValid ? 1 : 0.6)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 20)
@@ -478,8 +493,11 @@ struct CartCheckoutView: View {
     private func processOrder() {
         // Validate required fields
         guard !selectedItems.isEmpty,
-              userManager.currentUser.address != nil else {
-            print("Cannot process order: missing items or address")
+              userManager.currentUser.address != nil,
+              let pickupDate = pickupDate,
+              let pickupTime = pickupTime,
+              let selectedPaymentMethod = selectedPaymentMethod else {
+            print("Cannot process order: missing required fields")
             return
         }
         

@@ -12,7 +12,7 @@ class OrderingViewModel: ObservableObject {
     @Published var order: Ordering
     @Published var showingDatePicker: Bool = false
     @Published var showingTimePicker: Bool = false
-    @Published var selectedPaymentMethod: PaymentMethod = .creditCard
+    @Published var selectedPaymentMethod: PaymentMethod? = nil
     
     private let customizationOrder: CustomizationOrder
     
@@ -36,10 +36,13 @@ class OrderingViewModel: ObservableObject {
     }
     
     var formattedPickupDate: String {
+        guard let pickupDate = order.pickupDate else {
+            return "Belum dipilih"
+        }
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
         formatter.locale = Locale(identifier: "id_ID")
-        return formatter.string(from: order.pickupDate)
+        return formatter.string(from: pickupDate)
     }
     
     var formattedTotalPrice: String {
@@ -65,23 +68,39 @@ class OrderingViewModel: ObservableObject {
         order.paymentMethod = method
     }
     
+    var isFormValid: Bool {
+        let hasValidAddress = !(UserManager.shared.currentUser.address?.isEmpty ?? true)
+        let hasPickupDate = order.pickupDate != nil
+        let hasPickupTime = order.pickupTime != nil
+        let hasPaymentMethod = selectedPaymentMethod != nil
+        
+        return hasValidAddress && hasPickupDate && hasPickupTime && hasPaymentMethod
+    }
+    
     func confirmOrder() -> Bool {
         // Validate required fields
-        guard UserManager.shared.currentUser.address != nil else {
-            print("Cannot confirm order: missing address")
+        guard isFormValid else {
+            print("Cannot confirm order: missing required fields")
+            return false
+        }
+        
+        guard let pickupDate = order.pickupDate,
+              let pickupTime = order.pickupTime,
+              let paymentMethod = selectedPaymentMethod else {
+            print("Cannot confirm order: missing date, time, or payment method")
             return false
         }
         
         // Create transaction from customization order
         let success = UserManager.shared.createTransactionFromCustomization(
             customizationOrder,
-            pickupDate: order.pickupDate,
-            pickupTime: order.pickupTime,
-            paymentMethod: selectedPaymentMethod
+            pickupDate: pickupDate,
+            pickupTime: pickupTime,
+            paymentMethod: paymentMethod
         )
         
         if success {
-            print("Order confirmed with payment method: \(selectedPaymentMethod.displayName)")
+            print("Order confirmed with payment method: \(paymentMethod.displayName)")
             print("Total amount: \(formattedTotalPrice)")
             print("Items: \(order.items.map { "\($0.name) x\($0.quantity)" }.joined(separator: ", "))")
         } else {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TimePickerView: View {
-    @Binding var selectedTime: TimeSlot
+    @Binding var selectedTime: TimeSlot?
     let onTimeSelected: (TimeSlot) -> Void
     @Environment(\.dismiss) private var dismiss
     
