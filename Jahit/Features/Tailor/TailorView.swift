@@ -10,7 +10,9 @@ import SwiftUI
 struct TailorDetailView: View {
     @StateObject private var viewModel: TailorViewModel
     @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
+    @State private var isCartViewPresented = false
     
     init(tailor: Tailor) {
         _viewModel = StateObject(wrappedValue: TailorViewModel(tailor: tailor))
@@ -29,6 +31,27 @@ struct TailorDetailView: View {
                 }
                 
                 Spacer()
+                
+                // Cart Button
+                Button(action: {
+                    isCartViewPresented = true
+                }) {
+                    ZStack {
+                        Image(systemName: "cart")
+                            .foregroundColor(.black)
+                            .font(.system(size: 20, weight: .medium))
+                        
+                        if userManager.currentUser.totalCartItems > 0 {
+                            Text("\(userManager.currentUser.totalCartItems)")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
+                                .foregroundColor(.white)
+                                .frame(minWidth: 20, minHeight: 20)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 12, y: -10)
+                        }
+                    }
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 16)
@@ -42,6 +65,9 @@ struct TailorDetailView: View {
                 }
             }
             .background(Color(UIColor.systemGroupedBackground))
+        }
+        .navigationDestination(isPresented: $isCartViewPresented) {
+            CartView()
         }
         .navigationBarHidden(true)
         .onAppear {

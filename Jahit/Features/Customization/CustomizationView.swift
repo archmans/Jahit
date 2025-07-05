@@ -12,6 +12,7 @@ struct CustomizationView: View {
     @StateObject private var tabBarVM = TabBarViewModel.shared
     @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
+    @State private var isCartViewPresented = false
     
     let tailor: Tailor
     let service: TailorService
@@ -78,6 +79,9 @@ struct CustomizationView: View {
         .navigationDestination(isPresented: $viewModel.showingOrdering) {
             OrderingView(customizationOrder: viewModel.customizationOrder)
         }
+        .navigationDestination(isPresented: $isCartViewPresented) {
+            CartView()
+        }
         .alert("Berhasil ditambahkan!", isPresented: $viewModel.showingCartSuccess) {
             Button("OK") { }
         } message: {
@@ -106,6 +110,27 @@ struct CustomizationView: View {
                 .foregroundColor(.black)
             
             Spacer()
+            
+            // Cart Button
+            Button(action: {
+                isCartViewPresented = true
+            }) {
+                ZStack {
+                    Image(systemName: "cart")
+                        .foregroundColor(.black)
+                        .font(.system(size: 20, weight: .medium))
+                    
+                    if userManager.currentUser.totalCartItems > 0 {
+                        Text("\(userManager.currentUser.totalCartItems)")
+                            .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
+                            .foregroundColor(.white)
+                            .frame(minWidth: 20, minHeight: 20)
+                            .background(Color.red)
+                            .clipShape(Circle())
+                            .offset(x: 12, y: -10)
+                    }
+                }
+            }
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 16)
@@ -157,7 +182,7 @@ struct CustomizationView: View {
     
     private var descriptionView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Deskripsi Pesanan (optional)")
+            Text("Deskripsi Pesanan (opsional)")
                 .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
                 .foregroundColor(.black)
             

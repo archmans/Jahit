@@ -165,7 +165,7 @@ struct LoginView: View {
                 .frame(height: 1)
                 .foregroundColor(.gray.opacity(0.3))
             
-            Text("atau register dengan")
+            Text("atau login dengan")
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.gray)
                 .padding(.horizontal, 8)
