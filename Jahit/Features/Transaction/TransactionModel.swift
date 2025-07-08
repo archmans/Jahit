@@ -8,7 +8,7 @@
 import Foundation
 
 enum TransactionTab: String, CaseIterable, Identifiable {
-    case ongoing = "Sedang Berlangsung"
+    case ongoing = "Berlangsung"
     case completed = "Selesai"
 
     var id: String { rawValue }

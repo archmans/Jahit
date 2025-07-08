@@ -10,62 +10,74 @@ import SwiftUI
 struct TransactionView: View {
     @StateObject private var viewModel = TransactionViewModel()
     @StateObject private var tabBarVM = TabBarViewModel.shared
-    @Namespace private var underlineNamespace
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                HStack {
+                HStack(spacing: 0) {
                     ForEach(TransactionTab.allCases) { tab in
                         Button(action: {
                             withAnimation { viewModel.selectedTab = tab }
                         }) {
-                            VStack(spacing: 4) {
+                            VStack(spacing: 8) {
                                 Text(tab.rawValue)
-                                    .font(.system(size: 16,
-                                                  weight: viewModel.selectedTab == tab ? .semibold : .regular))
+                                    .font(.custom("PlusJakartaSans-Regular", size: 16))
                                     .foregroundColor(viewModel.selectedTab == tab ? .blue : .gray)
-
-                                if viewModel.selectedTab == tab {
-                                    Rectangle()
-                                        .fill(Color.blue)
-                                        .matchedGeometryEffect(id: "underline", in: underlineNamespace)
-                                        .frame(height: 2)
-                                } else {
-                                    Color.clear.frame(height: 2)
-                                }
+                                
+                                Rectangle()
+                                    .fill(viewModel.selectedTab == tab ? Color.blue : Color.clear)
+                                    .frame(height: 2)
                             }
-                            .frame(maxWidth: .infinity)
                         }
+                        .frame(maxWidth: .infinity)
                     }
                 }
-                .padding(.horizontal)
+                .background(Color.white)
                 .padding(.bottom, 8)
                 .padding(.top, 32)
 
                 TabView(selection: $viewModel.selectedTab) {
-                    ForEach(TransactionTab.allCases) { tab in
-                        ScrollView {
-                            VStack(spacing: 0) {
-                                ForEach(viewModel.filteredTransactions) { transaction in
-                                    if tab == .ongoing {
-                                        OngoingTransactionRow(transaction: transaction, viewModel: viewModel)
-                                    } else {
-                                        CompletedTransactionRow(transaction: transaction, viewModel: viewModel)
-                                    }
-                                }
-                            }
-                        }
-                        .tag(tab)
-                    }
+                    OngoingTransactionsView(viewModel: viewModel)
+                        .tag(TransactionTab.ongoing)
+                    
+                    CompletedTransactionsView(viewModel: viewModel)
+                        .tag(TransactionTab.completed)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             }
             .padding(.bottom, 65)
-            .background(Color(white: 0.95).edgesIgnoringSafeArea(.all))
+            .background(Color.white.edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.refreshTransactions()
                 tabBarVM.show()
+            }
+        }
+    }
+}
+
+struct OngoingTransactionsView: View {
+    let viewModel: TransactionViewModel
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(viewModel.getOngoingTransactionsSortedByRecent()) { transaction in
+                    OngoingTransactionRow(transaction: transaction, viewModel: viewModel)
+                }
+            }
+        }
+    }
+}
+
+struct CompletedTransactionsView: View {
+    let viewModel: TransactionViewModel
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(viewModel.getCompletedTransactionsSortedByRecent()) { transaction in
+                    CompletedTransactionRow(transaction: transaction, viewModel: viewModel)
+                }
             }
         }
     }
@@ -120,10 +132,12 @@ struct OngoingTransactionRow: View {
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
+            .background(Color.white)
         }
         .buttonStyle(PlainButtonStyle())
 
         Divider()
+            .background(Color.gray.opacity(0.3))
     }
 }
 
@@ -179,6 +193,7 @@ struct CompletedTransactionRow: View {
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
+            .background(Color.white)
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showingRatingPopup) {
@@ -191,6 +206,7 @@ struct CompletedTransactionRow: View {
         }
 
         Divider()
+            .background(Color.gray.opacity(0.3))
     }
 }
 

@@ -28,9 +28,9 @@ class TransactionViewModel: ObservableObject {
     var filteredTransactions: [Transaction] {
         switch selectedTab {
         case .ongoing:
-            return userManager.getOngoingTransactions()
+            return getOngoingTransactionsSortedByRecent()
         case .completed:
-            return userManager.getCompletedTransactions()
+            return getCompletedTransactionsSortedByRecent()
         }
     }
     
@@ -45,5 +45,29 @@ class TransactionViewModel: ObservableObject {
     func loadSampleData() {
         userManager.resetToDefaultUserWithSampleData()
         objectWillChange.send()
+    }
+    
+    func getOngoingTransactionsSortedByRecent() -> [Transaction] {
+        return userManager.getOngoingTransactions()
+            .sorted { transaction1, transaction2 in
+                // Sort by most recent date (newest first)
+                return transaction1.orderDate > transaction2.orderDate
+            }
+    }
+    
+    func getCompletedTransactionsSortedByRecent() -> [Transaction] {
+        return userManager.getCompletedTransactions()
+            .sorted { transaction1, transaction2 in
+                // Sort by most recent date (newest first)
+                return transaction1.orderDate > transaction2.orderDate
+            }
+    }
+    
+    func getAllTransactionsSortedByRecent() -> [Transaction] {
+        let allTransactions = userManager.getOngoingTransactions() + userManager.getCompletedTransactions()
+        return allTransactions.sorted { transaction1, transaction2 in
+            // Sort by most recent date (newest first)
+            return transaction1.orderDate > transaction2.orderDate
+        }
     }
 }
