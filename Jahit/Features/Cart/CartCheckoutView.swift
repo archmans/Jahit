@@ -19,6 +19,7 @@ struct CartCheckoutView: View {
     @State private var showingDatePicker = false
     @State private var showingTimePicker = false
     @State private var showingAddressSheet = false
+    @State private var showingPaymentSuccess = false
     
     var totalPrice: Double {
         return selectedItems.reduce(0) { $0 + $1.totalPrice }
@@ -114,6 +115,12 @@ struct CartCheckoutView: View {
                 }
             )
             .environmentObject(userManager)
+        }
+        .fullScreenCover(isPresented: $showingPaymentSuccess) {
+            PaymentSuccessView(onDismiss: {
+                showingPaymentSuccess = false
+                dismiss()
+            })
         }
     }
     
@@ -516,8 +523,8 @@ struct CartCheckoutView: View {
             print("Pickup Time: \(pickupTime.displayName)")
             print("Payment Method: \(selectedPaymentMethod.displayName)")
             
-            // Navigate back
-            dismiss()
+            // Show payment success view
+            showingPaymentSuccess = true
         } else {
             print("Failed to process order")
             // TODO: Show error alert to user

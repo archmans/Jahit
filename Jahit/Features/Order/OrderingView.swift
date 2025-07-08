@@ -13,6 +13,7 @@ struct OrderingView: View {
     @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
     @State private var showingAddressSheet = false
+    @State private var showingPaymentSuccess = false
     
     let customizationOrder: CustomizationOrder
     
@@ -71,6 +72,12 @@ struct OrderingView: View {
         }
         .sheet(isPresented: $viewModel.showingTimePicker) {
             TimePickerView(selectedTime: $viewModel.order.pickupTime, onTimeSelected: viewModel.updatePickupTime)
+        }
+        .fullScreenCover(isPresented: $showingPaymentSuccess) {
+            PaymentSuccessView(onDismiss: {
+                showingPaymentSuccess = false
+                dismiss()
+            })
         }
     }
     
@@ -433,7 +440,7 @@ struct OrderingView: View {
             Button(action: {
                 let success = viewModel.confirmOrder()
                 if success {
-                    dismiss()
+                    showingPaymentSuccess = true
                 }
             }) {
                 Text("Konfirmasi")
