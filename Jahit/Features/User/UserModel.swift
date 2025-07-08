@@ -179,7 +179,7 @@ extension User {
                 paymentMethod: "GoPay",
                 customerAddress: "Jl. Ganesha No. 10, Bandung",
                 orderDate: Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date(),
-                status: .readyForPickup
+                status: .pickup
             ),
             
             // Pending transaction

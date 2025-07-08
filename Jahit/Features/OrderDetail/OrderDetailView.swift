@@ -65,7 +65,7 @@ struct OrderDetailView: View {
                                 .fill(index <= viewModel.currentStepIndex ? Color.blue : Color.gray.opacity(0.3))
                                 .frame(width: 40, height: 40)
                             
-                            Image(systemName: status.icon)
+                            Image(status.icon)
                                 .foregroundColor(index <= viewModel.currentStepIndex ? .white : .gray)
                                 .font(.system(size: 16))
                         }

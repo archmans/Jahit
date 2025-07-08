@@ -70,10 +70,12 @@ class OrderDetailViewModel: ObservableObject {
                 return .pending
             case .confirmed:
                 return .confirmed
+            case .pickup:
+                return .pickup
             case .inProgress:
                 return .inProgress
-            case .readyForPickup:
-                return .readyForPickup
+            case .onDelivery:
+                return .onDelivery
             case .completed:
                 return .completed
             }

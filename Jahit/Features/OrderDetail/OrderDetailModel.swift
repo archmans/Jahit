@@ -26,27 +26,30 @@ struct Order {
 enum OrderStatus: String, CaseIterable {
     case pending = "Menunggu Konfirmasi"
     case confirmed = "Pesanan dikonfirmasi"
+    case pickup = "Pengukuran / Pengambilan Bahan"
     case inProgress = "Sedang dijahit"
-    case readyForPickup = "Siap diambil"
+    case onDelivery = "Pesanan sedang diantar"
     case completed = "Pesanan Selesai"
     
     var stepIndex: Int {
         switch self {
         case .pending: return 0
         case .confirmed: return 1
-        case .inProgress: return 2
-        case .readyForPickup: return 3
-        case .completed: return 4
+        case .pickup: return 2
+        case .inProgress: return 3
+        case .onDelivery: return 4
+        case .completed: return 5
         }
     }
     
     var icon: String {
         switch self {
-        case .pending: return "clock"
-        case .confirmed: return "doc.text"
-        case .inProgress: return "scissors"
-        case .readyForPickup: return "checkmark.shield"
-        case .completed: return "checkmark.circle"
+        case .pending: return "menunggu_konfirmasi"
+        case .confirmed: return "pesanan_dikonfirmasi"
+        case .pickup: return "pengukuran"
+        case .inProgress: return "dijahit"
+        case .onDelivery: return "diantar"
+        case .completed: return "pesanan_selesai"
         }
     }
 }

@@ -17,8 +17,9 @@ enum TransactionTab: String, CaseIterable, Identifiable {
 enum TransactionStatus: String, Codable {
     case pending = "Menunggu Konfirmasi"
     case confirmed = "Dikonfirmasi"
+    case pickup = "Pengukuran / Pengambilan Bahan"
     case inProgress = "Sedang Dikerjakan"
-    case readyForPickup = "Siap Diambil"
+    case onDelivery = "Pesanan Sedang Diantar"
     case completed = "Selesai"
     case cancelled = "Dibatalkan"
 }
@@ -124,14 +125,16 @@ extension Transaction {
                 return .pending
             case .confirmed:
                 return .confirmed
+            case .pickup:
+                return .pickup
             case .inProgress:
                 return .inProgress
-            case .readyForPickup:
-                return .readyForPickup
+            case .onDelivery:
+                return .onDelivery
             case .completed:
                 return .completed
             case .cancelled:
-                return .pending // Fallback to pending for cancelled orders
+                return .pending
             }
         }()
         
