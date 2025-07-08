@@ -61,7 +61,7 @@ struct CustomizationView: View {
             
             bottomSectionView
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .sheet(isPresented: $viewModel.showingImagePicker) {
             ImagePicker(
                 selectedImages: $viewModel.selectedImages,

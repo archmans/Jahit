@@ -70,7 +70,7 @@ struct TimePickerView: View {
             }
             .padding(.top, 16)
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .presentationDetents([.fraction(0.5)])
         .presentationDragIndicator(.hidden)
     }

@@ -114,7 +114,7 @@ struct CartView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color(UIColor.systemGray6))
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
     }
     
     private func cartItemView(item: CartItem) -> some View {

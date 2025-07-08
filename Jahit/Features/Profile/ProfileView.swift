@@ -145,7 +145,7 @@ struct ProfileView: View {
             
             Spacer()
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .navigationBarHidden(true)
         .alert("Keluar", isPresented: $showLogoutAlert) {
             Button("Batal", role: .cancel) { }

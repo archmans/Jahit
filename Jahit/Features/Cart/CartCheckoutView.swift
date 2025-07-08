@@ -85,7 +85,7 @@ struct CartCheckoutView: View {
             // Bottom Section
             bottomSectionView
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()

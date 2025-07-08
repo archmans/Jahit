@@ -37,7 +37,7 @@ struct ItemPickerView: View {
             }
             .padding(.top, 20)
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .navigationBarHidden(true)
         .presentationDetents([.large]) // Full screen bottom sheet
         .presentationDragIndicator(.visible)

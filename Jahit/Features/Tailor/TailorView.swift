@@ -64,7 +64,7 @@ struct TailorDetailView: View {
                     tabContentView
                 }
             }
-            .background(Color(UIColor.systemGroupedBackground))
+            .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         }
         .navigationDestination(isPresented: $isCartViewPresented) {
             CartView()

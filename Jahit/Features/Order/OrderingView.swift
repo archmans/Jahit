@@ -58,7 +58,7 @@ struct OrderingView: View {
             // Bottom Section
             bottomSectionView
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
@@ -630,7 +630,7 @@ struct AddressEditSheet: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
             }
-            .background(Color(UIColor.systemBackground))
+           .background(Color(red: 0.95, green: 0.95, blue: 0.95))
             .onChange(of: userManager.currentUser.address) { _, newAddress in
                 // Update addressText when location is updated
                 if let newAddress = newAddress, !newAddress.isEmpty {
