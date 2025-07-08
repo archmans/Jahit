@@ -123,79 +123,66 @@ struct OrderDetailView: View {
                 .cornerRadius(12)
                 .padding(.horizontal, 20)
             
-            VStack(alignment: .leading, spacing: 16) {
-                // Category
-                orderDetailRow(title: "Kategori", value: viewModel.order.category)
-                
-                // Items (updated to show all items with details)
-                itemsListView
-                
-                // Payment Method
-                orderDetailRow(title: "Metode Pembayaran", value: viewModel.order.paymentMethod)
-                
-                // Pickup Address
-                orderDetailRow(title: "Alamat Pengiriman/Penjemputan", value: viewModel.order.pickupAddress)
-                
-                // Order Details
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("No. Pesanan")
-                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
-                            .foregroundColor(.black)
-                        Spacer()
-                        Text(viewModel.order.orderNumber)
-                            .font(.custom("PlusJakartaSans-Regular", size: 14))
-                            .foregroundColor(.black)
-                    }
-                    
-                    HStack {
-                        Text("Waktu Pembayaran")
-                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
-                            .foregroundColor(.black)
-                        Spacer()
-                        Text(viewModel.formattedPaymentTime)
-                            .font(.custom("PlusJakartaSans-Regular", size: 14))
-                            .foregroundColor(.black)
-                    }
-                    
-                    HStack {
-                        Text("Waktu Konfirmasi Pesanan")
-                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
-                            .foregroundColor(.black)
-                        Spacer()
-                        Text(viewModel.formattedConfirmationTime)
-                            .font(.custom("PlusJakartaSans-Regular", size: 14))
-                            .foregroundColor(.black)
-                    }
+            VStack(alignment: .leading, spacing: 20) {
+                // Items Card
+                VStack(alignment: .leading, spacing: 16) {
+                    itemsListView
                 }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 20)
+                .background(Color.white)
+                .cornerRadius(12)
+                .padding(.horizontal, 20)
                 
-                // Total Amount
-                HStack {
-                    Text("Total Pesanan")
-                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                        .foregroundColor(.black)
-                    Spacer()
-                    Text(viewModel.formattedTotalAmount)
-                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                        .foregroundColor(.black)
-                }
-                .padding(.top, 8)
-                
-                // Review Section (only show if there's a review)
-                if let review = viewModel.orderReview {
+                // Order Details Card
+                VStack(alignment: .leading, spacing: 16) {
+                    // Pickup Address
+                    orderDetailRow(title: "Alamat Pengiriman/Penjemputan", value: viewModel.order.pickupAddress)
+                    
+                    // Payment Method
+                    orderDetailRow(title: "Metode Pembayaran", value: viewModel.order.paymentMethod)
+                    
+                    // Order Details
                     VStack(alignment: .leading, spacing: 8) {
-                        Divider()
-                            .padding(.vertical, 8)
-                        
-                        ReviewCardView(review: review)
+                        HStack {
+                            Text("No. Pesanan")
+                                .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                                .foregroundColor(.black)
+                            Spacer()
+                            Text(viewModel.order.orderNumber)
+                                .font(.custom("PlusJakartaSans-Regular", size: 14))
+                                .foregroundColor(.black)
+                        }
+                    }
+                    
+                    // Total Amount
+                    HStack {
+                        Text("Total Pesanan")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                            .foregroundColor(.black)
+                        Spacer()
+                        Text(viewModel.formattedTotalAmount)
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                            .foregroundColor(.black)
+                    }
+                    .padding(.top, 8)
+                    
+                    // Review Section (only show if there's a review)
+                    if let review = viewModel.orderReview {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Divider()
+                                .padding(.vertical, 8)
+                            
+                            ReviewCardView(review: review)
+                        }
                     }
                 }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 20)
+                .background(Color.white)
+                .cornerRadius(12)
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 20)
-            .background(Color.white)
-            .cornerRadius(12)
-            .padding(.horizontal, 20)
         }
     }
     
@@ -264,13 +251,9 @@ struct TransactionItemRowView: View {
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
                     .foregroundColor(.black)
                 
-                Text("\(item.category) • Qty: \(item.quantity)")
+                Text("Kuantitas: \(item.quantity)")
                     .font(.custom("PlusJakartaSans-Regular", size: 12))
                     .foregroundColor(.gray)
-                
-                if item.isCustomOrder {
-                    customOrderBadge
-                }
             }
             
             Spacer()
@@ -279,16 +262,6 @@ struct TransactionItemRowView: View {
                 .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                 .foregroundColor(.black)
         }
-    }
-    
-    private var customOrderBadge: some View {
-        Text("Custom Order")
-            .font(.custom("PlusJakartaSans-Regular", size: 10))
-            .foregroundColor(.blue)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(Color.blue.opacity(0.1))
-            .cornerRadius(4)
     }
     
     private func itemDescriptionView(description: String) -> some View {
@@ -300,10 +273,6 @@ struct TransactionItemRowView: View {
             Text(description)
                 .font(.custom("PlusJakartaSans-Regular", size: 12))
                 .foregroundColor(.black)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(6)
         }
     }
     
