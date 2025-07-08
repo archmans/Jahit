@@ -55,11 +55,12 @@ struct OrderDetailView: View {
     }
     
     private var progressStepsView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 4) {
             ForEach(Array(OrderStatus.allCases.enumerated()), id: \.offset) { index, status in
-                HStack(spacing: 16) {
-                    // Step circle with connecting line
-                    VStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    // Main content row
+                    HStack(spacing: 16) {
+                        // Step circle
                         ZStack {
                             Circle()
                                 .fill(index <= viewModel.currentStepIndex ? Color.blue : Color.gray.opacity(0.3))
@@ -70,8 +71,27 @@ struct OrderDetailView: View {
                                 .font(.system(size: 16))
                         }
                         
-                        // Connecting line (except for last item)
-                        if index < OrderStatus.allCases.count - 1 {
+                        // Status text
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(status.rawValue)
+                                .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                                .foregroundColor(index <= viewModel.currentStepIndex ? .blue : .gray)
+                        }
+                        
+                        Spacer()
+                        
+                        // Time
+                        if index <= viewModel.currentStepIndex {
+                            Text(getTimeForStatus(index: index))
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    
+                    // Connecting line (except for last item)
+                    if index < OrderStatus.allCases.count - 1 {
+                        HStack {
+                            // Line aligned under the circle
                             VStack(spacing: 2) {
                                 ForEach(0..<6, id: \.self) { _ in
                                     Circle()
@@ -79,24 +99,11 @@ struct OrderDetailView: View {
                                         .frame(width: 3, height: 3)
                                 }
                             }
-                            .frame(height: 24)
+                            .frame(width: 40, height: 24)
+                            
+                            Spacer()
                         }
                     }
-                    
-                    // Status text
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(status.rawValue)
-                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
-                            .foregroundColor(index <= viewModel.currentStepIndex ? .blue : .gray)
-                        
-                        if index <= viewModel.currentStepIndex {
-                            Text("Completed")
-                                .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                .foregroundColor(.green)
-                        }
-                    }
-                    
-                    Spacer()
                 }
             }
         }
@@ -212,6 +219,17 @@ struct OrderDetailView: View {
             Text(value)
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.black)
+        }
+    }
+    
+    private func getTimeForStatus(index: Int) -> String {
+        switch index {
+        case 0:
+            return viewModel.formattedPaymentTime
+        case 1:
+            return viewModel.formattedConfirmationTime
+        default:
+            return viewModel.formattedConfirmationTime
         }
     }
 }
