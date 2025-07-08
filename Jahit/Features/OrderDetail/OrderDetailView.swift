@@ -28,11 +28,15 @@ struct OrderDetailView: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .navigationBarHidden(true)
+        .onDisappear {
+            TabBarViewModel.shared.show()
+        }
     }
     
     private var headerView: some View {
         HStack {
             Button(action: {
+                TabBarViewModel.shared.show()
                 dismiss()
             }) {
                 Image(systemName: "arrow.left")

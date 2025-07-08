@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TransactionView: View {
     @StateObject private var viewModel = TransactionViewModel()
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     @Namespace private var underlineNamespace
     
     var body: some View {
@@ -64,6 +65,7 @@ struct TransactionView: View {
             .background(Color(white: 0.95).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.refreshTransactions()
+                tabBarVM.show()
             }
         }
     }
@@ -74,7 +76,12 @@ struct OngoingTransactionRow: View {
     let viewModel: TransactionViewModel
 
     var body: some View {
-        NavigationLink(destination: OrderDetailView(order: transaction.toOrder())) {
+        NavigationLink(destination: 
+            OrderDetailView(order: transaction.toOrder())
+                .onAppear {
+                    TabBarViewModel.shared.hide()
+                }
+        ) {
             HStack(spacing: 16) {
                 Image("penjahit")
                     .resizable()
@@ -126,7 +133,12 @@ struct CompletedTransactionRow: View {
     @State private var showingRatingPopup = false
 
     var body: some View {
-        NavigationLink(destination: OrderDetailView(order: transaction.toOrder())) {
+        NavigationLink(destination: 
+            OrderDetailView(order: transaction.toOrder())
+                .onAppear {
+                    TabBarViewModel.shared.hide()
+                }
+        ) {
             HStack(spacing: 16) {
                 Image("penjahit")
                     .resizable()
@@ -143,14 +155,6 @@ struct CompletedTransactionRow: View {
                         .font(.subheadline)
                         .foregroundColor(.gray)
                         .lineLimit(2)
-                    Text(transaction.totalPrice.idrFormatted)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.black)
-                    
-                    Text(transaction.formattedOrderDate)
-                        .font(.caption)
-                        .foregroundColor(.gray)
                 }
 
                 Spacer()

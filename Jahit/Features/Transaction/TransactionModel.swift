@@ -103,13 +103,6 @@ struct Transaction: Identifiable, Codable {
 }
 
 extension Transaction {
-    var formattedOrderDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd MMM yyyy, HH:mm"
-        formatter.locale = Locale(identifier: "id_ID")
-        return formatter.string(from: orderDate)
-    }
-    
     var formattedPickupDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
