@@ -5,8 +5,8 @@ class SearchViewModel: ObservableObject {
     @Published var isLoading = false
     private let database = LocalDatabase.shared
     
-    init(category: String? = nil) {
-        loadTailors(category: category)
+    init() {
+        // Don't load tailors in init, wait for setCategory to be called
     }
     
     private func loadTailors(category: String?) {
@@ -24,7 +24,9 @@ class SearchViewModel: ObservableObject {
         // Update UI synchronously for faster loading
         self.tailors = tailorsData
         self.isLoading = false
-        
-        print("SearchViewModel: Loaded \(tailorsData.count) tailors for category: \(category ?? "all")")
+    }
+    
+    func setCategory(_ category: String) {
+        loadTailors(category: category)
     }
 }

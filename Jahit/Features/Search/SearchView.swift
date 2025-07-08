@@ -10,13 +10,11 @@ import SwiftUI
 struct SearchView: View {
     @Binding var searchTitle: String
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel: SearchViewModel
+    @StateObject private var viewModel = SearchViewModel()
     @StateObject private var tabBarVM = TabBarViewModel.shared
     
     init(searchTitle: Binding<String>) {
         self._searchTitle = searchTitle
-        self._viewModel = StateObject(wrappedValue: SearchViewModel(category: searchTitle.wrappedValue))
-        print("SearchView: Initializing with category: \(searchTitle.wrappedValue)")
     }
     
     var body: some View {
@@ -84,8 +82,8 @@ struct SearchView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
-            print("SearchView: onAppear called")
             tabBarVM.hide()
+            viewModel.setCategory(searchTitle)
         }
     }
 }
