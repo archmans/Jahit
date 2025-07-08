@@ -15,7 +15,7 @@ struct ProfileView: View {
         VStack(spacing: 20) {
             // Header
             HStack {
-                Text("Profil")
+                Text("Akun Saya")
                     .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
                     .foregroundColor(.black)
                 
@@ -27,12 +27,12 @@ struct ProfileView: View {
             // Profile content
             VStack(spacing: 20) {
                 // User Info Card
-                VStack(spacing: 16) {
+                HStack(spacing: 16) {
                     Image(systemName: "person.circle.fill")
-                        .font(.system(size: 80))
+                        .font(.system(size: 60))
                         .foregroundColor(.blue)
                     
-                    VStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text(userManager.currentUser.name)
                             .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.semibold))
                             .foregroundColor(.black)
@@ -48,23 +48,8 @@ struct ProfileView: View {
                                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                                 .foregroundColor(.gray)
                         }
-                        
-                        if let provider = userManager.currentUser.authProvider {
-                            HStack(spacing: 4) {
-                                Image(systemName: provider == "google" ? "globe" : provider == "apple" ? "applelogo" : "envelope")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.blue)
-                                
-                                Text("Masuk dengan \(provider.capitalized)")
-                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                    .foregroundColor(.blue)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 4)
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(12)
-                        }
                     }
+                    Spacer()
                 }
                 .padding(24)
                 .background(Color.white)
@@ -72,42 +57,69 @@ struct ProfileView: View {
                 
                 // Account Settings
                 VStack(spacing: 12) {
-                    ProfileMenuItem(
-                        icon: "person.fill",
-                        title: "Edit Profil",
-                        action: {
-                            // TODO: Navigate to edit profile
-                        }
-                    )
+                    VStack {
+                        ProfileMenuItem(
+                            icon: "bell.fill",
+                            title: "Notifikasi",
+                            action: {
+                                // TODO: Navigate to notification settings
+                            }
+                        )
+                    }
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(16)
+
+                    VStack {
+                        ProfileMenuItem(
+                            icon: "person.fill",
+                            title: "Manajemen Akun",
+                            action: {
+                                // TODO: Navigate to edit profile
+                            }
+                        )
+                    }
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(16)
+
+                    VStack {
+                        ProfileMenuItem(
+                            icon: "globe",
+                            title: "Pilih Bahasa",
+                            action: {
+                            }
+                        )
+                    }
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(16)
+
+                    VStack {
+                        ProfileMenuItem(
+                            icon: "shield.fill",
+                            title: "Kebijakan Privasi",
+                            action: {
+                            }
+                        )
+                    }
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(16)
                     
-                    ProfileMenuItem(
-                        icon: "location.fill",
-                        title: "Alamat",
-                        subtitle: userManager.currentUser.address ?? "Belum diset",
-                        action: {
-                            // TODO: Navigate to address settings
-                        }
-                    )
-                    
-                    ProfileMenuItem(
-                        icon: "bell.fill",
-                        title: "Notifikasi",
-                        action: {
-                            // TODO: Navigate to notification settings
-                        }
-                    )
-                    
-                    ProfileMenuItem(
-                        icon: "questionmark.circle.fill",
-                        title: "Bantuan",
-                        action: {
-                            // TODO: Navigate to help
-                        }
-                    )
+                    VStack {
+                        ProfileMenuItem(
+                            icon: "questionmark.circle.fill",
+                            title: "Bantuan",
+                            action: {
+                                // TODO: Navigate to help
+                            }
+                        )
+                    }
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(16)
                 }
-                .padding(16)
-                .background(Color.white)
-                .cornerRadius(16)
                 
                 // Logout Button
                 Button(action: {
