@@ -21,33 +21,34 @@ struct RatingPopupView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 8) {
-                        Text("Beri Penilaian")
-                            .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
-                            .foregroundColor(.black)
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Header
+                        VStack(spacing: 8) {
+                            Text("Beri Penilaian")
+                                .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
+                                .foregroundColor(.black)
+                            
+                            Text("Bagaimana pengalaman Anda dengan \(transaction.tailorName)?")
+                                .font(.custom("PlusJakartaSans-Regular", size: 16))
+                                .foregroundColor(.black)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.top, 8)
                         
-                        Text("Bagaimana pengalaman Anda dengan \(transaction.tailorName)?")
-                            .font(.custom("PlusJakartaSans-Regular", size: 16))
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.top, 8)
-                    
-                    // Star Rating
-                    VStack(spacing: 12) {
-                        Text("Rating")
-                            .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        HStack(spacing: 8) {
-                            ForEach(1...5, id: \.self) { star in
-                                Button(action: {
-                                    rating = star
-                                }) {
+                        // Star Rating
+                        VStack(spacing: 12) {
+                            Text("Rating")
+                                .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
+                                .foregroundColor(.black)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            HStack(spacing: 8) {
+                                ForEach(1...5, id: \.self) { star in
+                                    Button(action: {
+                                        rating = star
+                                    }) {
                                     Image(systemName: star <= rating ? "star.fill" : "star")
                                         .font(.system(size: 32))
                                         .foregroundColor(star <= rating ? .yellow : .gray.opacity(0.3))
@@ -67,11 +68,19 @@ struct RatingPopupView: View {
                         
                         TextField("Tulis pengalaman Anda...", text: $comment, axis: .vertical)
                             .font(.custom("PlusJakartaSans-Regular", size: 16))
+                            .foregroundColor(.black)
+                            .accentColor(.blue)
+                            .textFieldStyle(PlainTextFieldStyle())
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
-                            .background(Color.gray.opacity(0.1))
+                            .background(Color.white)
                             .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
                             .lineLimit(5, reservesSpace: true)
+                            .environment(\.colorScheme, .light)
                     }
                     
                     // Image Upload Section
@@ -122,28 +131,43 @@ struct RatingPopupView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 100)
+                .padding(.bottom, 20)
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Batal") {
-                        isPresented = false
-                    }
-                    .foregroundColor(.gray)
-                }
+            
+            // Bottom Button Section
+            VStack(spacing: 0) {
+                Divider()
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kirim") {
-                        submitReview()
-                    }
-                    .foregroundColor(canSubmit ? .blue : .gray)
-                    .disabled(!canSubmit || isSubmitting)
+                Button(action: {
+                    submitReview()
+                }) {
+                    Text(isSubmitting ? "Mengirim..." : "Kirim")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(canSubmit ? Color.blue : Color.gray)
+                        .cornerRadius(12)
                 }
+                .disabled(!canSubmit || isSubmitting)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(Color.white)
             }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Batal") {
+                    isPresented = false
+                }
+                .foregroundColor(.gray)
+            }
+        }
         }
         .sheet(isPresented: $isShowingImagePicker) {
             ImagePicker(selectedImages: $selectedImages, maxSelection: 5)
+                .presentationBackground(Color.white)
         }
     }
     

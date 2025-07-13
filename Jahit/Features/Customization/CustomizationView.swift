@@ -67,6 +67,7 @@ struct CustomizationView: View {
                 selectedImages: $viewModel.selectedImages,
                 maxSelection: 10 - viewModel.customizationOrder.referenceImages.count
             )
+            .presentationBackground(Color.white)
         }
         .sheet(isPresented: $viewModel.showingItemPicker) {
             ItemPickerView(viewModel: viewModel)
@@ -191,6 +192,8 @@ struct CustomizationView: View {
                 set: { viewModel.updateDescription($0) }
             ), axis: .vertical)
             .textFieldStyle(PlainTextFieldStyle())
+            .foregroundColor(.black)
+            .accentColor(.blue)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(Color.white)
@@ -199,6 +202,7 @@ struct CustomizationView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.gray.opacity(0.3), lineWidth: 1)
             )
+            .environment(\.colorScheme, .light)
         }
     }
     

@@ -203,6 +203,7 @@ struct CompletedTransactionRow: View {
             ) { review in
                 UserManager.shared.addReviewToTransaction(review: review)
             }
+            .presentationBackground(Color.white)
         }
 
         Divider()
