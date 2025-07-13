@@ -80,6 +80,7 @@ struct SearchView: View {
                 .padding(.top, 16)
             }
         }
+        .background(Color.white)
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()

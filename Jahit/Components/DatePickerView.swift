@@ -52,7 +52,11 @@ struct DatePickerView: View {
             DatePicker("", selection: $internalDate, in: tomorrowDate..., displayedComponents: .date)
                 .datePickerStyle(GraphicalDatePickerStyle())
                 .environment(\.locale, Locale(identifier: "id_ID"))
+                .accentColor(.blue)
+                .colorScheme(.light)
+                .background(Color.white)
                 .padding(.horizontal, 20)
+                .presentationBackground(Color.white)
             
             // Confirm Button
             Button(action: {

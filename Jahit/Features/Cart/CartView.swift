@@ -49,6 +49,7 @@ struct CartView: View {
                 bottomCheckoutView
             }
         }
+        .background(Color.white)
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showingCheckout) {
             CartCheckoutView(selectedItems: userManager.currentUser.selectedCartItems)

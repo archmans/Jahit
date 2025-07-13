@@ -15,6 +15,7 @@ struct JahitApp: App {
         WindowGroup {
             SplashScreenView()
                 .environmentObject(userManager)
+                .background(Color.white)
                 .onAppear {
                     // Request location only once when app launches
                     userManager.requestLocationOnAppLaunch()

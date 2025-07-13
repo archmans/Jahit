@@ -21,12 +21,12 @@ struct SearchKeywordView: View {
             // Header with search field
             headerView
             
-            if !searchText.isEmpty {
-                searchSummaryView
-            }
-            
             // Results
             ScrollView {
+                if !searchText.isEmpty {
+                    searchSummaryView
+                    .padding(.vertical, 8)
+                }
                 if viewModel.isLoading {
                     loadingView
                 } else if viewModel.searchResults.isEmpty && !searchText.isEmpty {
@@ -36,7 +36,9 @@ struct SearchKeywordView: View {
                 }
             }
             .padding(.horizontal, 20)
+            .background(Color.white)
         }
+        .background(Color.white)
         .navigationBarHidden(true)
         .onAppear {
             tabBarVM.hide()
@@ -122,7 +124,7 @@ struct SearchKeywordView: View {
             }.count
             
             if productCount > 0 {
-                Text("\(productCount) Product found")
+                Text("\(productCount) Produk ditemukan")
                     .font(.custom("PlusJakartaSans-Regular", size: 12))
                     .foregroundColor(.gray)
             }
@@ -134,14 +136,13 @@ struct SearchKeywordView: View {
             }
             
             if tailorCount > 0 {
-                Text("\(tailorCount) Penjahit found")
+                Text("\(tailorCount) Penjahit ditemukan")
                     .font(.custom("PlusJakartaSans-Regular", size: 12))
                     .foregroundColor(.gray)
             }
             
             Spacer()
         }
-        .padding(.horizontal, 20)
     }
     
     private var loadingView: some View {
@@ -154,6 +155,7 @@ struct SearchKeywordView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 100)
+        .background(Color.white)
     }
     
     private var emptyView: some View {
@@ -170,6 +172,7 @@ struct SearchKeywordView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 100)
+        .background(Color.white)
     }
     
     private var resultsGridView: some View {
@@ -194,7 +197,6 @@ struct SearchKeywordView: View {
                 }
             }
         }
-        .padding(.top, 16)
     }
 }
 

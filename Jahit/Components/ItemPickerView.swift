@@ -37,11 +37,12 @@ struct ItemPickerView: View {
             }
             .padding(.top, 20)
         }
-        .background(Color(red: 0.95, green: 0.95, blue: 0.95))
+        .background(Color.white)
+        .colorScheme(.light)
         .navigationBarHidden(true)
         .presentationDetents([.large]) // Full screen bottom sheet
         .presentationDragIndicator(.visible)
-        .presentationBackground(.regularMaterial)
+        .presentationBackground(Color.white)
     }
     
     private var headerView: some View {

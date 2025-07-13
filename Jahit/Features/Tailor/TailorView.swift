@@ -66,6 +66,7 @@ struct TailorDetailView: View {
             }
             .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         }
+        .background(Color.white)
         .navigationDestination(isPresented: $isCartViewPresented) {
             CartView()
         }

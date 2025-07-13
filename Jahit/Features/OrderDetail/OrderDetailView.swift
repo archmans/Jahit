@@ -16,14 +16,16 @@ struct OrderDetailView: View {
     }
     
     var body: some View {
-        headerView
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                // Progress Steps
-                progressStepsView
-                
-                // Order Content
-                orderContentView
+        VStack(spacing: 0) {
+            headerView
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Progress Steps
+                    progressStepsView
+                    
+                    // Order Content
+                    orderContentView
+                }
             }
         }
         .background(Color(red: 0.95, green: 0.95, blue: 0.95))
