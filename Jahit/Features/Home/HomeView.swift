@@ -48,6 +48,7 @@ struct HomeView: View {
                             .font(.headline)
                             .padding(.top, 8)
                             .padding(.horizontal, 20)
+                            .foregroundColor(.black)
                         CategoriesButton(categories: viewModel.model.categories) { category in
                             searchTitle = category.capitalized
                             isSearchViewPresented = true
@@ -55,6 +56,7 @@ struct HomeView: View {
                         HStack {
                             Text("Penjahit terekemondasi")
                                 .font(.headline)
+                                .foregroundColor(.black)
                             Spacer()
                             Button("Lihat semua") {
                                 searchTitle = "Semua Penjahit"
@@ -75,6 +77,7 @@ struct HomeView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
+            .background(Color.white)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationDestination(item: $selectedTailorId) { idObj in
                 if let id = idObj.value, let tailor = viewModel.filteredTailors.first(where: { $0.id == id }) {

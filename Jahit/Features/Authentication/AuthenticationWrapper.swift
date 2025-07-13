@@ -20,43 +20,36 @@ struct AuthenticationWrapper: View {
                     }
             } else {
                 // Authentication required
-                Button(action: {
-                    showAuthenticationView = true
-                }) {
-                    VStack(spacing: 20) {
-                        Image("JahitLogo")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 120, height: 120)
+                VStack(spacing: 20) {
+                    Image("JahitLogo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 120, height: 120)
+                    
+                    VStack(spacing: 8) {
+                        Text("Selamat Datang di Jahit")
+                            .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
+                            .foregroundColor(.black)
                         
-                        VStack(spacing: 8) {
-                            Text("Selamat Datang di Jahit")
-                                .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
-                                .foregroundColor(.black)
-                            
-                            Text("Silakan masuk atau daftar untuk melanjutkan")
-                                .font(.custom("PlusJakartaSans-Regular", size: 16))
-                                .foregroundColor(.gray)
-                                .multilineTextAlignment(.center)
-                        }
-                        
-                        VStack(spacing: 12) {
-                            Button(action: {
-                                showAuthenticationView = true
-                            }) {
-                                Text("Mulai")
-                                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(Color.blue)
-                                    .cornerRadius(12)
-                            }
-                        }
+                        Text("Silakan masuk atau daftar untuk melanjutkan")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16))
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
                     }
-                    .padding(.horizontal, 40)
+                    
+                    Button(action: {
+                        showAuthenticationView = true
+                    }) {
+                        Text("Mulai")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                    }
                 }
-                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal, 40)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.white)
             }

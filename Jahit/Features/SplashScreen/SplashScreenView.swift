@@ -39,6 +39,7 @@ struct SplashScreenView: View {
                 }
                 
             }
+            .background(Color.white)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation {

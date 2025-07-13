@@ -21,6 +21,10 @@ struct SearchKeywordView: View {
             // Header with search field
             headerView
             
+            if !searchText.isEmpty {
+                searchSummaryView
+            }
+            
             // Results
             ScrollView {
                 if viewModel.isLoading {
@@ -100,13 +104,9 @@ struct SearchKeywordView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
-                
-                if !searchText.isEmpty {
-                    searchSummaryView
-                }
             }
         }
-        .frame(height: searchText.isEmpty ? 70 : 100)
+        .frame(height: 70)
     }
     
     private var searchSummaryView: some View {
@@ -124,19 +124,19 @@ struct SearchKeywordView: View {
             if productCount > 0 {
                 Text("\(productCount) Product found")
                     .font(.custom("PlusJakartaSans-Regular", size: 12))
-                    .foregroundColor(.white)
+                    .foregroundColor(.gray)
             }
             
             if productCount > 0 && tailorCount > 0 {
-                Text("•")
+                Text("\(productCount) Produk dan \(tailorCount) Penjahit ditemukan")
                     .font(.custom("PlusJakartaSans-Regular", size: 12))
-                    .foregroundColor(.white)
+                    .foregroundColor(.gray)
             }
             
             if tailorCount > 0 {
                 Text("\(tailorCount) Penjahit found")
                     .font(.custom("PlusJakartaSans-Regular", size: 12))
-                    .foregroundColor(.white)
+                    .foregroundColor(.gray)
             }
             
             Spacer()

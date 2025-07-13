@@ -91,11 +91,6 @@ struct SearchView: View {
 struct TailorGridItem: View {
     let tailor: Tailor
     
-    // Computed property to cache the services string
-    private var servicesText: String {
-        tailor.services.map { $0.name }.joined(separator: ", ")
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Tailor Image
@@ -182,60 +177,6 @@ struct TailorGridItemSkeleton: View {
         .background(Color.white)
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-    }
-}
-
-struct TailorListItem: View {
-    let tailor: Tailor
-    
-    // Computed property to cache the services string
-    private var servicesText: String {
-        tailor.services.map { $0.name }.joined(separator: ", ")
-    }
-    
-    var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(tailor.profileImage)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .clipped()
-                .cornerRadius(8)
-                .frame(width: 99, height: 99)
-                .padding(.leading, 4)
-            VStack(spacing: 4) {
-                Text(tailor.name)
-                    .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.semibold))
-                    .foregroundColor(.black)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                HStack(spacing: 2) {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                        .font(.system(size: 12))
-                    Text(String(format: "%.1f", tailor.rating))
-                        .font(.custom("PlusJakartaSans-Regular", size: 10))
-                        .foregroundColor(.black)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Text(servicesText)
-                    .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
-                    .foregroundColor(.black)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Text(tailor.location)
-                    .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
-                    .foregroundColor(.black)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 4)
-        .background(Color.white)
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .inset(by: 0.5)
-                .stroke(.black.opacity(0.2), lineWidth: 1)
-        )
     }
 }
 
