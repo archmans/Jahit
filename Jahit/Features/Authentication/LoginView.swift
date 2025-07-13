@@ -86,7 +86,7 @@ struct LoginView: View {
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
                     .foregroundColor(.black)
                 
-                TextField("Masukkan email atau nomor handphone", text: $viewModel.emailOrPhone)
+                TextField("Email atau nomor handphone (081234567890)", text: $viewModel.emailOrPhone)
                     .font(.custom("PlusJakartaSans-Regular", size: 16))
                     .keyboardType(.emailAddress)
                     .autocapitalization(.none)

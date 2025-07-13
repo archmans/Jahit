@@ -32,8 +32,11 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func registerUser(email: String, phoneNumber: String, password: String) {
         let hashedPassword = hashPassword(password)
+        
+        let userName = email.components(separatedBy: "@").first?.capitalized ?? "User"
+        
         let newUser = User(
-            name: "User",
+            name: userName,
             email: email,
             phoneNumber: phoneNumber,
             transactions: User.defaultUser.transactions,
@@ -50,28 +53,11 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         saveUserToStorage()
     }
     
-    func loginUser(identifier: String, password: String) {
-        let hashedPassword = hashPassword(password)
-        
-        // Check registered users
-        if let registeredUser = findRegisteredUser(identifier: identifier, password: hashedPassword) {
-            var user = registeredUser
-            user.isLoggedIn = true
-            
-            // Ensure user always has example transactions
-            if user.transactions.isEmpty {
-                user.transactions = User.defaultUser.transactions
-            }
-            
-            currentUser = user
-            saveUserToStorage()
-        }
-    }
-    
-    func loginWithSocialProvider(provider: AuthenticationProvider, email: String, name: String) {
+    func loginWithSocialProvider(provider: AuthenticationProvider, email: String, name: String, phoneNumber: String) {
         let newUser = User(
             name: name,
             email: email,
+            phoneNumber: phoneNumber,
             transactions: User.defaultUser.transactions,
             isLoggedIn: true,
             authProvider: provider == .google ? "google" : "apple"
@@ -535,5 +521,40 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         currentUser = User.defaultUser
         saveUserToStorage()
         print("User reset to default with sample transactions")
+    }
+    
+    func isEmailRegistered(_ email: String) -> Bool {
+        let registeredUsers = getRegisteredUsers()
+        return registeredUsers.contains { user in
+            user.email?.lowercased() == email.lowercased()
+        }
+    }
+    
+    func isPhoneRegistered(_ phoneNumber: String) -> Bool {
+        let registeredUsers = getRegisteredUsers()
+        return registeredUsers.contains { user in
+            user.phoneNumber == phoneNumber
+        }
+    }
+    
+    func authenticateUser(identifier: String, password: String) -> Bool {
+        let hashedPassword = hashPassword(password)
+        
+        // Check registered users
+        if let registeredUser = findRegisteredUser(identifier: identifier, password: hashedPassword) {
+            var user = registeredUser
+            user.isLoggedIn = true
+            
+            // Ensure user always has example transactions
+            if user.transactions.isEmpty {
+                user.transactions = User.defaultUser.transactions
+            }
+            
+            currentUser = user
+            saveUserToStorage()
+            return true
+        }
+        
+        return false
     }
 }

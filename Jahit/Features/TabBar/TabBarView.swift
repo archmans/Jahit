@@ -56,6 +56,11 @@ struct TabBarView: View {
                 .navigationBarBackButtonHidden(true)
             }
         }
+        .onAppear {
+            // When user successfully logs in, start on home tab
+            tabBarVM.selectedTab = 0
+            tabBarVM.show()
+        }
     }
 }
 

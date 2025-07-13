@@ -17,13 +17,23 @@ class AuthenticationViewModel: ObservableObject {
     @Published var errorMessage = ""
     @Published var showError = false
     @Published var isAuthenticated = false
+    @Published var showRegistrationSuccess = false
+    @Published var registrationSuccessMessage = ""
     
     private let userManager = UserManager.shared
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        // Check if user is already logged in
         isAuthenticated = userManager.currentUser.isLoggedIn
+        
+        // Observe UserManager state changes
+        userManager.$currentUser
+            .map { $0.isLoggedIn }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoggedIn in
+                self?.isAuthenticated = isLoggedIn
+            }
+            .store(in: &cancellables)
     }
     
     func register() {
@@ -34,13 +44,13 @@ class AuthenticationViewModel: ObservableObject {
         
         // Simulate API call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            // Check if email or phone already exists (mock check)
-            if self.email.lowercased() == "test@example.com" {
+            // Check if email or phone already exists
+            if self.userManager.isEmailRegistered(self.email) {
                 self.showErrorMessage("Email sudah terdaftar")
                 return
             }
             
-            if self.phoneNumber == "081234567890" {
+            if self.userManager.isPhoneRegistered(self.phoneNumber) {
                 self.showErrorMessage("Nomor handphone sudah terdaftar")
                 return
             }
@@ -52,9 +62,14 @@ class AuthenticationViewModel: ObservableObject {
                 password: self.password
             )
             
-            self.isAuthenticated = true
+            self.showRegistrationSuccessMessage("Pendaftaran berhasil! Selamat datang di Jahit!")
             self.isLoading = false
-            self.clearFields()
+            
+            // Auto login after successful registration
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.clearFields()
+                // isAuthenticated will be automatically updated via Combine subscription
+            }
         }
     }
     
@@ -66,13 +81,12 @@ class AuthenticationViewModel: ObservableObject {
         
         // Simulate API call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            // Mock authentication
-            let isValid = self.mockAuthentication()
+            // Try to authenticate with registered users
+            let isValid = self.userManager.authenticateUser(identifier: self.emailOrPhone, password: self.password)
             
             if isValid {
-                self.userManager.loginUser(identifier: self.emailOrPhone, password: self.password)
-                self.isAuthenticated = true
                 self.clearFields()
+                // isAuthenticated will be automatically updated via Combine subscription
             } else {
                 self.showErrorMessage("Email/nomor handphone atau kata sandi salah")
             }
@@ -89,10 +103,11 @@ class AuthenticationViewModel: ObservableObject {
             self.userManager.loginWithSocialProvider(
                 provider: .google,
                 email: "user@gmail.com",
-                name: "Google User"
+                name: "Google User",
+                phoneNumber: "081234567890" // Add mock phone number
             )
-            self.isAuthenticated = true
             self.isLoading = false
+            // isAuthenticated will be automatically updated via Combine subscription
         }
     }
     
@@ -104,16 +119,17 @@ class AuthenticationViewModel: ObservableObject {
             self.userManager.loginWithSocialProvider(
                 provider: .apple,
                 email: "user@icloud.com",
-                name: "Apple User"
+                name: "Apple User",
+                phoneNumber: "081987654321" // Add mock phone number
             )
-            self.isAuthenticated = true
             self.isLoading = false
+            // isAuthenticated will be automatically updated via Combine subscription
         }
     }
     
     func logout() {
         userManager.logout()
-        isAuthenticated = false
+        // isAuthenticated will be automatically updated via Combine subscription
     }
     
     private func validateRegistrationInput() -> Bool {
@@ -123,7 +139,7 @@ class AuthenticationViewModel: ObservableObject {
         }
         
         if phoneNumber.isEmpty || !isValidPhoneNumber(phoneNumber) {
-            showErrorMessage("Format nomor handphone tidak valid")
+            showErrorMessage("Format nomor handphone tidak valid (contoh: 081234567890)")
             return false
         }
         
@@ -149,13 +165,6 @@ class AuthenticationViewModel: ObservableObject {
         return true
     }
     
-    private func mockAuthentication() -> Bool {
-        // Mock successful login for demo purposes
-        return emailOrPhone.lowercased() == "user@jahit.com" && password == "123456" ||
-               emailOrPhone == "081234567890" && password == "123456" ||
-               emailOrPhone.lowercased() == "test@example.com" && password == "password"
-    }
-    
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
@@ -163,7 +172,7 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     private func isValidPhoneNumber(_ phone: String) -> Bool {
-        let phoneRegex = "^[0-9]{10,15}$"
+        let phoneRegex = "^(\\+62|62|0)[0-9]{9,13}$"
         let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         return phonePredicate.evaluate(with: phone)
     }
@@ -174,6 +183,11 @@ class AuthenticationViewModel: ObservableObject {
         isLoading = false
     }
     
+    private func showRegistrationSuccessMessage(_ message: String) {
+        registrationSuccessMessage = message
+        showRegistrationSuccess = true
+    }
+    
     private func clearFields() {
         email = ""
         phoneNumber = ""
@@ -181,5 +195,7 @@ class AuthenticationViewModel: ObservableObject {
         emailOrPhone = ""
         errorMessage = ""
         showError = false
+        showRegistrationSuccess = false
+        registrationSuccessMessage = ""
     }
 }

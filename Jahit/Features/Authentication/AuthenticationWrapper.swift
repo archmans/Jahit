@@ -14,8 +14,10 @@ struct AuthenticationWrapper: View {
     var body: some View {
         Group {
             if userManager.currentUser.isLoggedIn {
-                // Main app content
                 TabBarView()
+                    .onAppear {
+                        showAuthenticationView = false
+                    }
             } else {
                 // Authentication required
                 Button(action: {
@@ -61,6 +63,11 @@ struct AuthenticationWrapper: View {
         }
         .fullScreenCover(isPresented: $showAuthenticationView) {
             LoginView()
+        }
+        .onChange(of: userManager.currentUser.isLoggedIn) { _, isLoggedIn in
+            if isLoggedIn {
+                showAuthenticationView = false
+            }
         }
     }
 }
