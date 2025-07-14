@@ -40,6 +40,15 @@ struct SearchKeywordView: View {
         }
         .background(Color.white)
         .navigationBarHidden(true)
+        .gesture(
+            DragGesture()
+                .onEnded { value in
+                    if value.translation.width > 100 && abs(value.translation.height) < 50 {
+                        dismiss()
+                        tabBarVM.show()
+                    }
+                }
+        )
         .onAppear {
             tabBarVM.hide()
         }

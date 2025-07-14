@@ -71,6 +71,21 @@ struct TailorDetailView: View {
             CartView()
         }
         .navigationBarHidden(true)
+        .gesture(
+            DragGesture(minimumDistance: 10, coordinateSpace: .global)
+                .onChanged { value in
+                    if value.translation.width > 30 && abs(value.translation.height) < 100 {
+                    }
+                }
+                .onEnded { value in
+                    if value.translation.width > 50 && abs(value.translation.height) < 150 {
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+                        dismiss()
+                        tabBarVM.show()
+                    }
+                }
+        )
         .onAppear {
             tabBarVM.hide()
         }

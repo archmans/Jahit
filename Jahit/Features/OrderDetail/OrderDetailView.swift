@@ -30,6 +30,15 @@ struct OrderDetailView: View {
         }
         .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .navigationBarHidden(true)
+        .gesture(
+            DragGesture()
+                .onEnded { value in
+                    if value.translation.width > 100 && abs(value.translation.height) < 50 {
+                        TabBarViewModel.shared.show()
+                        dismiss()
+                    }
+                }
+        )
         .onDisappear {
             TabBarViewModel.shared.show()
         }

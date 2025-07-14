@@ -89,6 +89,20 @@ struct CustomizationView: View {
             Text("Item berhasil ditambahkan ke keranjang")
         }
         .navigationBarHidden(true)
+        .gesture(
+            DragGesture(minimumDistance: 10, coordinateSpace: .global)
+                .onChanged { value in
+                    if value.translation.width > 30 && abs(value.translation.height) < 100 {
+                    }
+                }
+                .onEnded { value in
+                    if value.translation.width > 50 && abs(value.translation.height) < 150 {
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+                        dismiss()
+                    }
+                }
+        )
         .onAppear {
             tabBarVM.hide()
             // Update location each time CustomizationView appears
