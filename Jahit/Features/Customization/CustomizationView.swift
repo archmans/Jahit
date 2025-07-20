@@ -223,7 +223,7 @@ struct CustomizationView: View {
     private var referenceImagesView: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Gambar atau Referensi (Max 10)")
+                Text("Referensi Gambar (Maks 10)")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
                     .foregroundColor(.black)
                 
@@ -259,7 +259,7 @@ struct CustomizationView: View {
                 }
                 .disabled(viewModel.isUploadingImages)
             } else {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 12) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                     ForEach(Array(viewModel.customizationOrder.referenceImages.enumerated()), id: \.offset) { index, imageName in
                         ZStack(alignment: .topTrailing) {
                             // Try to load saved image first, fallback to bundled image
@@ -274,7 +274,7 @@ struct CustomizationView: View {
                                         .aspectRatio(1, contentMode: .fill)
                                 }
                             }
-                            .frame(width: 90, height: 90)
+                            .frame(height: 80)
                             .clipped()
                             .cornerRadius(8)
                             
@@ -305,7 +305,7 @@ struct CustomizationView: View {
                                         .scaleEffect(0.6)
                                 }
                             }
-                            .frame(width: 90, height: 90)
+                            .frame(width: 110, height: 80)
                             .background(Color.white)
                             .cornerRadius(8)
                             .overlay(

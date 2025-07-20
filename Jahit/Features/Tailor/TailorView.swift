@@ -301,7 +301,7 @@ struct TailorDetailView: View {
             
             // Review Images
             if !review.reviewImages.isEmpty {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 12) {
                     ForEach(review.reviewImages, id: \.self) { imageName in
                         Group {
                             if let uiImage = ImageManager.shared.loadImage(named: imageName) {
@@ -314,7 +314,7 @@ struct TailorDetailView: View {
                                     .aspectRatio(1, contentMode: .fill)
                             }
                         }
-                        .frame(width: 60, height: 60)
+                        .frame(width: 70, height: 60)
                         .clipped()
                         .cornerRadius(8)
                         .overlay(

@@ -39,10 +39,16 @@ struct RatingPopupView: View {
                         
                         // Star Rating
                         VStack(spacing: 12) {
-                            Text("Rating")
-                                .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
-                                .foregroundColor(.black)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                            HStack(spacing: 2) {
+                                Text("Rating")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
+                                    .foregroundColor(.black)
+                                
+                                Text("*")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
+                                    .foregroundColor(.red)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             
                             HStack(spacing: 8) {
                                 ForEach(1...5, id: \.self) { star in
@@ -86,7 +92,7 @@ struct RatingPopupView: View {
                     // Image Upload Section
                     VStack(spacing: 12) {
                         HStack {
-                            Text("Foto (Opsional)")
+                            Text("Foto")
                                 .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
                                 .foregroundColor(.black)
                             
@@ -119,9 +125,10 @@ struct RatingPopupView: View {
                                             selectedImages.remove(at: index)
                                         }) {
                                             Image(systemName: "xmark.circle.fill")
-                                                .foregroundColor(.white)
-                                                .background(Color.black.opacity(0.6))
+                                                .foregroundColor(.red)
+                                                .background(Color.white)
                                                 .clipShape(Circle())
+                                                .font(.system(size: 20))
                                         }
                                         .padding(4)
                                     }
@@ -172,7 +179,7 @@ struct RatingPopupView: View {
     }
     
     private var canSubmit: Bool {
-        return rating > 0 && !comment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        return rating > 0
     }
     
     private func submitReview() {

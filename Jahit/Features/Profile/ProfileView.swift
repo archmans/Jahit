@@ -57,18 +57,6 @@ struct ProfileView: View {
                 
                 // Account Settings
                 VStack(spacing: 12) {
-                    VStack {
-                        ProfileMenuItem(
-                            icon: "bell.fill",
-                            title: "Notifikasi",
-                            action: {
-                                // TODO: Navigate to notification settings
-                            }
-                        )
-                    }
-                    .padding(16)
-                    .background(Color.white)
-                    .cornerRadius(16)
 
                     VStack {
                         ProfileMenuItem(
