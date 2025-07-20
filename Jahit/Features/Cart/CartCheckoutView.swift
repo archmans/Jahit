@@ -331,57 +331,54 @@ struct CartCheckoutView: View {
                             
                             // Custom Order Details
                             if item.isCustomOrder {
-                                Divider()
+                                let hasDescription = item.customDescription != nil && !item.customDescription!.isEmpty
+                                let hasImages = !item.referenceImages.isEmpty
                                 
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text("Detail Kustomisasi")
-                                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
-                                        .foregroundColor(.black)
-                                    
-                                    // Description
-                                    if let description = item.customDescription, !description.isEmpty {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            Text("Deskripsi:")
-                                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
-                                                .foregroundColor(.gray)
-                                            
-                                            Text(description)
-                                                .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                                .foregroundColor(.black)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 6)
-                                                .background(Color.gray.opacity(0.1))
-                                                .cornerRadius(6)
-                                        }
-                                    }
-                                    
-                                    // Reference Images
-                                    if !item.referenceImages.isEmpty {
-                                        VStack(alignment: .leading, spacing: 6) {
-                                            Text("Gambar Referensi (\(item.referenceImages.count)):")
-                                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
-                                                .foregroundColor(.gray)
-                                            
-                                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
-                                                ForEach(item.referenceImages, id: \.self) { imageName in
-                                                    Group {
-                                                        if let uiImage = ImageManager.shared.loadImage(named: imageName) {
-                                                            Image(uiImage: uiImage)
-                                                                .resizable()
-                                                                .aspectRatio(1, contentMode: .fill)
-                                                        } else {
-                                                            Image(imageName)
-                                                                .resizable()
-                                                                .aspectRatio(1, contentMode: .fill)
-                                                        }
-                                                    }
-                                                    .frame(width: 50, height: 50)
-                                                    .clipped()
+                                if hasDescription || hasImages {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        if hasDescription {
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text("Deskripsi:")
+                                                    .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
+                                                    .foregroundColor(.gray)
+                                                
+                                                Text(item.customDescription!)
+                                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                                    .foregroundColor(.black)
+                                                    .padding(.horizontal, 8)
+                                                    .padding(.vertical, 6)
+                                                    .background(Color.gray.opacity(0.1))
                                                     .cornerRadius(6)
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 6)
-                                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                                    )
+                                            }
+                                        }
+                                        
+                                        if hasImages {
+                                            VStack(alignment: .leading, spacing: 6) {
+                                                Text("Gambar Referensi (\(item.referenceImages.count)):")
+                                                    .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.medium))
+                                                    .foregroundColor(.gray)
+                                                
+                                                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
+                                                    ForEach(item.referenceImages, id: \.self) { imageName in
+                                                        Group {
+                                                            if let uiImage = ImageManager.shared.loadImage(named: imageName) {
+                                                                Image(uiImage: uiImage)
+                                                                    .resizable()
+                                                                    .aspectRatio(1, contentMode: .fill)
+                                                            } else {
+                                                                Image(imageName)
+                                                                    .resizable()
+                                                                    .aspectRatio(1, contentMode: .fill)
+                                                            }
+                                                        }
+                                                        .frame(width: 50, height: 50)
+                                                        .clipped()
+                                                        .cornerRadius(6)
+                                                        .overlay(
+                                                            RoundedRectangle(cornerRadius: 6)
+                                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
@@ -397,7 +394,7 @@ struct CartCheckoutView: View {
                     
                     if tailorName != groupedItems.keys.sorted().last {
                         Divider()
-                            .background(Color.blue)
+                            .background(Color.black)
                             .frame(height: 2)
                     }
                 }

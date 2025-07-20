@@ -307,12 +307,6 @@ struct OrderingView: View {
             
             // Custom Order Details
             if !customizationOrder.description.isEmpty || !customizationOrder.referenceImages.isEmpty {
-                Divider()
-                
-                Text("Detail Kustomisasi")
-                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
-                    .foregroundColor(.black)
-                
                 // Description
                 if !customizationOrder.description.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {

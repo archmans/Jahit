@@ -358,8 +358,12 @@ struct CustomizationView: View {
                                     .foregroundColor(.gray)
                                     .font(.system(size: 14))
                                     .frame(width: 30, height: 30)
-                                    .background(Color.gray.opacity(0.1))
+                                    .background(Color.white)
                                     .cornerRadius(6)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                    )
                             }
                             .disabled(viewModel.customizationOrder.quantity <= 1)
                             
@@ -375,8 +379,12 @@ struct CustomizationView: View {
                                     .foregroundColor(.gray)
                                     .font(.system(size: 14))
                                     .frame(width: 30, height: 30)
-                                    .background(Color.gray.opacity(0.1))
+                                    .background(Color.white)
                                     .cornerRadius(6)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                    )
                             }
                         }
                     }

@@ -12,6 +12,7 @@ struct CartView: View {
     @StateObject private var tabBarVM = TabBarViewModel.shared
     @Environment(\.dismiss) private var dismiss
     @State private var showingCheckout = false
+    @State private var showingDeleteAlert = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -72,6 +73,14 @@ struct CartView: View {
         .onAppear {
             tabBarVM.hide()
         }
+        .alert("Hapus Item", isPresented: $showingDeleteAlert) {
+            Button("Batal", role: .cancel) { }
+            Button("Hapus", role: .destructive) {
+                deleteSelectedItems()
+            }
+        } message: {
+            Text("Apakah Anda yakin ingin menghapus \(userManager.currentUser.selectedCartItems.count) item dari keranjang?")
+        }
     }
     
     private var headerView: some View {
@@ -94,7 +103,7 @@ struct CartView: View {
                 
                 if !userManager.currentUser.selectedCartItems.isEmpty {
                     Button(action: {
-                        deleteSelectedItems()
+                        showingDeleteAlert = true
                     }) {
                         Image(systemName: "trash")
                             .foregroundColor(.red)
@@ -169,7 +178,7 @@ struct CartView: View {
                         .foregroundColor(.black)
                     
                     Text("Total: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")")
-                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.bold))
                         .foregroundColor(.black)
                 }
                 
@@ -183,6 +192,13 @@ struct CartView: View {
                             Image(systemName: "minus")
                                 .foregroundColor(.gray)
                                 .font(.system(size: 14))
+                                .frame(width: 30, height: 30)
+                                .background(Color.white)
+                                .cornerRadius(6)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
                         }
                         .disabled(item.quantity <= 1)
                         
@@ -197,6 +213,13 @@ struct CartView: View {
                             Image(systemName: "plus")
                                 .foregroundColor(.gray)
                                 .font(.system(size: 14))
+                                .frame(width: 30, height: 30)
+                                .background(Color.white)
+                                .cornerRadius(6)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
                         }
                     }
                 }
