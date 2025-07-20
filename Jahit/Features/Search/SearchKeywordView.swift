@@ -12,6 +12,7 @@ struct SearchKeywordView: View {
     @StateObject private var viewModel = SearchKeywordViewModel()
     @StateObject private var tabBarVM = TabBarViewModel.shared
     @State private var searchText: String = ""
+    @FocusState private var isSearchFieldFocused: Bool
     @State private var selectedTailorId: OptionalStringIdentifiable? = nil
     @State private var selectedProductForCustomization: (ProductSearchResult, Tailor, TailorService)? = nil
     @State private var showingCustomization = false
@@ -51,6 +52,9 @@ struct SearchKeywordView: View {
         )
         .onAppear {
             tabBarVM.hide()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isSearchFieldFocused = true
+            }
         }
         .navigationDestination(item: $selectedTailorId) { idObj in
             if let id = idObj.value, 
@@ -97,6 +101,7 @@ struct SearchKeywordView: View {
                         TextField("Cari produk atau penjahit...", text: $searchText)
                             .font(.custom("PlusJakartaSans-Regular", size: 14))
                             .foregroundColor(.black)
+                            .focused($isSearchFieldFocused)
                             .onSubmit {
                                 viewModel.search(query: searchText)
                             }
