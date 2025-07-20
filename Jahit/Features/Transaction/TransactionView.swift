@@ -10,6 +10,7 @@ import SwiftUI
 struct TransactionView: View {
     @StateObject private var viewModel = TransactionViewModel()
     @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
         NavigationView {
@@ -144,6 +145,7 @@ struct OngoingTransactionRow: View {
 struct CompletedTransactionRow: View {
     let transaction: Transaction
     let viewModel: TransactionViewModel
+    @EnvironmentObject var userManager: UserManager
     @State private var showingRatingPopup = false
 
     var body: some View {
@@ -173,7 +175,8 @@ struct CompletedTransactionRow: View {
 
                 Spacer()
 
-                if !transaction.hasReview {
+                if let currentTransaction = userManager.currentUser.transactions.first(where: { $0.id == transaction.id }),
+                   !currentTransaction.hasReview {
                     Button("Nilai") {
                         showingRatingPopup = true
                     }
@@ -201,7 +204,7 @@ struct CompletedTransactionRow: View {
                 isPresented: $showingRatingPopup,
                 transaction: transaction
             ) { review in
-                UserManager.shared.addReviewToTransaction(review: review)
+                userManager.addReviewToTransaction(review: review)
             }
             .presentationBackground(Color.white)
         }

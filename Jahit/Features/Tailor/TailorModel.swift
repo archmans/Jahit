@@ -43,7 +43,7 @@ struct TailorReview: Identifiable, Hashable, Codable {
     let rating: Int
     let comment: String
     let timeAgo: String
-    let userImage: String?
+    let reviewImages: [String]
 }
 
 enum TailorTab: String, CaseIterable {
@@ -100,7 +100,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                TailorReview(id: "r1", userName: "Budi", rating: 5, comment: "Bagus sekali!", timeAgo: "2 hari lalu", userImage: nil)
+                TailorReview(id: "r1", userName: "Budi", rating: 5, comment: "Bagus sekali!", timeAgo: "2 hari lalu", reviewImages: [])
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat ITB"
@@ -139,7 +139,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                TailorReview(id: "r2", userName: "Siti", rating: 4, comment: "Pelayanan baik!", timeAgo: "1 hari lalu", userImage: nil)
+                TailorReview(id: "r2", userName: "Siti", rating: 4, comment: "Pelayanan baik!", timeAgo: "1 hari lalu", reviewImages: [])
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat UI"
@@ -178,7 +178,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                TailorReview(id: "r3", userName: "Andi", rating: 5, comment: "Cepat dan rapi!", timeAgo: "5 hari lalu", userImage: nil)
+                TailorReview(id: "r3", userName: "Andi", rating: 5, comment: "Cepat dan rapi!", timeAgo: "5 hari lalu", reviewImages: [])
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat ITS"
@@ -217,7 +217,7 @@ extension Tailor {
                 )
             ],
             reviews: [
-                TailorReview(id: "r4", userName: "Rina", rating: 4, comment: "Hasil memuaskan!", timeAgo: "3 hari lalu", userImage: nil)
+                TailorReview(id: "r4", userName: "Rina", rating: 4, comment: "Hasil memuaskan!", timeAgo: "3 hari lalu", reviewImages: [])
             ],
             description: "Penjahit profesional.",
             locationDescription: "Dekat UGM"

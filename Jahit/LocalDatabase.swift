@@ -71,7 +71,7 @@ class LocalDatabase: ObservableObject {
             rating: review.rating,
             comment: review.comment,
             timeAgo: formatTimeAgo(from: review.createdDate),
-            userImage: nil
+            reviewImages: review.reviewImages
         )
         
         // Add review to tailor

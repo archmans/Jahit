@@ -299,13 +299,30 @@ struct TailorDetailView: View {
                 .foregroundColor(.black)
                 .lineLimit(nil)
             
-            if let userImage = review.userImage {
-                Image(userImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 60, height: 60)
-                    .clipped()
-                    .cornerRadius(8)
+            // Review Images
+            if !review.reviewImages.isEmpty {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
+                    ForEach(review.reviewImages, id: \.self) { imageName in
+                        Group {
+                            if let uiImage = ImageManager.shared.loadImage(named: imageName) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fill)
+                            } else {
+                                Image(imageName)
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fill)
+                            }
+                        }
+                        .frame(width: 60, height: 60)
+                        .clipped()
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                    }
+                }
             }
         }
         .padding(16)
