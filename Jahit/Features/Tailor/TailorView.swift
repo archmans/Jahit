@@ -13,6 +13,7 @@ struct TailorDetailView: View {
     @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
     @State private var isCartViewPresented = false
+    @State private var autoScrollTimers: [String: Timer] = [:]
     
     init(tailor: Tailor) {
         _viewModel = StateObject(wrappedValue: TailorViewModel(tailor: tailor))
@@ -88,6 +89,9 @@ struct TailorDetailView: View {
         )
         .onAppear {
             tabBarVM.hide()
+        }
+        .onDisappear {
+            stopAllAutoScroll()
         }
     }
     
@@ -249,12 +253,20 @@ struct TailorDetailView: View {
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .frame(height: 200)
+            .onAppear {
+                startAutoScroll(for: serviceId)
+            }
+            .onDisappear {
+                stopAutoScroll(for: serviceId)
+            }
             
             HStack(spacing: 8) {
                 ForEach(indices, id: \.self) { index in
                     Circle()
                         .fill(index == currentIndex ? Color.blue : Color.gray.opacity(0.3))
                         .frame(width: 8, height: 8)
+                        .scaleEffect(index == currentIndex ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.7), value: currentIndex)
                         .onTapGesture {
                             viewModel.setCurrentImageIndex(index, for: serviceId)
                         }
@@ -364,6 +376,28 @@ struct TailorDetailView: View {
             .cornerRadius(12)
         }
         .padding(.horizontal, 16)
+    }
+    
+    private func startAutoScroll(for serviceId: String) {
+        stopAutoScroll(for: serviceId)
+        
+        autoScrollTimers[serviceId] = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
+            withAnimation(.easeInOut(duration: 0.5)) {
+                viewModel.nextImage(for: serviceId)
+            }
+        }
+    }
+    
+    private func stopAutoScroll(for serviceId: String) {
+        autoScrollTimers[serviceId]?.invalidate()
+        autoScrollTimers[serviceId] = nil
+    }
+    
+    private func stopAllAutoScroll() {
+        for (_, timer) in autoScrollTimers {
+            timer.invalidate()
+        }
+        autoScrollTimers.removeAll()
     }
 }
 
