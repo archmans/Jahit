@@ -92,12 +92,12 @@ extension User {
         transactions: [
             // Completed transaction
             Transaction(
-                id: "TXN-001",
+                id: "JH7X3K9M2",
                 tailorId: "1",
                 tailorName: "Alfa Tailor",
                 items: [
                     TransactionItem(
-                        id: "item-1",
+                        id: "IT4M8Q1L5",
                         name: "Blazer Formal",
                         category: "Atasan",
                         quantity: 1,
@@ -108,7 +108,7 @@ extension User {
                         referenceImages: ["blazer", "atasan"]
                     ),
                     TransactionItem(
-                        id: "item-2",
+                        id: "BR6Y2N8X1",
                         name: "Celana Bahan",
                         category: "Bawahan",
                         quantity: 1,
@@ -130,12 +130,12 @@ extension User {
             
             // In progress transaction
             Transaction(
-                id: "TXN-002",
+                id: "P3K7M9Q4L",
                 tailorId: "2",
                 tailorName: "Beta Tailor",
                 items: [
                     TransactionItem(
-                        id: "item-3",
+                        id: "GH2R8C6V1",
                         name: "Dress Custom",
                         category: "Terusan",
                         quantity: 1,
@@ -157,12 +157,12 @@ extension User {
             
             // Ready for pickup transaction
             Transaction(
-                id: "TXN-003",
+                id: "D5N9W2A7K",
                 tailorId: "1",
                 tailorName: "Alfa Tailor",
                 items: [
                     TransactionItem(
-                        id: "item-4",
+                        id: "Z8F4T1M6Y",
                         name: "Kemeja Batik",
                         category: "Atasan",
                         quantity: 2,
@@ -184,12 +184,12 @@ extension User {
             
             // Pending transaction
             Transaction(
-                id: "TXN-004",
+                id: "L7Q3X8B5R",
                 tailorId: "3",
                 tailorName: "Gamma Tailor",
                 items: [
                     TransactionItem(
-                        id: "item-5",
+                        id: "V9H2J6E4S",
                         name: "Jas Pengantin",
                         category: "Atasan",
                         quantity: 1,
@@ -200,7 +200,7 @@ extension User {
                         referenceImages: ["blazer", "atasan"]
                     ),
                     TransactionItem(
-                        id: "item-6",
+                        id: "U1C8K5P2N",
                         name: "Celana Jas",
                         category: "Bawahan",
                         quantity: 1,
@@ -222,12 +222,12 @@ extension User {
             
             // Another completed transaction
             Transaction(
-                id: "TXN-005",
+                id: "M4A9T3F7W",
                 tailorId: "2",
                 tailorName: "Beta Tailor",
                 items: [
                     TransactionItem(
-                        id: "item-7",
+                        id: "Q6R1G8L4B",
                         name: "Kebaya Modern",
                         category: "Terusan",
                         quantity: 1,

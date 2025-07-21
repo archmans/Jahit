@@ -13,7 +13,6 @@ struct Tailor: Identifiable, Hashable, Codable {
     let profileImage: String
     let location: String
     let rating: Double
-    let maxRating: Int
     let services: [TailorService]
     let reviews: [TailorReview]
     let description: String
@@ -60,7 +59,6 @@ extension Tailor {
             profileImage: "penjahit",
             location: "Bandung",
             rating: 4.8,
-            maxRating: 5,
             services: [
                 TailorService(
                     id: "s1", 
@@ -111,7 +109,6 @@ extension Tailor {
             profileImage: "penjahit",
             location: "Jakarta",
             rating: 4.7,
-            maxRating: 5,
             services: [
                 TailorService(
                     id: "s1", 
@@ -150,7 +147,6 @@ extension Tailor {
             profileImage: "penjahit",
             location: "Surabaya",
             rating: 4.6,
-            maxRating: 5,
             services: [
                 TailorService(
                     id: "s1", 
@@ -189,7 +185,6 @@ extension Tailor {
             profileImage: "penjahit",
             location: "Yogyakarta",
             rating: 4.5,
-            maxRating: 5,
             services: [
                 TailorService(
                     id: "s1", 

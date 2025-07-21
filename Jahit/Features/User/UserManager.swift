@@ -30,6 +30,20 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         loadUserFromStorage()
     }
     
+    // Generate a 9-character order number with digits and letters
+    private func generateOrderNumber() -> String {
+        let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        var result = ""
+        
+        for _ in 0..<9 {
+            let randomIndex = Int.random(in: 0..<characters.count)
+            let randomCharacter = characters[characters.index(characters.startIndex, offsetBy: randomIndex)]
+            result.append(randomCharacter)
+        }
+        
+        return result
+    }
+    
     func registerUser(email: String, phoneNumber: String, password: String) {
         let hashedPassword = hashPassword(password)
         
@@ -389,7 +403,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             let totalPrice = items.reduce(0) { $0 + $1.totalPrice }
             
             let transaction = Transaction(
-                id: UUID().uuidString,
+                id: generateOrderNumber(),
                 tailorId: tailorId,
                 tailorName: firstItem.tailorName,
                 items: transactionItems,
@@ -431,7 +445,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         let totalPrice = basePrice * Double(customizationOrder.quantity)
         
         let transactionItem = TransactionItem(
-            id: UUID().uuidString,
+            id: generateOrderNumber(),
             name: customizationOrder.selectedItem?.name ?? customizationOrder.category,
             category: customizationOrder.category,
             quantity: customizationOrder.quantity,
@@ -443,7 +457,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         )
         
         let transaction = Transaction(
-            id: UUID().uuidString,
+            id: generateOrderNumber(),
             tailorId: customizationOrder.tailorId,
             tailorName: customizationOrder.tailorName,
             items: [transactionItem],

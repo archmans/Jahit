@@ -64,7 +64,7 @@ extension Order {
         description: "-",
         paymentMethod: "Kartu Debit",
         pickupAddress: "Jalan Ganesha, Bandung",
-        orderNumber: "123456789",
+        orderNumber: "ABC123XYZ",
         paymentTime: DateFormatter.orderDateFormatter.date(from: "09-05-2025 10:00") ?? Date(),
         confirmationTime: DateFormatter.orderDateFormatter.date(from: "09-05-2025 11:00") ?? Date(),
         totalAmount: 200000,

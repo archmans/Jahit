@@ -37,7 +37,8 @@ class TailorViewModel: ObservableObject {
     }
     
     var formattedRating: String {
-        return "\(tailor.rating)/\(tailor.maxRating)"
+        let roundedRating = (tailor.rating * 10).rounded() / 10
+        return String(format: "%.1f", roundedRating) + "/5"
     }
     
     var currentService: TailorService? {

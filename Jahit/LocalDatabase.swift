@@ -88,7 +88,6 @@ class LocalDatabase: ObservableObject {
             profileImage: updatedTailor.profileImage,
             location: updatedTailor.location,
             rating: newRating,
-            maxRating: updatedTailor.maxRating,
             services: updatedTailor.services,
             reviews: updatedReviews,
             description: updatedTailor.description,
@@ -113,12 +112,13 @@ class LocalDatabase: ObservableObject {
     private func calculateAverageRating(reviews: [TailorReview]) -> Double {
         guard !reviews.isEmpty else { return 0.0 }
         let totalRating = reviews.reduce(0) { $0 + $1.rating }
-        return Double(totalRating) / Double(reviews.count)
+        let average = Double(totalRating) / Double(reviews.count)
+        return (average * 10).rounded() / 10
     }
     
     private func formatTimeAgo(from date: Date) -> String {
         let timeInterval = Date().timeIntervalSince(date)
-        let days = Int(timeInterval / 86400) // 86400 seconds in a day
+        let days = Int(timeInterval / 86400)
         
         if days == 0 {
             return "Hari ini"
