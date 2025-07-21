@@ -82,11 +82,11 @@ struct LoginView: View {
         VStack(spacing: 20) {
             // Email/Phone Field
             VStack(alignment: .leading, spacing: 8) {
-                Text("Email/No Handphone")
+                Text("Email atau Nomor Handphone")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
                     .foregroundColor(.black)
                 
-                TextField("Email atau nomor handphone (081234567890)", text: $viewModel.emailOrPhone)
+                TextField("Masukkan email/nomor", text: $viewModel.emailOrPhone)
                     .font(.custom("PlusJakartaSans-Regular", size: 16))
                     .keyboardType(.emailAddress)
                     .autocapitalization(.none)

@@ -40,17 +40,13 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             email: email,
             phoneNumber: phoneNumber,
             transactions: User.defaultUser.transactions,
-            isLoggedIn: true,
+            isLoggedIn: false,
             authProvider: "email",
             hashedPassword: hashedPassword
         )
         
-        // Save to registered users list
+        // Save to registered users list only, don't set as current user
         saveRegisteredUser(newUser)
-        
-        // Set as current user
-        currentUser = newUser
-        saveUserToStorage()
     }
     
     func loginWithSocialProvider(provider: AuthenticationProvider, email: String, name: String, phoneNumber: String) {

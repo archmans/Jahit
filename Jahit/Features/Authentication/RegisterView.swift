@@ -49,7 +49,17 @@ struct RegisterView: View {
             }
             .alert("Berhasil!", isPresented: $viewModel.showRegistrationSuccess) {
                 Button("OK") {
+                    // Clear the registration fields
+                    viewModel.email = ""
+                    viewModel.phoneNumber = ""
+                    viewModel.password = ""
+                    viewModel.registrationSuccessMessage = ""
                     viewModel.showRegistrationSuccess = false
+                    
+                    // Navigate to login view with animation
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showLoginView = true
+                    }
                 }
             } message: {
                 Text(viewModel.registrationSuccessMessage)
@@ -113,7 +123,7 @@ struct RegisterView: View {
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
                     .foregroundColor(.black)
                 
-                TextField("Contoh: 081234567890", text: $viewModel.phoneNumber)
+                TextField("Masukkan nomor handphone", text: $viewModel.phoneNumber)
                     .font(.custom("PlusJakartaSans-Regular", size: 16))
                     .keyboardType(.phonePad)
                     .textContentType(.telephoneNumber)

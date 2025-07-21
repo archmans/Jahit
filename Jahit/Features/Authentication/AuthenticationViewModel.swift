@@ -62,14 +62,8 @@ class AuthenticationViewModel: ObservableObject {
                 password: self.password
             )
             
-            self.showRegistrationSuccessMessage("Pendaftaran berhasil! Selamat datang di Jahit!")
+            self.showRegistrationSuccessMessage("Pendaftaran berhasil! Silakan login dengan akun Anda.")
             self.isLoading = false
-            
-            // Auto login after successful registration
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.clearFields()
-                // isAuthenticated will be automatically updated via Combine subscription
-            }
         }
     }
     
