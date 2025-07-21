@@ -14,6 +14,8 @@ struct TailorDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isCartViewPresented = false
     @State private var autoScrollTimers: [String: Timer] = [:]
+    @State private var selectedImageForPreview: String?
+    @State private var showImagePreview = false
     
     init(tailor: Tailor) {
         _viewModel = StateObject(wrappedValue: TailorViewModel(tailor: tailor))
@@ -86,6 +88,59 @@ struct TailorDetailView: View {
                         tabBarVM.show()
                     }
                 }
+        )
+        .overlay(
+            // Full-screen image preview overlay
+            Group {
+                if showImagePreview, let selectedImage = selectedImageForPreview {
+                    ZStack {
+                        Color.black.opacity(0.9)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showImagePreview = false
+                                }
+                            }
+                        
+                        VStack {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showImagePreview = false
+                                    }
+                                }) {
+                                    Image(systemName: "xmark")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 24, weight: .medium))
+                                        .padding(16)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Group {
+                                if let uiImage = ImageManager.shared.loadImage(named: selectedImage) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                } else {
+                                    Image(selectedImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                }
+                            }
+                            .cornerRadius(12)
+                            .padding(.horizontal, 20)
+                            
+                            Spacer()
+                        }
+                    }
+                    .opacity(showImagePreview ? 1 : 0)
+                    .scaleEffect(showImagePreview ? 1 : 0.8)
+                    .animation(.easeInOut(duration: 0.3), value: showImagePreview)
+                }
+            }
         )
         .onAppear {
             tabBarVM.hide()
@@ -333,6 +388,10 @@ struct TailorDetailView: View {
                             RoundedRectangle(cornerRadius: 8)
                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                         )
+                        .onTapGesture {
+                            selectedImageForPreview = imageName
+                            showImagePreview = true
+                        }
                     }
                 }
             }
