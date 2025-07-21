@@ -13,6 +13,7 @@ struct CustomizationView: View {
     @EnvironmentObject var userManager: UserManager
     @Environment(\.dismiss) private var dismiss
     @State private var isCartViewPresented = false
+    @FocusState private var isDescriptionFocused: Bool
     
     let tailor: Tailor
     let service: TailorService
@@ -58,9 +59,14 @@ struct CustomizationView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
             }
-            
-            bottomSectionView
         }
+        .overlay(
+            VStack {
+                Spacer()
+                bottomSectionView
+            }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+        )
         .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .sheet(isPresented: $viewModel.showingImagePicker) {
             ImagePicker(
@@ -89,6 +95,9 @@ struct CustomizationView: View {
             Text("Item berhasil ditambahkan ke keranjang")
         }
         .navigationBarHidden(true)
+        .onTapGesture {
+            isDescriptionFocused = false
+        }
         .gesture(
             DragGesture(minimumDistance: 10, coordinateSpace: .global)
                 .onChanged { value in
@@ -197,17 +206,27 @@ struct CustomizationView: View {
     
     private var descriptionView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Deskripsi Pesanan (opsional)")
+            Text("Deskripsi Pesanan (Opsional)")
                 .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
                 .foregroundColor(.black)
             
-            TextField("Deskripsikan pesanan Anda secara detail", text: Binding(
+            TextField("Deskripsikan pesanan Anda", text: Binding(
                 get: { viewModel.customizationOrder.description },
                 set: { viewModel.updateDescription($0) }
             ), axis: .vertical)
             .textFieldStyle(PlainTextFieldStyle())
             .foregroundColor(.black)
             .accentColor(.blue)
+            .focused($isDescriptionFocused)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Simpan Deskripsi") {
+                        isDescriptionFocused = false
+                    }
+                    .foregroundColor(.blue)
+                }
+            }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(Color.white)

@@ -522,11 +522,19 @@ struct AddressEditSheet: View {
                             .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
                             .foregroundColor(.black)
                         
-                        TextField("Masukkan nama lengkap", text: $nameText)
-                            .font(.custom("PlusJakartaSans-Regular", size: 14))
-                            .padding(12)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                        TextField("Masukkan nama", text: $nameText)
+                            .font(.custom("PlusJakartaSans-Regular", size: 16))
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .foregroundColor(.black)
+                            .accentColor(.blue)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -535,11 +543,19 @@ struct AddressEditSheet: View {
                             .foregroundColor(.black)
                         
                         TextField("Masukkan nomor handphone", text: $phoneText)
-                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .font(.custom("PlusJakartaSans-Regular", size: 16))
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .foregroundColor(.black)
+                            .accentColor(.blue)
                             .keyboardType(.phonePad)
-                            .padding(12)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
                     }
                 }
                 .padding(.horizontal, 20)
@@ -590,8 +606,12 @@ struct AddressEditSheet: View {
                         }
                     }
                     .padding(16)
-                    .background(Color.gray.opacity(0.1))
+                    .background(Color.white)
                     .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                    )
                 }
                 .disabled(userManager.isLocationLoading)
                 .padding(.horizontal, 20)
@@ -603,11 +623,19 @@ struct AddressEditSheet: View {
                         .foregroundColor(.black)
                     
                     TextField("Masukkan alamat lengkap Anda", text: $addressText, axis: .vertical)
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .padding(12)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(8)
-                        .lineLimit(3...6)
+                        .font(.custom("PlusJakartaSans-Regular", size: 16))
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .foregroundColor(.black)
+                        .accentColor(.blue)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                        .lineLimit(5, reservesSpace: true)
                 }
                 .padding(.horizontal, 20)
                 
@@ -638,21 +666,21 @@ struct AddressEditSheet: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
             }
-           .background(Color(red: 0.95, green: 0.95, blue: 0.95))
-            .onChange(of: userManager.currentUser.address) { _, newAddress in
-                // Update addressText when location is updated
-                if let newAddress = newAddress, !newAddress.isEmpty {
-                    addressText = newAddress
-                }
+        .background(Color.white)
+        .onChange(of: userManager.currentUser.address) { _, newAddress in
+            // Update addressText when location is updated
+            if let newAddress = newAddress, !newAddress.isEmpty {
+                addressText = newAddress
             }
-            .onAppear {
-                // Sync current data when sheet appears
-                if let currentAddress = userManager.currentUser.address, !currentAddress.isEmpty {
-                    addressText = currentAddress
-                }
-                nameText = userManager.currentUser.name
-                phoneText = userManager.currentUser.phoneNumber ?? ""
+        }
+        .onAppear {
+            // Sync current data when sheet appears
+            if let currentAddress = userManager.currentUser.address, !currentAddress.isEmpty {
+                addressText = currentAddress
             }
+            nameText = userManager.currentUser.name
+            phoneText = userManager.currentUser.phoneNumber ?? ""
+        }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
     }
