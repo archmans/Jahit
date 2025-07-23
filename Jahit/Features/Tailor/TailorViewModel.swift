@@ -46,7 +46,7 @@ class TailorViewModel: ObservableObject {
     }
     
     func formattedStartingPrice(for service: TailorService) -> String {
-        return NumberFormatter.priceFormatter.string(from: NSNumber(value: service.startingPrice)) ?? "Rp0"
+        return NumberFormatter.currencyFormatter.string(from: NSNumber(value: service.startingPrice)) ?? "Rp0"
     }
     
     func getCurrentImageIndex(for serviceId: String) -> Int {

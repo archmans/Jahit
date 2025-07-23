@@ -199,7 +199,7 @@ struct CustomizationView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color.blue)
+            .background(Color(red: 0, green: 0.37, blue: 0.92))
             .cornerRadius(15)
         }
     }
@@ -216,7 +216,7 @@ struct CustomizationView: View {
             ), axis: .vertical)
             .textFieldStyle(PlainTextFieldStyle())
             .foregroundColor(.black)
-            .accentColor(.blue)
+            .accentColor(Color(red: 0, green: 0.37, blue: 0.92))
             .focused($isDescriptionFocused)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
@@ -224,7 +224,7 @@ struct CustomizationView: View {
                     Button("Simpan Deskripsi") {
                         isDescriptionFocused = false
                     }
-                    .foregroundColor(.blue)
+                    .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                 }
             }
             .padding(.horizontal, 12)
@@ -260,12 +260,12 @@ struct CustomizationView: View {
                 }) {
                     VStack(spacing: 8) {
                         Image(systemName: "arrow.up")
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                             .font(.system(size: 24))
                         
                         Text(viewModel.isUploadingImages ? "Mengunggah..." : "Unggah Referensi Gambar")
                             .font(.custom("PlusJakartaSans-Regular", size: 14))
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 100)
@@ -273,7 +273,7 @@ struct CustomizationView: View {
                     .cornerRadius(8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.blue, style: StrokeStyle(lineWidth: 2, dash: [5]))
+                            .stroke(Color(red: 0, green: 0.37, blue: 0.92), style: StrokeStyle(lineWidth: 2, dash: [5]))
                     )
                 }
                 .disabled(viewModel.isUploadingImages)
@@ -316,7 +316,7 @@ struct CustomizationView: View {
                         }) {
                             VStack(spacing: 4) {
                                 Image(systemName: "plus")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                                     .font(.system(size: 20))
                                 
                                 if viewModel.isUploadingImages {
@@ -329,7 +329,7 @@ struct CustomizationView: View {
                             .cornerRadius(8)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.blue, style: StrokeStyle(lineWidth: 2, dash: [5]))
+                                    .stroke(Color(red: 0, green: 0.37, blue: 0.92), style: StrokeStyle(lineWidth: 2, dash: [5]))
                             )
                         }
                         .disabled(viewModel.isUploadingImages)
@@ -426,15 +426,15 @@ struct CustomizationView: View {
             }) {
                 HStack(spacing: 8) {
                     Image(systemName: "plus")
-                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? .blue : .gray)
+                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                         .font(.system(size: 16))
                     
                     Image(systemName: "cart")
-                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? .blue : .gray)
+                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                         .font(.system(size: 16))
                 }
                 .padding(16)
-                .background((viewModel.customizationOrder.selectedItem != nil ? Color.blue : Color.gray).opacity(0.1))
+                .background((viewModel.customizationOrder.selectedItem != nil ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray).opacity(0.1))
                 .cornerRadius(8)
             }
             .disabled(viewModel.customizationOrder.selectedItem == nil)
@@ -447,7 +447,7 @@ struct CustomizationView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(viewModel.customizationOrder.isValid ? Color.blue : Color.gray)
+                    .background(viewModel.customizationOrder.isValid ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray)
                     .cornerRadius(8)
             }
             .disabled(!viewModel.customizationOrder.isValid)

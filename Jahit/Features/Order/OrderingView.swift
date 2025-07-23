@@ -145,7 +145,7 @@ struct OrderingView: View {
                 }) {
                     Text("Ubah Alamat")
                         .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                 }
             }
             
@@ -236,7 +236,7 @@ struct OrderingView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(Color.blue)
+                .background(Color(red: 0, green: 0.37, blue: 0.92))
                 .cornerRadius(15)
             }
         }
@@ -271,7 +271,7 @@ struct OrderingView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(Color.blue)
+                .background(Color(red: 0, green: 0.37, blue: 0.92))
                 .cornerRadius(15)
             }
         }
@@ -395,7 +395,7 @@ struct OrderingView: View {
                 }) {
                     HStack(spacing: 12) {
                         Image(systemName: method.icon)
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                             .font(.system(size: 20))
                             .frame(width: 24)
                         
@@ -414,7 +414,7 @@ struct OrderingView: View {
                         Spacer()
                         
                         Image(systemName: viewModel.selectedPaymentMethod == method ? "largecircle.fill.circle" : "circle")
-                            .foregroundColor(viewModel.selectedPaymentMethod == method ? .blue : .gray)
+                            .foregroundColor(viewModel.selectedPaymentMethod == method ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                             .font(.system(size: 20))
                     }
                     .padding(.vertical, 8)
@@ -456,7 +456,7 @@ struct OrderingView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(viewModel.isFormValid ? Color.blue : Color.gray)
+                    .background(viewModel.isFormValid ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray)
                     .cornerRadius(12)
             }
             .disabled(!viewModel.isFormValid)
@@ -503,7 +503,7 @@ struct AddressEditSheet: View {
                     Button("Tutup") {
                         dismiss()
                     }
-                    .foregroundColor(.blue)
+                    .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                 }
             }
             .padding(.horizontal, 20)

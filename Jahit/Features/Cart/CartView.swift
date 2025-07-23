@@ -127,7 +127,7 @@ struct CartView: View {
                 userManager.toggleSelectAllForTailor(tailorId: tailorCart.tailorId)
             }) {
                 Image(systemName: tailorCart.isSelectAll ? "checkmark.square.fill" : "square")
-                    .foregroundColor(tailorCart.isSelectAll ? .blue : .gray)
+                    .foregroundColor(tailorCart.isSelectAll ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                     .font(.system(size: 20))
             }
             
@@ -149,7 +149,7 @@ struct CartView: View {
                     userManager.toggleCartItemSelection(itemId: item.id, tailorId: item.tailorId)
                 }) {
                     Image(systemName: item.isSelected ? "checkmark.square.fill" : "square")
-                        .foregroundColor(item.isSelected ? .blue : .gray)
+                        .foregroundColor(item.isSelected ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                         .font(.system(size: 20))
                 }
                 
@@ -167,10 +167,10 @@ struct CartView: View {
                     
                     Text(item.category)
                         .font(.custom("PlusJakartaSans-Regular", size: 12))
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.blue.opacity(0.1))
+                            .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.1))
                             .cornerRadius(4)
                     
                     Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.basePrice)) ?? "Rp0")
@@ -255,7 +255,7 @@ struct CartView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(userManager.currentUser.selectedCartItems.isEmpty ? Color.gray : Color.blue)
+                    .background(userManager.currentUser.selectedCartItems.isEmpty ? Color.gray : Color(red: 0, green: 0.37, blue: 0.92))
                     .cornerRadius(12)
             }
             .disabled(userManager.currentUser.selectedCartItems.isEmpty)

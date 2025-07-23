@@ -179,7 +179,7 @@ struct CartCheckoutView: View {
                 }) {
                     Text("Ubah Alamat")
                         .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                 }
             }
             
@@ -256,7 +256,7 @@ struct CartCheckoutView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(Color.blue)
+                .background(Color(red: 0, green: 0.37, blue: 0.92))
                 .cornerRadius(15)
             }
         }
@@ -291,7 +291,7 @@ struct CartCheckoutView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(Color.blue)
+                .background(Color(red: 0, green: 0.37, blue: 0.92))
                 .cornerRadius(15)
             }
         }
@@ -437,7 +437,7 @@ struct CartCheckoutView: View {
                 }) {
                     HStack(spacing: 12) {
                         Image(systemName: method.icon)
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                             .font(.system(size: 20))
                             .frame(width: 24)
                         
@@ -456,7 +456,7 @@ struct CartCheckoutView: View {
                         Spacer()
                         
                         Image(systemName: selectedPaymentMethod == method ? "largecircle.fill.circle" : "circle")
-                            .foregroundColor(selectedPaymentMethod == method ? .blue : .gray)
+                            .foregroundColor(selectedPaymentMethod == method ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                             .font(.system(size: 20))
                     }
                     .padding(.vertical, 8)
@@ -495,7 +495,7 @@ struct CartCheckoutView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(isFormValid ? Color.blue : Color.gray)
+                    .background(isFormValid ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray)
                     .cornerRadius(12)
             }
             .disabled(!isFormValid)

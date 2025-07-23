@@ -75,7 +75,7 @@ struct RatingPopupView: View {
                         TextField("Tulis pengalaman Anda...", text: $comment, axis: .vertical)
                             .font(.custom("PlusJakartaSans-Regular", size: 16))
                             .foregroundColor(.black)
-                            .accentColor(.blue)
+                            .accentColor(Color(red: 0, green: 0.37, blue: 0.92))
                             .textFieldStyle(PlainTextFieldStyle())
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
@@ -106,7 +106,7 @@ struct RatingPopupView: View {
                                     Text("Tambah Foto")
                                 }
                                 .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                             }
                         }
                         
@@ -153,7 +153,7 @@ struct RatingPopupView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(canSubmit ? Color.blue : Color.gray)
+                        .background(canSubmit ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray)
                         .cornerRadius(12)
                 }
                 .disabled(!canSubmit || isSubmitting)
