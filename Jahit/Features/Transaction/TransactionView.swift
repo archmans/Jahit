@@ -23,10 +23,10 @@ struct TransactionView: View {
                             VStack(spacing: 8) {
                                 Text(tab.rawValue)
                                     .font(.custom("PlusJakartaSans-Regular", size: 16))
-                                    .foregroundColor(viewModel.selectedTab == tab ? .blue : .gray)
+                                    .foregroundColor(viewModel.selectedTab == tab ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                                 
                                 Rectangle()
-                                    .fill(viewModel.selectedTab == tab ? Color.blue : Color.clear)
+                                    .fill(viewModel.selectedTab == tab ? Color(red: 0, green: 0.37, blue: 0.92) : Color.clear)
                                     .frame(height: 2)
                             }
                         }
@@ -96,12 +96,30 @@ struct OngoingTransactionRow: View {
                 }
         ) {
             HStack(spacing: 16) {
-                Image("penjahit")
-                    .resizable()
-                    .aspectRatio(1, contentMode: .fill)
+                // Dynamic tailor image
+                if let tailor = LocalDatabase.shared.getTailor(by: transaction.tailorId) {
+                    Group {
+                        if let uiImage = ImageManager.shared.loadImage(named: tailor.profileImage) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        } else {
+                            Image(tailor.profileImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        }
+                    }
                     .frame(width: 120, height: 99)
                     .clipped()
                     .cornerRadius(8)
+                } else {
+                    Image("penjahit")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fill)
+                        .frame(width: 120, height: 99)
+                        .clipped()
+                        .cornerRadius(8)
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(transaction.tailorName)
@@ -118,10 +136,10 @@ struct OngoingTransactionRow: View {
                     
                     Text(transaction.status.rawValue)
                         .font(.caption)
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
-                        .background(Color.blue.opacity(0.1))
+                        .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.1))
                         .cornerRadius(4)
                 }
 
@@ -156,12 +174,30 @@ struct CompletedTransactionRow: View {
                 }
         ) {
             HStack(spacing: 16) {
-                Image("penjahit")
-                    .resizable()
-                    .aspectRatio(1, contentMode: .fill)
+                // Dynamic tailor image
+                if let tailor = LocalDatabase.shared.getTailor(by: transaction.tailorId) {
+                    Group {
+                        if let uiImage = ImageManager.shared.loadImage(named: tailor.profileImage) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        } else {
+                            Image(tailor.profileImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        }
+                    }
                     .frame(width: 120, height: 99)
                     .clipped()
                     .cornerRadius(8)
+                } else {
+                    Image("penjahit")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fill)
+                        .frame(width: 120, height: 99)
+                        .clipped()
+                        .cornerRadius(8)
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(transaction.tailorName)
@@ -183,7 +219,7 @@ struct CompletedTransactionRow: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(width: 84, height: 36)
-                    .background(Color.blue)
+                    .background(Color(red: 0, green: 0.37, blue: 0.92))
                     .cornerRadius(18)
                 } else {
                     Text("Dinilai")

@@ -61,11 +61,11 @@ struct ReviewCardView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color.blue.opacity(0.05))
+        .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.05))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                .stroke(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.2), lineWidth: 1)
         )
     }
 }

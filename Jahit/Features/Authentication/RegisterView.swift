@@ -189,7 +189,7 @@ struct RegisterView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(viewModel.isLoading ? Color.blue.opacity(0.7) : Color.blue)
+            .background(viewModel.isLoading ? Color(red: 0, green: 0.37, blue: 0.92).opacity(0.7) : Color(red: 0, green: 0.37, blue: 0.92))
             .cornerRadius(12)
         }
         .disabled(viewModel.isLoading)

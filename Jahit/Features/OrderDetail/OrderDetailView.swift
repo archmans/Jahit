@@ -74,7 +74,7 @@ struct OrderDetailView: View {
                         // Step circle
                         ZStack {
                             Circle()
-                                .fill(index <= viewModel.currentStepIndex ? Color.blue : Color.gray.opacity(0.3))
+                                .fill(index <= viewModel.currentStepIndex ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray.opacity(0.3))
                                 .frame(width: 40, height: 40)
                             
                             Image(status.icon)
@@ -106,7 +106,7 @@ struct OrderDetailView: View {
                             VStack(spacing: 2) {
                                 ForEach(0..<6, id: \.self) { _ in
                                     Circle()
-                                        .fill(index < viewModel.currentStepIndex ? Color.blue : Color.gray.opacity(0.3))
+                                        .fill(index < viewModel.currentStepIndex ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray.opacity(0.3))
                                         .frame(width: 3, height: 3)
                                 }
                             }
@@ -130,7 +130,7 @@ struct OrderDetailView: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.blue.opacity(0.7))
+                .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.7))
                 .cornerRadius(12)
                 .padding(.horizontal, 20)
             

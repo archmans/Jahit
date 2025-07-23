@@ -41,7 +41,7 @@ struct BannerCard: View {
             HStack(spacing: 8) {
                 ForEach(0..<bannerImages.count, id: \.self) { index in
                     Circle()
-                        .fill(currentIndex == index ? Color.blue : Color.gray.opacity(0.4))
+                        .fill(currentIndex == index ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray.opacity(0.4))
                         .frame(width: 8, height: 8)
                         .scaleEffect(currentIndex == index ? 1.2 : 1.0)
                         .animation(.easeInOut(duration: 0.7), value: currentIndex)

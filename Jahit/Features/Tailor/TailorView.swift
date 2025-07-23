@@ -216,7 +216,7 @@ struct TailorDetailView: View {
                             .foregroundColor(viewModel.selectedTab == tab ? .blue : .gray)
                         
                         Rectangle()
-                            .fill(viewModel.selectedTab == tab ? Color.blue : Color.clear)
+                            .fill(viewModel.selectedTab == tab ? Color(red: 0, green: 0.37, blue: 0.92) : Color.clear)
                             .frame(height: 2)
                     }
                 }
@@ -318,7 +318,7 @@ struct TailorDetailView: View {
             HStack(spacing: 8) {
                 ForEach(indices, id: \.self) { index in
                     Circle()
-                        .fill(index == currentIndex ? Color.blue : Color.gray.opacity(0.3))
+                        .fill(index == currentIndex ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray.opacity(0.3))
                         .frame(width: 8, height: 8)
                         .scaleEffect(index == currentIndex ? 1.2 : 1.0)
                         .animation(.easeInOut(duration: 0.7), value: currentIndex)

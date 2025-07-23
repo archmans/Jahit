@@ -153,7 +153,7 @@ struct ItemCard: View {
         .cornerRadius(16)
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(isSelected ? Color.blue : Color.gray.opacity(0.2), lineWidth: isSelected ? 2 : 1)
+                .stroke(isSelected ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray.opacity(0.2), lineWidth: isSelected ? 2 : 1)
         )
         .shadow(
             color: Color.black.opacity(isSelected ? 0.15 : 0.08),

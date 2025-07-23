@@ -67,7 +67,7 @@ struct DatePickerView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.blue)
+                    .background(Color(red: 0, green: 0.37, blue: 0.92))
                     .cornerRadius(12)
             }
             .padding(.horizontal, 20)
