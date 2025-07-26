@@ -173,9 +173,33 @@ struct CartView: View {
                             .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.1))
                             .cornerRadius(4)
                     
-                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.basePrice)) ?? "Rp0")
-                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                        .foregroundColor(.black)
+                    // Fabric information for custom orders
+                    if item.isCustomOrder && item.fabricProvider != nil {
+                        if item.fabricProvider == .personal {
+                            Text("Bahan pribadi")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.green)
+                        } else if let fabricOption = item.selectedFabricOption {
+                            Text("Bahan: \(fabricOption.type)")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.orange)
+                        }
+                    }
+                    
+                    HStack {
+                        Text("Harga jasa: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.basePrice)) ?? "Rp0")")
+                            .font(.custom("PlusJakartaSans-Regular", size: 12))
+                            .foregroundColor(.gray)
+                    }
+                    
+                    // Show fabric cost if applicable
+                    if item.fabricPrice > 0 {
+                        HStack {
+                            Text("Biaya bahan: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.fabricPrice)) ?? "Rp0")")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.gray)
+                        }
+                    }
                     
                     Text("Total: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")")
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.bold))

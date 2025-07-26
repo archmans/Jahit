@@ -12,13 +12,18 @@ struct CartItem: Identifiable, Codable, Hashable {
     let basePrice: Double
     var isSelected: Bool = false
     
-    // Customization specific properties
     var isCustomOrder: Bool = false
     var customDescription: String?
     var referenceImages: [String] = []
     
+    var fabricProvider: FabricProvider?
+    var selectedFabricOption: FabricOption?
+    var fabricPrice: Double = 0
+    
     var totalPrice: Double {
-        return Double(quantity) * basePrice
+        let baseCost = Double(quantity) * basePrice
+        let fabricCost = Double(quantity) * fabricPrice
+        return baseCost + fabricCost
     }
     
     init(
@@ -34,7 +39,10 @@ struct CartItem: Identifiable, Codable, Hashable {
         isSelected: Bool = false,
         isCustomOrder: Bool = false,
         customDescription: String? = nil,
-        referenceImages: [String] = []
+        referenceImages: [String] = [],
+        fabricProvider: FabricProvider? = nil,
+        selectedFabricOption: FabricOption? = nil,
+        fabricPrice: Double = 0
     ) {
         self.id = id
         self.tailorId = tailorId
@@ -49,13 +57,18 @@ struct CartItem: Identifiable, Codable, Hashable {
         self.isCustomOrder = isCustomOrder
         self.customDescription = customDescription
         self.referenceImages = referenceImages
+        self.fabricProvider = fabricProvider
+        self.selectedFabricOption = selectedFabricOption
+        self.fabricPrice = fabricPrice
     }
 }
 
-// Helper to create CartItem from CustomizationOrder
 extension CartItem {
     static func fromCustomizationOrder(_ order: CustomizationOrder) -> CartItem? {
         guard let selectedItem = order.selectedItem else { return nil }
+        
+        let fabricPrice = (!order.isRepairService && order.fabricProvider == .tailor) ? 
+            (order.selectedFabricOption?.additionalPrice ?? 0) : 0
         
         return CartItem(
             tailorId: order.tailorId,
@@ -68,7 +81,10 @@ extension CartItem {
             basePrice: selectedItem.price,
             isCustomOrder: true,
             customDescription: order.description.isEmpty ? nil : order.description,
-            referenceImages: order.referenceImages
+            referenceImages: order.referenceImages,
+            fabricProvider: order.isRepairService ? nil : order.fabricProvider,
+            selectedFabricOption: order.selectedFabricOption,
+            fabricPrice: fabricPrice
         )
     }
 }

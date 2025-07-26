@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FabricProvider: String, CaseIterable {
+enum FabricProvider: String, CaseIterable, Codable {
     case tailor = "Bahan disediakan penjahit"
     case personal = "Bahan pribadi"
 }

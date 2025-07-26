@@ -35,6 +35,10 @@ struct TransactionItem: Identifiable, Codable {
     let customDescription: String?
     let referenceImages: [String]
     
+    let fabricProvider: FabricProvider?
+    let selectedFabricOption: FabricOption?
+    let fabricPrice: Double
+    
     init(
         id: String,
         name: String,
@@ -44,7 +48,10 @@ struct TransactionItem: Identifiable, Codable {
         totalPrice: Double,
         isCustomOrder: Bool,
         customDescription: String? = nil,
-        referenceImages: [String] = []
+        referenceImages: [String] = [],
+        fabricProvider: FabricProvider? = nil,
+        selectedFabricOption: FabricOption? = nil,
+        fabricPrice: Double = 0
     ) {
         self.id = id
         self.name = name
@@ -55,6 +62,9 @@ struct TransactionItem: Identifiable, Codable {
         self.isCustomOrder = isCustomOrder
         self.customDescription = customDescription
         self.referenceImages = referenceImages
+        self.fabricProvider = fabricProvider
+        self.selectedFabricOption = selectedFabricOption
+        self.fabricPrice = fabricPrice
     }
     
     init(from cartItem: CartItem) {
@@ -67,6 +77,9 @@ struct TransactionItem: Identifiable, Codable {
         self.isCustomOrder = cartItem.isCustomOrder
         self.customDescription = cartItem.customDescription
         self.referenceImages = cartItem.referenceImages
+        self.fabricProvider = cartItem.fabricProvider
+        self.selectedFabricOption = cartItem.selectedFabricOption
+        self.fabricPrice = cartItem.fabricPrice
     }
 }
 

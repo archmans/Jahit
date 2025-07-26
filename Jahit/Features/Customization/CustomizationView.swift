@@ -551,7 +551,7 @@ struct CustomizationView: View {
                             .foregroundColor(.black)
                             .lineLimit(2)
                         
-                        Text("Harga dasar: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.price)) ?? "Rp0")")
+                        Text("Harga jasa: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.price)) ?? "Rp0")")
                             .font(.custom("PlusJakartaSans-Regular", size: 12))
                             .foregroundColor(.gray)
                     }

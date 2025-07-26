@@ -25,9 +25,20 @@ struct OrderSummaryItem {
     let name: String
     let quantity: Int
     let price: Double
+    let fabricProvider: FabricProvider?
+    let selectedFabricOption: FabricOption?
+    let fabricPrice: Double
     
     var totalPrice: Double {
+        return Double(quantity) * (price + fabricPrice)
+    }
+    
+    var basePrice: Double {
         return Double(quantity) * price
+    }
+    
+    var totalFabricPrice: Double {
+        return Double(quantity) * fabricPrice
     }
 }
 

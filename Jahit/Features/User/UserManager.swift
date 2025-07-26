@@ -266,12 +266,17 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func addToCart(_ item: CartItem) {
         // Check if tailor cart already exists
         if let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == item.tailorId }) {
-            // Check if same item already exists
-            if let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.itemId == item.itemId && $0.isCustomOrder == item.isCustomOrder }) {
-                // Update quantity for existing item
+            // Check if same item already exists (including fabric selection)
+            if let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { 
+                $0.itemId == item.itemId && 
+                $0.isCustomOrder == item.isCustomOrder &&
+                $0.fabricProvider == item.fabricProvider &&
+                $0.selectedFabricOption?.id == item.selectedFabricOption?.id
+            }) {
+                // Update quantity for existing item with same fabric
                 currentUser.cart[tailorCartIndex].items[itemIndex].quantity += item.quantity
             } else {
-                // Add new item to existing tailor cart
+                // Add new item to existing tailor cart (different fabric or new item)
                 currentUser.cart[tailorCartIndex].items.append(item)
             }
             
@@ -440,9 +445,11 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             return false
         }
         
-        // Calculate the total price from the selected item and quantity
+        // Calculate prices including fabric
         let basePrice = customizationOrder.selectedItem?.price ?? 0
-        let totalPrice = basePrice * Double(customizationOrder.quantity)
+        let fabricPrice = (!customizationOrder.isRepairService && customizationOrder.fabricProvider == .tailor) ? 
+            (customizationOrder.selectedFabricOption?.additionalPrice ?? 0) : 0
+        let totalItemPrice = (basePrice + fabricPrice) * Double(customizationOrder.quantity)
         
         let transactionItem = TransactionItem(
             id: generateOrderNumber(),
@@ -450,10 +457,13 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             category: customizationOrder.category,
             quantity: customizationOrder.quantity,
             basePrice: basePrice,
-            totalPrice: totalPrice,
+            totalPrice: totalItemPrice,
             isCustomOrder: true,
             customDescription: customizationOrder.description.isEmpty ? nil : customizationOrder.description,
-            referenceImages: customizationOrder.referenceImages
+            referenceImages: customizationOrder.referenceImages,
+            fabricProvider: customizationOrder.isRepairService ? nil : customizationOrder.fabricProvider,
+            selectedFabricOption: customizationOrder.selectedFabricOption,
+            fabricPrice: fabricPrice
         )
         
         let transaction = Transaction(
@@ -461,7 +471,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             tailorId: customizationOrder.tailorId,
             tailorName: customizationOrder.tailorName,
             items: [transactionItem],
-            totalPrice: totalPrice,
+            totalPrice: totalItemPrice,
             pickupDate: pickupDate,
             pickupTime: pickupTime.displayName,
             paymentMethod: paymentMethod.displayName,

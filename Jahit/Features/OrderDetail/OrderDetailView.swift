@@ -256,22 +256,55 @@ struct TransactionItemRowView: View {
     }
     
     private var itemHeaderView: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.name)
-                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
-                    .foregroundColor(.black)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.name)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                        .foregroundColor(.black)
+                    
+                    Text("Kuantitas: \(item.quantity)")
+                        .font(.custom("PlusJakartaSans-Regular", size: 12))
+                        .foregroundColor(.gray)
+                }
                 
-                Text("Kuantitas: \(item.quantity)")
-                    .font(.custom("PlusJakartaSans-Regular", size: 12))
-                    .foregroundColor(.gray)
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                        .foregroundColor(.black)
+                    
+                    if item.fabricPrice > 0 {
+                        Text("(termasuk bahan)")
+                            .font(.custom("PlusJakartaSans-Regular", size: 10))
+                            .foregroundColor(.gray)
+                    }
+                }
             }
             
-            Spacer()
-            
-            Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")
-                .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
-                .foregroundColor(.black)
+            if let fabricProvider = item.fabricProvider {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        if fabricProvider == .personal {
+                            Text("Bahan pribadi")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.green)
+                        } else if let fabricOption = item.selectedFabricOption {
+                            Text("Bahan \(fabricOption.type)")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                .foregroundColor(.orange)
+                            
+                            if item.fabricPrice > 0 {
+                                Text("Biaya bahan: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.fabricPrice * Double(item.quantity))) ?? "Rp0")")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 11))
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+                    Spacer()
+                }
+            }
         }
     }
     

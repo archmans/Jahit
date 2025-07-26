@@ -19,10 +19,16 @@ class OrderingViewModel: ObservableObject {
     init(customizationOrder: CustomizationOrder) {
         self.customizationOrder = customizationOrder
         
+        let fabricPrice = (!customizationOrder.isRepairService && customizationOrder.fabricProvider == .tailor) ? 
+            (customizationOrder.selectedFabricOption?.additionalPrice ?? 0) : 0
+        
         let orderItem = OrderSummaryItem(
             name: customizationOrder.selectedItem?.name ?? "Unknown Item",
             quantity: customizationOrder.quantity,
-            price: customizationOrder.selectedItem?.price ?? 0
+            price: customizationOrder.selectedItem?.price ?? 0,
+            fabricProvider: customizationOrder.isRepairService ? nil : customizationOrder.fabricProvider,
+            selectedFabricOption: customizationOrder.selectedFabricOption,
+            fabricPrice: fabricPrice
         )
         
         // Try to get user's current address, fallback to default

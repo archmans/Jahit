@@ -329,6 +329,29 @@ struct CartCheckoutView: View {
                                     .foregroundColor(.black)
                             }
                             
+                            if let fabricProvider = item.fabricProvider {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        if fabricProvider == .personal {
+                                            Text("Bahan Pribadi")
+                                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                                .foregroundColor(.green)
+                                        } else if let fabricOption = item.selectedFabricOption {
+                                            Text("Bahan \(fabricOption.type)")
+                                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                                .foregroundColor(.orange)
+                                            
+                                            if item.fabricPrice > 0 {
+                                                Text("Biaya bahan: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.fabricPrice * Double(item.quantity))) ?? "Rp0")")
+                                                    .font(.custom("PlusJakartaSans-Regular", size: 11))
+                                                    .foregroundColor(.gray)
+                                            }
+                                        }
+                                    }
+                                    Spacer()
+                                }
+                            }
+                            
                             // Custom Order Details
                             if item.isCustomOrder {
                                 let hasDescription = item.customDescription != nil && !item.customDescription!.isEmpty
