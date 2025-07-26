@@ -41,13 +41,29 @@ class CustomizationViewModel: ObservableObject {
     }
     
     var formattedPrice: String {
+        return NumberFormatter.currencyFormatter.string(from: NSNumber(value: customizationOrder.totalPrice)) ?? "Rp0"
+    }
+    
+    var formattedBasePrice: String {
         guard let item = customizationOrder.selectedItem else { return "Rp0" }
-        let totalPrice = item.price * Double(customizationOrder.quantity)
-        return NumberFormatter.currencyFormatter.string(from: NSNumber(value: totalPrice)) ?? "Rp0"
+        let basePrice = item.price * Double(customizationOrder.quantity)
+        return NumberFormatter.currencyFormatter.string(from: NSNumber(value: basePrice)) ?? "Rp0"
+    }
+    
+    var formattedFabricPrice: String {
+        let fabricPrice = (!customizationOrder.isRepairService && customizationOrder.fabricProvider == .tailor) ? 
+            (customizationOrder.selectedFabricOption?.additionalPrice ?? 0) * Double(customizationOrder.quantity) : 0
+        return NumberFormatter.currencyFormatter.string(from: NSNumber(value: fabricPrice)) ?? "Rp0"
     }
     
     func selectItem(_ item: TailorServiceItem) {
         customizationOrder.selectedItem = item
+        customizationOrder.selectedFabricOption = nil
+        
+        if !customizationOrder.isRepairService {
+            customizationOrder.fabricProvider = .tailor
+        }
+        
         showingItemPicker = false
     }
     
@@ -57,6 +73,22 @@ class CustomizationViewModel: ObservableObject {
     
     func updateDescription(_ description: String) {
         customizationOrder.description = description
+    }
+    
+    func updateFabricProvider(_ provider: FabricProvider) {
+        // Only update fabric provider for non-repair services
+        if !customizationOrder.isRepairService {
+            customizationOrder.fabricProvider = provider
+            // Reset fabric selection when provider changes
+            if provider == .personal {
+                customizationOrder.selectedFabricOption = nil
+            }
+        }
+    }
+    
+    func updateFabricOption(_ option: FabricOption) {
+        // Only update fabric option for non-repair services, or if it's a repair service with actual options (like button types)
+        customizationOrder.selectedFabricOption = option
     }
     
     func addToCart() {

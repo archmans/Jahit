@@ -46,6 +46,9 @@ struct CustomizationView: View {
                     // Selected Item Card
                     if viewModel.customizationOrder.selectedItem != nil {
                         selectedItemCardView
+                        
+                        // Fabric Selection
+                        fabricSelectionView
                     }
                     
                     // Description
@@ -204,6 +207,196 @@ struct CustomizationView: View {
         }
     }
     
+    private var fabricSelectionView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Only show fabric selection for non-repair services
+            if !viewModel.customizationOrder.isRepairService {
+                // Fabric Provider Selection
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 4) {
+                        Text("Pilihan Bahan")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                            .foregroundColor(.black)
+                        
+                        Text("*")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                            .foregroundColor(.red)
+                    }
+                    
+                    VStack(spacing: 0) {
+                        ForEach(Array(FabricProvider.allCases.enumerated()), id: \.element) { index, provider in
+                            Button(action: {
+                                viewModel.updateFabricProvider(provider)
+                            }) {
+                                HStack(spacing: 12) {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(provider.rawValue)
+                                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                                            .foregroundColor(.black)
+                                        
+                                        if provider == .personal {
+                                            Text("Gratis - Gunakan bahan sendiri")
+                                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                                .foregroundColor(.gray)
+                                        } else {
+                                            Text("Tambahan biaya sesuai jenis bahan")
+                                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                                .foregroundColor(.gray)
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    if provider == .personal {
+                                        Text("GRATIS")
+                                            .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.bold))
+                                            .foregroundColor(.green)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.green.opacity(0.1))
+                                            .cornerRadius(4)
+                                    }
+                                    
+                                    Image(systemName: viewModel.customizationOrder.fabricProvider == provider ? "largecircle.fill.circle" : "circle")
+                                        .foregroundColor(viewModel.customizationOrder.fabricProvider == provider ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
+                                        .font(.system(size: 20))
+                                }
+                                .padding(.vertical, 8)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            if index < FabricProvider.allCases.count - 1 {
+                                Divider()
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(12)
+                }
+                
+                // Fabric Type Selection (only when tailor provides fabric and item is selected)
+                if viewModel.customizationOrder.fabricProvider == .tailor,
+                   let selectedItem = viewModel.customizationOrder.selectedItem,
+                   !selectedItem.availableFabrics.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 4) {
+                            Text("Jenis Bahan")
+                                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                .foregroundColor(.black)
+                            
+                            Text("*")
+                                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                .foregroundColor(.red)
+                        }
+                        
+                        VStack(spacing: 0) {
+                            ForEach(Array(selectedItem.availableFabrics.enumerated()), id: \.element.id) { index, fabricOption in
+                                Button(action: {
+                                    viewModel.updateFabricOption(fabricOption)
+                                }) {
+                                    HStack(spacing: 12) {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(fabricOption.type)
+                                                .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                                                .foregroundColor(.black)
+                                            
+                                            Text(fabricOption.description)
+                                                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                                .foregroundColor(.gray)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Text("+ \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: fabricOption.additionalPrice)) ?? "Rp0")")
+                                            .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.bold))
+                                            .foregroundColor(.orange)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.orange.opacity(0.1))
+                                            .cornerRadius(4)
+                                        
+                                        Image(systemName: viewModel.customizationOrder.selectedFabricOption?.id == fabricOption.id ? "largecircle.fill.circle" : "circle")
+                                            .foregroundColor(viewModel.customizationOrder.selectedFabricOption?.id == fabricOption.id ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
+                                            .font(.system(size: 20))
+                                    }
+                                    .padding(.vertical, 8)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                
+                                if index < selectedItem.availableFabrics.count - 1 {
+                                    Divider()
+                                }
+                            }
+                        }
+                        .padding(16)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                    }
+                }
+            }
+            
+            // Price Breakdown
+            priceBreakdownView
+        }
+        .padding(.vertical, 8)
+    }
+    
+    private var priceBreakdownView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Rincian Harga")
+                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                .foregroundColor(.black)
+            
+            VStack(spacing: 4) {
+                HStack {
+                    Text("\(viewModel.customizationOrder.selectedItem?.name ?? "") × \(viewModel.customizationOrder.quantity)")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                    Spacer()
+                    Text(viewModel.formattedBasePrice)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                }
+                
+                // Only show fabric costs for non-repair services
+                if !viewModel.customizationOrder.isRepairService &&
+                   viewModel.customizationOrder.fabricProvider == .tailor,
+                   let fabricOption = viewModel.customizationOrder.selectedFabricOption {
+                    HStack {
+                        Text("Biaya bahan (\(fabricOption.type))")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text(viewModel.formattedFabricPrice)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                Divider()
+                
+                HStack {
+                    Text("Total")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                        .foregroundColor(.black)
+                    Spacer()
+                    Text(viewModel.formattedPrice)
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                        .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.white)
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            )
+        }
+    }
+    
     private var descriptionView: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Deskripsi Pesanan (Opsional)")
@@ -358,9 +551,9 @@ struct CustomizationView: View {
                             .foregroundColor(.black)
                             .lineLimit(2)
                         
-                        Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.price)) ?? "Rp0")
-                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
-                            .foregroundColor(.black)
+                        Text("Harga dasar: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.price)) ?? "Rp0")")
+                            .font(.custom("PlusJakartaSans-Regular", size: 12))
+                            .foregroundColor(.gray)
                     }
                     
                     Spacer()
