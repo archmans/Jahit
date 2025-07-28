@@ -43,6 +43,9 @@ struct OrderingView: View {
                     // Time Selection
                     timeSelectionView
                     
+                    // Delivery Option
+                    deliveryOptionView
+                    
                     // Order Summary
                     orderSummaryView
                     
@@ -277,6 +280,75 @@ struct OrderingView: View {
         }
     }
     
+    private var deliveryOptionView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 2) {
+                Text("Pesanan diantar")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.black)
+                
+                Text("*")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.red)
+            }
+            
+            ForEach(DeliveryOption.allCases, id: \.self) { option in
+                Button(action: {
+                    viewModel.selectDeliveryOption(option)
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: option == .delivery ? "truck.box" : "bag")
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
+                            .font(.system(size: 20))
+                            .frame(width: 24)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(option.description)
+                                .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                                .foregroundColor(.black)
+                            
+                            if let subtitle = option.subtitle {
+                                Text(subtitle)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.gray)
+                            } else if option == .pickup {
+                                Text(viewModel.order.tailorLocationDescription)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.gray)
+                                    .lineLimit(2)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        if option.additionalCost > 0 {
+                            Text("+\(NumberFormatter.currencyFormatter.string(from: NSNumber(value: option.additionalCost)) ?? "Rp15.000")")
+                                .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.bold))
+                                .foregroundColor(.orange)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.orange.opacity(0.1))
+                                .cornerRadius(4)
+                        }
+                        
+                        Image(systemName: viewModel.selectedDeliveryOption == option ? "largecircle.fill.circle" : "circle")
+                            .foregroundColor(viewModel.selectedDeliveryOption == option ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
+                            .font(.system(size: 20))
+                    }
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(PlainButtonStyle())
+                
+                if option != DeliveryOption.allCases.last {
+                    Divider()
+                }
+            }
+        }
+        .padding(16)
+        .background(Color.white)
+        .cornerRadius(12)
+    }
+    
     private var orderSummaryView: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Ringkasan Pemesanan")
@@ -385,6 +457,21 @@ struct OrderingView: View {
             }
             
             Divider()
+            
+            // Show delivery cost if selected
+            if let deliveryOption = viewModel.selectedDeliveryOption, deliveryOption.additionalCost > 0 {
+                HStack {
+                    Text("Biaya \(deliveryOption.displayName.lowercased()):")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    
+                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: deliveryOption.additionalCost)) ?? "Rp0")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                }
+            }
             
             HStack {
                 Text("Total:")

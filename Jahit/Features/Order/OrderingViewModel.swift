@@ -13,6 +13,7 @@ class OrderingViewModel: ObservableObject {
     @Published var showingDatePicker: Bool = false
     @Published var showingTimePicker: Bool = false
     @Published var selectedPaymentMethod: PaymentMethod? = nil
+    @Published var selectedDeliveryOption: DeliveryOption? = nil
     
     private let customizationOrder: CustomizationOrder
     
@@ -34,8 +35,14 @@ class OrderingViewModel: ObservableObject {
         // Try to get user's current address, fallback to default
         let userAddress = UserManager.shared.currentUser.address ?? "Alamat belum diset"
         
+        // Get tailor location description
+        let tailor = LocalDatabase.shared.getTailor(by: customizationOrder.tailorId)
+        let tailorLocationDescription = tailor?.locationDescription ?? "Lokasi tidak tersedia"
+        
         self.order = Ordering(
             tailorName: customizationOrder.tailorName,
+            tailorId: customizationOrder.tailorId,
+            tailorLocationDescription: tailorLocationDescription,
             address: userAddress,
             items: [orderItem]
         )
@@ -74,13 +81,19 @@ class OrderingViewModel: ObservableObject {
         order.paymentMethod = method
     }
     
+    func selectDeliveryOption(_ option: DeliveryOption) {
+        selectedDeliveryOption = option
+        order.deliveryOption = option
+    }
+    
     var isFormValid: Bool {
         let hasValidAddress = !(UserManager.shared.currentUser.address?.isEmpty ?? true)
         let hasPickupDate = order.pickupDate != nil
         let hasPickupTime = order.pickupTime != nil
         let hasPaymentMethod = selectedPaymentMethod != nil
+        let hasDeliveryOption = selectedDeliveryOption != nil
         
-        return hasValidAddress && hasPickupDate && hasPickupTime && hasPaymentMethod
+        return hasValidAddress && hasPickupDate && hasPickupTime && hasPaymentMethod && hasDeliveryOption
     }
     
     func confirmOrder() -> Bool {

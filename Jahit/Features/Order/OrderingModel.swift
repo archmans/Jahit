@@ -10,14 +10,19 @@ import Foundation
 struct Ordering: Identifiable {
     let id = UUID()
     let tailorName: String
+    let tailorId: String
+    let tailorLocationDescription: String
     var address: String
     var pickupDate: Date? = nil
     var pickupTime: TimeSlot? = nil
     let items: [OrderSummaryItem]
     var paymentMethod: PaymentMethod? = nil
+    var deliveryOption: DeliveryOption? = nil
     
     var totalAmount: Double {
-        return items.reduce(0) { $0 + $1.totalPrice }
+        let itemsTotal = items.reduce(0) { $0 + $1.totalPrice }
+        let deliveryCost = deliveryOption?.additionalCost ?? 0
+        return itemsTotal + deliveryCost
     }
 }
 
@@ -39,6 +44,36 @@ struct OrderSummaryItem {
     
     var totalFabricPrice: Double {
         return Double(quantity) * fabricPrice
+    }
+}
+
+enum DeliveryOption: String, CaseIterable, Codable {
+    case delivery = "Diantar"
+    case pickup = "Ambil sendiri"
+    
+    var displayName: String {
+        return self.rawValue
+    }
+    
+    var additionalCost: Double {
+        switch self {
+        case .delivery: return 15000
+        case .pickup: return 0
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .delivery: return "Diantar"
+        case .pickup: return "Ambil sendiri"
+        }
+    }
+    
+    var subtitle: String? {
+        switch self {
+        case .delivery: return "Pesanan diantar ke rumah anda"
+        case .pickup: return nil
+        }
     }
 }
 

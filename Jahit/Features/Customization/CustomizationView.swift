@@ -235,7 +235,7 @@ struct CustomizationView: View {
                                             .foregroundColor(.black)
                                         
                                         if provider == .personal {
-                                            Text("Gratis - Gunakan bahan sendiri")
+                                            Text("Menggunakan bahan sendiri")
                                                 .font(.custom("PlusJakartaSans-Regular", size: 12))
                                                 .foregroundColor(.gray)
                                         } else {
@@ -248,7 +248,7 @@ struct CustomizationView: View {
                                     Spacer()
                                     
                                     if provider == .personal {
-                                        Text("GRATIS")
+                                        Text("Gratis")
                                             .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.bold))
                                             .foregroundColor(.green)
                                             .padding(.horizontal, 6)
