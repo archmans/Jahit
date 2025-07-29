@@ -14,7 +14,7 @@ struct SplashScreenView: View {
     
     var body: some View {
         if isActive {
-            ContentView()
+            TabBarView()
         } else {
             VStack(alignment: .center, spacing: 7) {
                 VStack {
