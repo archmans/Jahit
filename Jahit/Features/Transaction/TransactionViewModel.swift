@@ -6,44 +6,64 @@
 //
 
 import SwiftUI
+import Combine
 
 class TransactionViewModel: ObservableObject {
-    @Published private(set) var tasks: [Transaction] = []
-
     @Published var selectedTab: TransactionTab = .ongoing
-
+    
+    private let userManager = UserManager.shared
+    private var cancellables = Set<AnyCancellable>()
+    
     init() {
-        loadSampleData()
+        userManager.$currentUser
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
     }
-
-    var filteredTasks: [Transaction] {
+    
+    var filteredTransactions: [Transaction] {
         switch selectedTab {
         case .ongoing:
-            return tasks.filter { !$0.isCompleted }
+            return getOngoingTransactionsSortedByRecent()
         case .completed:
-            return tasks.filter { $0.isCompleted }
+            return getCompletedTransactionsSortedByRecent()
         }
     }
-
-    func toggleCompletion(of task: Transaction) {
-        guard let idx = tasks.firstIndex(where: { $0.id == task.id }) else { return }
-        tasks[idx].isCompleted.toggle()
+    
+    func updateTransactionStatus(transactionId: String, newStatus: TransactionStatus) {
+        userManager.updateTransactionStatus(transactionId: transactionId, newStatus: newStatus)
     }
-
-    private func loadSampleData() {
-        tasks = [
-            Transaction(name: "Alfa Tailor", subtitle: "Atasan, Bawahan", imageName: "penjahit", price: 180_000, isCompleted: false),
-            Transaction(name: "Beta Tailor", subtitle: "Gamis, Mukena",    imageName: "penjahit", price: 220_000, isCompleted: false),
-            Transaction(name: "Gamma Tailor", subtitle: "Jaket, Mantel",   imageName: "penjahit", price: 350_000, isCompleted: true),
-            Transaction(name: "Delta Tailor", subtitle: "Kemeja, Celana",  imageName: "penjahit", price: 150_000, isCompleted: true),
-            Transaction(name: "Alfa Tailor", subtitle: "Atasan, Bawahan", imageName: "penjahit", price: 180_000, isCompleted: false),
-            Transaction(name: "Beta Tailor", subtitle: "Gamis, Mukena",    imageName: "penjahit", price: 220_000, isCompleted: false),
-            Transaction(name: "Gamma Tailor", subtitle: "Jaket, Mantel",   imageName: "penjahit", price: 350_000, isCompleted: true),
-            Transaction(name: "Delta Tailor", subtitle: "Kemeja, Celana",  imageName: "penjahit", price: 150_000, isCompleted: true),
-            Transaction(name: "Alfa Tailor", subtitle: "Atasan, Bawahan", imageName: "penjahit", price: 180_000, isCompleted: false),
-            Transaction(name: "Beta Tailor", subtitle: "Gamis, Mukena",    imageName: "penjahit", price: 220_000, isCompleted: false),
-            Transaction(name: "Gamma Tailor", subtitle: "Jaket, Mantel",   imageName: "penjahit", price: 350_000, isCompleted: true),
-            Transaction(name: "Delta Tailor", subtitle: "Kemeja, Celana",  imageName: "penjahit", price: 150_000, isCompleted: true)
-        ]
+    
+    func refreshTransactions() {
+        objectWillChange.send()
+    }
+    
+    func loadSampleData() {
+        userManager.resetToDefaultUserWithSampleData()
+        objectWillChange.send()
+    }
+    
+    func getOngoingTransactionsSortedByRecent() -> [Transaction] {
+        return userManager.getOngoingTransactions()
+            .sorted { transaction1, transaction2 in
+                return transaction1.orderDate > transaction2.orderDate
+            }
+    }
+    
+    func getCompletedTransactionsSortedByRecent() -> [Transaction] {
+        return userManager.getCompletedTransactions()
+            .sorted { transaction1, transaction2 in
+                return transaction1.orderDate > transaction2.orderDate
+            }
+    }
+    
+    func getAllTransactionsSortedByRecent() -> [Transaction] {
+        let allTransactions = userManager.getOngoingTransactions() + userManager.getCompletedTransactions()
+        return allTransactions.sorted { transaction1, transaction2 in
+            return transaction1.orderDate > transaction2.orderDate
+        }
     }
 }

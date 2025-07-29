@@ -20,30 +20,41 @@ struct Order {
     let paymentTime: Date
     let confirmationTime: Date
     let totalAmount: Double
-    let status: OrderStatus
+    let deliveryOption: DeliveryOption?
+    let deliveryCost: Double
+    var status: OrderStatus
 }
 
 enum OrderStatus: String, CaseIterable {
+    case pending = "Menunggu Konfirmasi"
     case confirmed = "Pesanan dikonfirmasi"
+    case pickup = "Pengukuran / Pengambilan Bahan"
     case inProgress = "Sedang dijahit"
-    case shipping = "Sedang dikirim"
-    case completed = "Selesai"
+    case readyForPickup = "Siap diambil"
+    case onDelivery = "Pesanan sedang diantar"
+    case completed = "Pesanan Selesai"
     
     var stepIndex: Int {
         switch self {
-        case .confirmed: return 0
-        case .inProgress: return 1
-        case .shipping: return 2
-        case .completed: return 3
+        case .pending: return 0
+        case .confirmed: return 1
+        case .pickup: return 2
+        case .inProgress: return 3
+        case .readyForPickup: return 4
+        case .onDelivery: return 4
+        case .completed: return 5
         }
     }
     
     var icon: String {
         switch self {
-        case .confirmed: return "doc.text"
-        case .inProgress: return "scissors"
-        case .shipping: return "checkmark.shield"
-        case .completed: return "checkmark.circle"
+        case .pending: return "menunggu_konfirmasi"
+        case .confirmed: return "pesanan_dikonfirmasi"
+        case .pickup: return "pengukuran"
+        case .inProgress: return "dijahit"
+        case .readyForPickup: return "diantar"
+        case .onDelivery: return "diantar"
+        case .completed: return "pesanan_selesai"
         }
     }
 }
@@ -58,10 +69,12 @@ extension Order {
         description: "-",
         paymentMethod: "Kartu Debit",
         pickupAddress: "Jalan Ganesha, Bandung",
-        orderNumber: "123456789",
+        orderNumber: "ABC123XYZ",
         paymentTime: DateFormatter.orderDateFormatter.date(from: "09-05-2025 10:00") ?? Date(),
         confirmationTime: DateFormatter.orderDateFormatter.date(from: "09-05-2025 11:00") ?? Date(),
         totalAmount: 200000,
+        deliveryOption: .delivery,
+        deliveryCost: 15000,
         status: .inProgress
     )
 }
@@ -70,17 +83,6 @@ extension DateFormatter {
     static let orderDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd-MM-yyyy HH:mm"
-        return formatter
-    }()
-}
-
-extension NumberFormatter {
-    static let currencyFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "IDR"
-        formatter.currencySymbol = "Rp"
-        formatter.maximumFractionDigits = 0
         return formatter
     }()
 }

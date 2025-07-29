@@ -8,11 +8,23 @@
 import SwiftUI
 
 class TabBarViewModel: ObservableObject {
-    static var shared: TabBarViewModel = TabBarViewModel()
+    static let shared = TabBarViewModel()
     
     @Published var selectedTab: Int = 0
+    @Published var isVisible: Bool = true
+    
+    private init() {}
     
     func selectTab(_ index: Int) {
         selectedTab = index
+        isVisible = true
+    }
+    
+    func hide() {
+        isVisible = false
+    }
+    
+    func show() {
+        isVisible = true
     }
 }

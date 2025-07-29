@@ -7,70 +7,101 @@
 
 import SwiftUI
 
+struct OptionalStringIdentifiable: Identifiable, Equatable, Hashable {
+    let value: String?
+    var id: String? { value }
+    
+    static func == (lhs: OptionalStringIdentifiable, rhs: OptionalStringIdentifiable) -> Bool {
+        lhs.value == rhs.value
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(value)
+    }
+}
+
 struct HomeView: View {
+    @StateObject private var tabBarVM = TabBarViewModel.shared
     @StateObject private var viewModel = HomeViewModel()
+    @EnvironmentObject var userManager: UserManager
+    @State private var selectedTailorId: OptionalStringIdentifiable? = nil
+    @State private var searchTitle: String = ""
+    @State private var isSearchViewPresented = false
+    @State private var isSearchKeywordViewPresented = false
+    @State private var isCartViewPresented = false
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            SearchFieldHome(searchText: $viewModel.searchText)
-            ScrollView {
-                VStack(alignment: .leading, spacing: 8) {
-                    LocationLabel()
-                    BannerCard()
-                        .padding(.horizontal, 20)
-                    
-                    Text("Kategori")
-                        .font(.headline)
-                        .padding(.top, 8)
-                        .padding(.horizontal, 20)
-                    
-                    CategoriesButton()
-                    
-                    HStack {
-                        Text("Penjahit terekemondasi")
-                            .font(.headline)
-                        Spacer()
-                        Button("Lihat semua") {
-                            // Action
-                        }
-                        .font(.subheadline)
-                        .padding(8)
-                        .background(Color(red: 0.82, green: 0.89, blue: 1.0))
-                        .cornerRadius(15)
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 0) {
+                SearchFieldHome(
+                    onSearchTapped: {
+                        isSearchKeywordViewPresented = true
+                    },
+                    onCartTapped: {
+                        isCartViewPresented = true
                     }
-                    .padding(.top, 12)
-                    .padding(.horizontal, 20)
-                    
-                    ListTailorHorizontal()
-                    
-                    HStack {
-                        Text("Penjahit terdekat")
+                )
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 8) {
+                        LocationLabel()
+                        BannerCard()
+                            .padding(.horizontal, 20)
+                        Text("Kategori")
                             .font(.headline)
-                        Spacer()
-                        Button("Lihat semua") {
-                            // Action
+                            .padding(.top, 8)
+                            .padding(.horizontal, 20)
+                            .foregroundColor(.black)
+                        CategoriesButton(categories: viewModel.model.categories) { category in
+                            searchTitle = category.capitalized
+                            isSearchViewPresented = true
                         }
-                        .font(.subheadline)
-                        .padding(8)
-                        .background(Color(red: 0.82, green: 0.89, blue: 1.0))
-                        .cornerRadius(15)
+                        HStack {
+                            Text("Penjahit terekemondasi")
+                                .font(.headline)
+                                .foregroundColor(.black)
+                            Spacer()
+                            Button("Lihat semua") {
+                                searchTitle = "Semua Penjahit"
+                                isSearchViewPresented = true
+                            }
+                                .font(.subheadline)
+                                .padding(8)
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 20)
+                        ListTailorHorizontal(tailors: viewModel.filteredTailors) { tailor in
+                            selectedTailorId = OptionalStringIdentifiable(value: tailor.id)
+                        }
                     }
-                    .padding(.top, 12)
-                    .padding(.horizontal, 20)
-                    
-                    
-                    ListTailorHorizontal()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 8)
+                    .padding(.bottom, 80)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-//                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .padding(.bottom, 80)
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
+            .background(Color.white)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .navigationDestination(item: $selectedTailorId) { idObj in
+                if let id = idObj.value, let tailor = viewModel.filteredTailors.first(where: { $0.id == id }) {
+                    TailorDetailView(tailor: tailor)
+                }
+            }
+            .navigationDestination(isPresented: $isSearchViewPresented) {
+                SearchView(searchTitle: $searchTitle)
+            }
+            .navigationDestination(isPresented: $isSearchKeywordViewPresented) {
+                SearchKeywordView()
+            }
+            .navigationDestination(isPresented: $isCartViewPresented) {
+                CartView()
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            tabBarVM.show()
+            userManager.forceUpdateLocation()
+        }
     }
 }
 
 #Preview {
     HomeView()
+        .environmentObject(UserManager.shared)
 }

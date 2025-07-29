@@ -8,38 +8,147 @@
 import SwiftUI
 
 struct TailorDetailView: View {
-    @StateObject private var viewModel = TailorViewModel()
+    @StateObject private var viewModel: TailorViewModel
+    @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
+    @Environment(\.dismiss) private var dismiss
+    @State private var isCartViewPresented = false
+    @State private var autoScrollTimers: [String: Timer] = [:]
+    @State private var selectedImageForPreview: String?
+    @State private var showImagePreview = false
     
-    var body: some View {
-        HStack {
-            Button(action: {
-                viewModel.goBack()
-            }) {
-                Image(systemName: "arrow.left")
-                    .foregroundColor(.black)
-                    .font(.system(size: 24, weight: .medium))
-            }
-            
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 16)
-        .padding(.bottom, 16)
-        
-        Divider()
-        
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                headerView
-                tabNavigationView
-                tabContentView
-            }
-        }
-        .background(Color(UIColor.systemGroupedBackground))
-        .navigationBarHidden(true)
+    init(tailor: Tailor) {
+        _viewModel = StateObject(wrappedValue: TailorViewModel(tailor: tailor))
     }
     
-    private var headerView: some View {
+    var body: some View {
+        VStack {
+            HStack {
+                Button(action: {
+                    dismiss()
+                    tabBarVM.show()
+                }) {
+                    Image(systemName: "arrow.left")
+                        .foregroundColor(.black)
+                        .font(.system(size: 24, weight: .medium))
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    isCartViewPresented = true
+                }) {
+                    ZStack {
+                        Image(systemName: "cart")
+                            .foregroundColor(.black)
+                            .font(.system(size: 20, weight: .medium))
+                        
+                        if userManager.currentUser.totalCartItems > 0 {
+                            Text("\(userManager.currentUser.totalCartItems)")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
+                                .foregroundColor(.white)
+                                .frame(minWidth: 20, minHeight: 20)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 12, y: -10)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 16)
+            
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    headerView
+                    tabNavigationView
+                    tabContentView
+                }
+            }
+            .background(Color(red: 0.95, green: 0.95, blue: 0.95))
+        }
+        .background(Color.white)
+        .navigationDestination(isPresented: $isCartViewPresented) {
+            CartView()
+        }
+        .navigationBarHidden(true)
+        .gesture(
+            DragGesture(minimumDistance: 10, coordinateSpace: .global)
+                .onChanged { value in
+                    if value.translation.width > 30 && abs(value.translation.height) < 100 {
+                    }
+                }
+                .onEnded { value in
+                    if value.translation.width > 50 && abs(value.translation.height) < 150 {
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+                        dismiss()
+                        tabBarVM.show()
+                    }
+                }
+        )
+        .overlay(
+            Group {
+                if showImagePreview, let selectedImage = selectedImageForPreview {
+                    ZStack {
+                        Color.black.opacity(0.9)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showImagePreview = false
+                                }
+                            }
+                        
+                        VStack {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showImagePreview = false
+                                    }
+                                }) {
+                                    Image(systemName: "xmark")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 24, weight: .medium))
+                                        .padding(16)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Group {
+                                if let uiImage = ImageManager.shared.loadImage(named: selectedImage) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                } else {
+                                    Image(selectedImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                }
+                            }
+                            .cornerRadius(12)
+                            .padding(.horizontal, 20)
+                            
+                            Spacer()
+                        }
+                    }
+                    .opacity(showImagePreview ? 1 : 0)
+                    .scaleEffect(showImagePreview ? 1 : 0.8)
+                    .animation(.easeInOut(duration: 0.3), value: showImagePreview)
+                }
+            }
+        )
+        .onAppear {
+            tabBarVM.hide()
+        }
+        .onDisappear {
+            stopAllAutoScroll()
+        }
+    }
+    
+    var headerView: some View {
         VStack(spacing: 16) {
             HStack(spacing: 12) {
                 Image(viewModel.tailor.profileImage)
@@ -93,7 +202,7 @@ struct TailorDetailView: View {
         .background(Color.white)
     }
     
-    private var tabNavigationView: some View {
+    var tabNavigationView: some View {
         HStack(spacing: 0) {
             ForEach(TailorTab.allCases, id: \.self) { tab in
                 Button(action: {
@@ -105,7 +214,7 @@ struct TailorDetailView: View {
                             .foregroundColor(viewModel.selectedTab == tab ? .blue : .gray)
                         
                         Rectangle()
-                            .fill(viewModel.selectedTab == tab ? Color.blue : Color.clear)
+                            .fill(viewModel.selectedTab == tab ? Color(red: 0, green: 0.37, blue: 0.92) : Color.clear)
                             .frame(height: 2)
                     }
                 }
@@ -115,7 +224,7 @@ struct TailorDetailView: View {
         .background(Color.white)
     }
     
-    private var tabContentView: some View {
+    var tabContentView: some View {
         Group {
             switch viewModel.selectedTab {
             case .services:
@@ -129,54 +238,63 @@ struct TailorDetailView: View {
         .padding(.top, 16)
     }
     
-    private var servicesTabView: some View {
+    var servicesTabView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if let service = viewModel.currentService {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(service.name)
-                                .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
-                                .foregroundColor(.black)
-                            
-                            Text(service.description)
-                                .font(.custom("PlusJakartaSans-Regular", size: 14))
-                                .foregroundColor(.gray)
-                                .lineLimit(2)
-                            
-                            HStack {
-                                Text("Mulai dari")
-                                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+            ForEach(viewModel.tailor.services, id: \.id) { service in
+                NavigationLink(destination: CustomizationView(tailor: viewModel.tailor, service: service)) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(service.name)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
                                     .foregroundColor(.black)
                                 
-                                Text(viewModel.formattedStartingPrice)
-                                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                                    .foregroundColor(.black)
+                                Text(service.description)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+                                    .foregroundColor(.gray)
+                                    .lineLimit(2)
+                                
+                                HStack {
+                                    Text("Mulai dari")
+                                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                                        .foregroundColor(.black)
+                                    
+                                    Text(viewModel.formattedStartingPrice(for: service))
+                                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                        .foregroundColor(.black)
+                                }
                             }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.system(size: 16))
                         }
                         
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
-                            .font(.system(size: 16))
+                        imageCarouselView(images: service.images, serviceId: service.id)
                     }
-                    
-                    imageCarouselView(images: service.images)
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(12)
                 }
-                .padding(16)
-                .background(Color.white)
-                .cornerRadius(12)
+                .buttonStyle(PlainButtonStyle())
             }
         }
         .padding(.horizontal, 16)
     }
     
-    private func imageCarouselView(images: [String]) -> some View {
-        VStack(spacing: 12) {
-            TabView(selection: $viewModel.currentImageIndex) {
-                ForEach(Array(images.enumerated()), id: \.offset) { index, imageName in
-                    Image(imageName)
+    func imageCarouselView(images: [String], serviceId: String) -> some View {
+        let indices = images.indices.map { $0 }
+        let currentIndex = viewModel.getCurrentImageIndex(for: serviceId)
+        
+        return VStack(spacing: 12) {
+            TabView(selection: Binding(
+                get: { currentIndex },
+                set: { viewModel.setCurrentImageIndex($0, for: serviceId) }
+            )) {
+                ForEach(indices, id: \.self) { index in
+                    Image(images[index])
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(height: 200)
@@ -188,21 +306,29 @@ struct TailorDetailView: View {
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .frame(height: 200)
+            .onAppear {
+                startAutoScroll(for: serviceId)
+            }
+            .onDisappear {
+                stopAutoScroll(for: serviceId)
+            }
             
             HStack(spacing: 8) {
-                ForEach(0..<images.count, id: \.self) { index in
+                ForEach(indices, id: \.self) { index in
                     Circle()
-                        .fill(index == viewModel.currentImageIndex ? Color.blue : Color.gray.opacity(0.3))
+                        .fill(index == currentIndex ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray.opacity(0.3))
                         .frame(width: 8, height: 8)
+                        .scaleEffect(index == currentIndex ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.7), value: currentIndex)
                         .onTapGesture {
-                            viewModel.goToImage(at: index)
+                            viewModel.setCurrentImageIndex(index, for: serviceId)
                         }
                 }
             }
         }
     }
     
-    private var reviewsTabView: some View {
+    var reviewsTabView: some View {
         VStack(alignment: .leading, spacing: 16) {
             ForEach(viewModel.tailor.reviews, id: \.id) { review in
                 reviewItemView(review: review)
@@ -211,7 +337,7 @@ struct TailorDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    private func reviewItemView(review: Review) -> some View {
+    func reviewItemView(review: TailorReview) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(review.userName)
@@ -238,13 +364,33 @@ struct TailorDetailView: View {
                 .foregroundColor(.black)
                 .lineLimit(nil)
             
-            if let userImage = review.userImage {
-                Image(userImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 60, height: 60)
-                    .clipped()
-                    .cornerRadius(8)
+            if !review.reviewImages.isEmpty {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 12) {
+                    ForEach(review.reviewImages, id: \.self) { imageName in
+                        Group {
+                            if let uiImage = ImageManager.shared.loadImage(named: imageName) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fill)
+                            } else {
+                                Image(imageName)
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fill)
+                            }
+                        }
+                        .frame(width: 70, height: 60)
+                        .clipped()
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                        .onTapGesture {
+                            selectedImageForPreview = imageName
+                            showImagePreview = true
+                        }
+                    }
+                }
             }
         }
         .padding(16)
@@ -252,38 +398,64 @@ struct TailorDetailView: View {
         .cornerRadius(12)
     }
     
-    private var aboutTabView: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            // Description Section
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Deskripsi")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                    .foregroundColor(.black)
+    var aboutTabView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Deskripsi")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                        .foregroundColor(.black)
+                    
+                    Text(viewModel.tailor.description)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 
-                Text(viewModel.tailor.description)
-                    .font(.custom("PlusJakartaSans-Regular", size: 14))
-                    .foregroundColor(.black)
-                    .lineLimit(nil)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Lokasi")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                        .foregroundColor(.black)
+                    
+                    Text(viewModel.tailor.locationDescription)
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                
+                Spacer(minLength: 0)
             }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Lokasi")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                    .foregroundColor(.black)
-                
-                Text(viewModel.tailor.locationDescription)
-                    .font(.custom("PlusJakartaSans-Regular", size: 14))
-                    .foregroundColor(.black)
-                    .lineLimit(nil)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(Color.white)
+            .cornerRadius(12)
+        }
+        .padding(.horizontal, 16)
+    }
+    
+    private func startAutoScroll(for serviceId: String) {
+        stopAutoScroll(for: serviceId)
+        
+        autoScrollTimers[serviceId] = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
+            withAnimation(.easeInOut(duration: 0.5)) {
+                viewModel.nextImage(for: serviceId)
             }
         }
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(12)
-        .padding(.horizontal, 16)
+    }
+    
+    private func stopAutoScroll(for serviceId: String) {
+        autoScrollTimers[serviceId]?.invalidate()
+        autoScrollTimers[serviceId] = nil
+    }
+    
+    private func stopAllAutoScroll() {
+        for (_, timer) in autoScrollTimers {
+            timer.invalidate()
+        }
+        autoScrollTimers.removeAll()
     }
 }
 
 #Preview {
-    TailorDetailView()
+    TailorDetailView(tailor: Tailor.sampleTailors.first!)
 }

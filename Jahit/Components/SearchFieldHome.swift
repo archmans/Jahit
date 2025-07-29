@@ -1,5 +1,5 @@
 //
-//  SearchField.swift
+//  SearchFieldHome.swift
 //  Jahit
 //
 //  Created by Muhamad Salman Hakim Alfarisi on 18/05/25.
@@ -8,33 +8,50 @@
 import SwiftUI
 
 struct SearchFieldHome: View {
-    @Binding var searchText: String
+    @EnvironmentObject var userManager: UserManager
+    var onSearchTapped: () -> Void = {}
+    var onCartTapped: () -> Void = {}
     
     var body: some View {
         ZStack (alignment: .top) {
             HeaderBackground()
             
             HStack(spacing: 12) {
-                HStack(alignment: .center, spacing: 4) {
-                    Image(systemName: "magnifyingglass")
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(Color(red: 0.62, green: 0.62, blue: 0.62))
-                    TextField("Cari penjahit", text: $searchText)
-                        .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.semibold))
-                        .foregroundColor(Color(red: 0.62, green: 0.62, blue: 0.62))
+                Button(action: onSearchTapped) {
+                    HStack(alignment: .center, spacing: 4) {
+                        Image(systemName: "magnifyingglass")
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color(red: 0.62, green: 0.62, blue: 0.62))
+                        Text("Cari produk atau penjahit...")
+                            .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.semibold))
+                            .foregroundColor(Color(red: 0.62, green: 0.62, blue: 0.62))
+                        Spacer()
+                    }
+                    .padding(.vertical, 6)
+                    .padding(.leading, 8)
+                    .padding(.trailing, 12)
+                    .background(Color.white)
+                    .cornerRadius(12)
                 }
-                .padding(.vertical, 6)
-                .padding(.leading, 8)
-                .padding(.trailing, 12)
-                .background(Color.white)
-                .cornerRadius(12)
                 
                 Button(action: {
-                    print("Cart tapped")
+                    onCartTapped()
                 }) {
-                    Image(systemName: "cart")
-                        .foregroundColor(.white)
-                        .font(.system(size: 24))
+                    ZStack {
+                        Image(systemName: "cart")
+                            .foregroundColor(.white)
+                            .font(.system(size: 20, weight: .medium))
+                        
+                        if userManager.currentUser.totalCartItems > 0 {
+                            Text("\(userManager.currentUser.totalCartItems)")
+                                .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
+                                .foregroundColor(.white)
+                                .frame(minWidth: 20, minHeight: 20)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 12, y: -10)
+                        }
+                    }
                 }
             }
             .padding(.vertical, 4)
@@ -43,11 +60,10 @@ struct SearchFieldHome: View {
             .frame(maxWidth: .infinity)
         }
         .frame(height: 70)
-//        Spacer()
     }
 }
 
-
 #Preview {
-    SearchFieldHome(searchText: .constant("Cari Penjahit"))
+    SearchFieldHome(onSearchTapped: {}, onCartTapped: {})
+        .environmentObject(UserManager.shared)
 }

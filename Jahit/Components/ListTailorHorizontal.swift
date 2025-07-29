@@ -8,63 +8,60 @@
 import SwiftUI
 
 struct ListTailorHorizontal: View {
+    let tailors: [Tailor]
+    var onTailorTap: ((Tailor) -> Void)? = nil
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
-                ForEach(0..<4) { _ in
+                Spacer(minLength: 0)
+                ForEach(tailors, id: \.id) { tailor in
                     Button(action: {
-                        // Action
+                        onTailorTap?(tailor)
                     }) {
-                        VStack(alignment: .center, spacing: 4) {
-                            Image("penjahit")
+                        VStack(alignment: .leading, spacing: 8) {
+                            Image(tailor.profileImage)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
+                                .frame(width: 140, height: 100)
                                 .clipped()
                                 .cornerRadius(8)
-                                .frame(width: 120)
 
-                            Text("Alfa Tailor")
-                            .font(
-                            Font.custom("Plus Jakarta Sans", size: 12)
-                            .weight(.semibold)
-                            )
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Text("Mulai dari Rp100.000")
-                                .font(Font.custom("PlusJakartaSans-Regular", size: 10))
-                              .foregroundColor(.black)
-                              .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            HStack(alignment: .center, spacing: 5) {
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
-                                Text("4.9")
-                                    .font(Font.custom("PlusJakartaSans-Regular", size: 10))
-                                .foregroundColor(.black)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(tailor.name)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                                    .foregroundColor(.black)
+                                    .lineLimit(1)
+
+                                Text("Mulai dari Rp\(Int(tailor.services.first?.startingPrice ?? 0))")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.black)
+
+                                HStack(spacing: 4) {
+                                    Image(systemName: "star.fill")
+                                        .foregroundColor(.yellow)
+                                        .font(.system(size: 10))
+                                    Text(String(format: "%.1f", tailor.rating))
+                                        .font(.custom("PlusJakartaSans-Regular", size: 10))
+                                        .foregroundColor(.gray)
+                                }
                             }
-                            .padding(0)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            
+                            .padding(.horizontal, 8)
+                            .padding(.bottom, 8)
                         }
-                        .padding(8)
+                        .frame(width: 140)
+                        .background(Color.white)
                         .cornerRadius(12)
-                        .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                        .inset(by: 0.5)
-                        .stroke(.black.opacity(0.2), lineWidth: 1)
-
-                        )
+                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                     }
                 }
+                Spacer(minLength: 0)
             }
+            .padding(.vertical, 8)
         }
-        .padding(.top, 8)
-        .padding(.leading, 20)
         .frame(maxHeight: 197)
     }
 }
 
 #Preview {
-    ListTailorHorizontal()
+    ListTailorHorizontal(tailors: Tailor.sampleTailors, onTailorTap: { _ in })
 }

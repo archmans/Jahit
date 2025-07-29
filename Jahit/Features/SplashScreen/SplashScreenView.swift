@@ -11,10 +11,12 @@ struct SplashScreenView: View {
     @State private var isActive = false
     @State private var size = 0.8
     @State private var opacity = 0.5
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
         if isActive {
-            TabBarView()
+            AuthenticationWrapper()
+                .environmentObject(userManager)
         } else {
             VStack(alignment: .center, spacing: 7) {
                 VStack {
@@ -37,6 +39,7 @@ struct SplashScreenView: View {
                 }
                 
             }
+            .background(Color.white)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation {

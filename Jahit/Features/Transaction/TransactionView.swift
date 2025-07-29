@@ -9,132 +9,242 @@ import SwiftUI
 
 struct TransactionView: View {
     @StateObject private var viewModel = TransactionViewModel()
-    @Namespace private var underlineNamespace
+    @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                ForEach(TransactionTab.allCases) { tab in
-                    Button(action: {
-                        withAnimation { viewModel.selectedTab = tab }
-                    }) {
-                        VStack(spacing: 4) {
-                            Text(tab.rawValue)
-                                .font(.system(size: 16,
-                                              weight: viewModel.selectedTab == tab ? .semibold : .regular))
-                                .foregroundColor(viewModel.selectedTab == tab ? .blue : .gray)
-
-                            if viewModel.selectedTab == tab {
+        NavigationView {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    ForEach(TransactionTab.allCases) { tab in
+                        Button(action: {
+                            withAnimation { viewModel.selectedTab = tab }
+                        }) {
+                            VStack(spacing: 8) {
+                                Text(tab.rawValue)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 16))
+                                    .foregroundColor(viewModel.selectedTab == tab ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
+                                
                                 Rectangle()
-                                    .fill(Color.blue)
-                                    .matchedGeometryEffect(id: "underline", in: underlineNamespace)
+                                    .fill(viewModel.selectedTab == tab ? Color(red: 0, green: 0.37, blue: 0.92) : Color.clear)
                                     .frame(height: 2)
-                            } else {
-                                Color.clear.frame(height: 2)
                             }
                         }
                         .frame(maxWidth: .infinity)
                     }
                 }
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 8)
-            .padding(.top, 32)
+                .background(Color.white)
+                .padding(.bottom, 8)
+                .padding(.top, 32)
 
-            TabView(selection: $viewModel.selectedTab) {
-                ForEach(TransactionTab.allCases) { tab in
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            ForEach(viewModel.filteredTasks) { task in
-                                if tab == .ongoing {
-                                    OngoingTransactionRow(task: task)
-                                } else {
-                                    CompletedTransactionRow(task: task) {
-                                        viewModel.toggleCompletion(of: task)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .tag(tab)
+                TabView(selection: $viewModel.selectedTab) {
+                    OngoingTransactionsView(viewModel: viewModel)
+                        .tag(TransactionTab.ongoing)
+                    
+                    CompletedTransactionsView(viewModel: viewModel)
+                        .tag(TransactionTab.completed)
+                }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            }
+            .padding(.bottom, 65)
+            .background(Color.white.edgesIgnoringSafeArea(.all))
+            .onAppear {
+                viewModel.refreshTransactions()
+                tabBarVM.show()
+            }
+        }
+    }
+}
+
+struct OngoingTransactionsView: View {
+    let viewModel: TransactionViewModel
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(viewModel.getOngoingTransactionsSortedByRecent()) { transaction in
+                    OngoingTransactionRow(transaction: transaction, viewModel: viewModel)
                 }
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
-        .padding(.bottom, 65)
-        .background(Color(white: 0.95).edgesIgnoringSafeArea(.all))
+    }
+}
+
+struct CompletedTransactionsView: View {
+    let viewModel: TransactionViewModel
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(viewModel.getCompletedTransactionsSortedByRecent()) { transaction in
+                    CompletedTransactionRow(transaction: transaction, viewModel: viewModel)
+                }
+            }
+        }
     }
 }
 
 struct OngoingTransactionRow: View {
-    let task: Transaction
+    let transaction: Transaction
+    let viewModel: TransactionViewModel
 
     var body: some View {
-        HStack(spacing: 16) {
-            Image(task.imageName)
-                .resizable()
-                .aspectRatio(1, contentMode: .fill)
-                .frame(width: 120, height: 99)
-                .clipped()
-                .cornerRadius(8)
+        NavigationLink(destination: 
+            OrderDetailView(order: transaction.toOrder())
+                .onAppear {
+                    TabBarViewModel.shared.hide()
+                }
+        ) {
+            HStack(spacing: 16) {
+                if let tailor = LocalDatabase.shared.getTailor(by: transaction.tailorId) {
+                    Group {
+                        if let uiImage = ImageManager.shared.loadImage(named: tailor.profileImage) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        } else {
+                            Image(tailor.profileImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        }
+                    }
+                    .frame(width: 120, height: 99)
+                    .clipped()
+                    .cornerRadius(8)
+                } else {
+                    Image("penjahit")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fill)
+                        .frame(width: 120, height: 99)
+                        .clipped()
+                        .cornerRadius(8)
+                }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(task.name)
-                    .font(.headline)
-                Text(task.subtitle)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text(task.price.idrFormatted)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-            }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(transaction.tailorName)
+                        .font(.headline)
+                        .foregroundColor(.black)
+                    Text(transaction.itemsSummary)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .lineLimit(2)
+                    Text(transaction.totalPrice.idrFormatted)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.black)
+                    
+                    Text(transaction.status.rawValue)
+                        .font(.caption)
+                        .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.1))
+                        .cornerRadius(4)
+                }
 
-            Spacer()
+                Spacer()
+                
                 Image(systemName: "chevron.right")
                     .font(.headline)
                     .foregroundColor(.gray)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            .background(Color.white)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 12)
+        .buttonStyle(PlainButtonStyle())
 
         Divider()
+            .background(Color.gray.opacity(0.3))
     }
 }
 
 struct CompletedTransactionRow: View {
-    let task: Transaction
-    let onRate: () -> Void
+    let transaction: Transaction
+    let viewModel: TransactionViewModel
+    @EnvironmentObject var userManager: UserManager
+    @State private var showingRatingPopup = false
 
     var body: some View {
-        HStack(spacing: 16) {
-            Image(task.imageName)
-                .resizable()
-                .aspectRatio(1, contentMode: .fill)
-                .frame(width: 120, height: 99)
-                .clipped()
-                .cornerRadius(8)
+        NavigationLink(destination: 
+            OrderDetailView(order: transaction.toOrder())
+                .onAppear {
+                    TabBarViewModel.shared.hide()
+                }
+        ) {
+            HStack(spacing: 16) {
+                if let tailor = LocalDatabase.shared.getTailor(by: transaction.tailorId) {
+                    Group {
+                        if let uiImage = ImageManager.shared.loadImage(named: tailor.profileImage) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        } else {
+                            Image(tailor.profileImage)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fill)
+                        }
+                    }
+                    .frame(width: 120, height: 99)
+                    .clipped()
+                    .cornerRadius(8)
+                } else {
+                    Image("penjahit")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fill)
+                        .frame(width: 120, height: 99)
+                        .clipped()
+                        .cornerRadius(8)
+                }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(task.name)
-                    .font(.headline)
-                Text(task.subtitle)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(transaction.tailorName)
+                        .font(.headline)
+                        .foregroundColor(.black)
+                    Text(transaction.itemsSummary)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .lineLimit(2)
+                }
+
+                Spacer()
+
+                if let currentTransaction = userManager.currentUser.transactions.first(where: { $0.id == transaction.id }),
+                    !currentTransaction.hasReview {
+                    Button("Nilai") {
+                        showingRatingPopup = true
+                    }
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 84, height: 36)
+                    .background(Color(red: 0, green: 0.37, blue: 0.92))
+                    .cornerRadius(18)
+                } else {
+                    Text("Dinilai")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.gray)
+                        .frame(width: 84, height: 36)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(18)
+                }
             }
-
-            Spacer()
-
-            Button("Nilai", action: onRate)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
-                .frame(width: 84, height: 36)
-                .background(Color.blue)
-                .cornerRadius(18)
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            .background(Color.white)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 12)
+        .buttonStyle(PlainButtonStyle())
+        .sheet(isPresented: $showingRatingPopup) {
+            RatingPopupView(
+                isPresented: $showingRatingPopup,
+                transaction: transaction
+            ) { review in
+                userManager.addReviewToTransaction(review: review)
+            }
+            .presentationBackground(Color.white)
+        }
 
         Divider()
+            .background(Color.gray.opacity(0.3))
     }
 }
 

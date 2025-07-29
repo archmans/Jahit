@@ -8,5 +8,13 @@
 import SwiftUI
 
 class HomeViewModel: ObservableObject {
-    @Published var searchText: String = ""
+    @Published var model: HomeModel
+    
+    init(model: HomeModel = .example) {
+        self.model = model
+    }
+    
+    var filteredTailors: [Tailor] {
+        return model.tailors
+    }
 }

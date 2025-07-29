@@ -9,15 +9,26 @@ import SwiftUI
 
 struct SearchView: View {
     @Binding var searchTitle: String
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel = SearchViewModel()
+    @StateObject private var tabBarVM = TabBarViewModel.shared
+    
+    init(searchTitle: Binding<String>) {
+        self._searchTitle = searchTitle
+    }
+    
     var body: some View {
-        VStack (alignment: .leading, spacing: 0) {
-            ZStack (alignment: .top) {
+        VStack(alignment: .leading, spacing: 0) {
+            ZStack(alignment: .top) {
                 HeaderBackground()
-                HStack {
-                    Button(action: {}) {
+                HStack(spacing: 12) {
+                    Button(action: {
+                        dismiss()
+                        tabBarVM.show()
+                    }) {
                         Image(systemName: "arrow.left")
                             .foregroundColor(.white)
-                            .font(.system(size: 30))
+                            .font(.system(size: 24, weight: .medium))
                     }
                     Text(searchTitle)
                         .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
@@ -29,73 +40,143 @@ struct SearchView: View {
             }
             .frame(height: 70)
             
-            // filter button
-            HStack {
-                Button(action: {}) {
-                    Image("filter")
-                        .foregroundColor(.black)
-                        .font(.system(size: 30))
-                    
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(Color(red: 0.82, green: 0.89, blue: 1.0))
-                .cornerRadius(15)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            // list of tailors
             ScrollView {
-                VStack(alignment: .leading) {
-                    ForEach(0..<8) { _ in
-                        Button(action: {}) {
-                            HStack(alignment: .top, spacing: 8) {
-                                Image("penjahit")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .clipped()
-                                    .cornerRadius(8)
-                                    .frame(width: 99, height: 99)
-                                    .padding(.leading, 4)
-                                VStack (spacing: 4) {
-                                    Text("Alfa Tailor")
-                                        .font(Font.custom("Plus Jakarta Sans", size: 12).weight(.semibold))
-                                        .foregroundColor(.black)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text("$$$$$")
-                                        .font(Font.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
-                                        .foregroundColor(.black)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text("Atasan, Bawahan")
-                                        .font(Font.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
-                                        .foregroundColor(.black)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text("0.5 km")
-                                        .font(Font.custom("PlusJakartaSans-Regular", size: 10).weight(.light))
-                                        .foregroundColor(.black)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                LazyVStack(spacing: 16) {
+                    if viewModel.isLoading {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 10),
+                            GridItem(.flexible(), spacing: 10)
+                        ], spacing: 16) {
+                            ForEach(0..<6, id: \.self) { _ in
+                                TailorGridItemSkeleton()
                             }
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 4)
-                            .cornerRadius(12)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .inset(by: 0.5)
-                                    .stroke(.black.opacity(0.2), lineWidth: 1)
-                            )
+                        }
+                    } else if viewModel.tailors.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "person.3")
+                                .font(.system(size: 48))
+                                .foregroundColor(.gray)
+                            Text("Tidak ada penjahit ditemukan")
+                                .font(.custom("PlusJakartaSans-Regular", size: 16))
+                                .foregroundColor(.gray)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 50)
+                    } else {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 10),
+                            GridItem(.flexible(), spacing: 10)
+                        ], spacing: 16) {
+                            ForEach(viewModel.tailors) { tailor in
+                                NavigationLink(destination: TailorDetailView(tailor: tailor)) {
+                                    TailorGridItem(tailor: tailor)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
                         }
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 8)
+                .padding(.top, 16)
             }
-            .padding(.top, 8)
-            .padding(.bottom, 70)
         }
+        .background(Color.white)
+        .navigationBarHidden(true)
+        .gesture(
+            DragGesture()
+                .onEnded { value in
+                    if value.translation.width > 100 && abs(value.translation.height) < 50 {
+                        dismiss()
+                        tabBarVM.show()
+                    }
+                }
+        )
+        .onAppear {
+            tabBarVM.hide()
+            viewModel.setCategory(searchTitle)
+        }
+    }
+}
+
+struct TailorGridItem: View {
+    let tailor: Tailor
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Image(tailor.profileImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 120)
+                .clipped()
+                .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(tailor.name)
+                    .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                    .foregroundColor(.black)
+                    .lineLimit(2)
+                
+                if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
+                    Text("Mulai dari Rp \(Int(minPrice).formatted())")
+                        .font(.custom("PlusJakartaSans-Regular", size: 12))
+                        .foregroundColor(.black)
+                }
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 10))
+                    Text(String(format: "%.1f", tailor.rating))
+                        .font(.custom("PlusJakartaSans-Regular", size: 10))
+                        .foregroundColor(.gray)
+                }
+                
+                Text(tailor.location)
+                    .font(.custom("PlusJakartaSans-Regular", size: 10))
+                    .foregroundColor(.gray)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
+        }
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+}
+
+struct TailorGridItemSkeleton: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 120)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 14)
+                
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 100, height: 12)
+                
+                HStack(spacing: 4) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 60, height: 10)
+                }
+                
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 80, height: 10)
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
+        }
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 

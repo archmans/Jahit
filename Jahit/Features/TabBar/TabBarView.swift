@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @ObservedObject var tabBarVM = TabBarViewModel()
+    @StateObject private var tabBarVM = TabBarViewModel.shared
+    @EnvironmentObject var userManager: UserManager
     
     var body: some View {
         ZStack {
@@ -16,36 +17,30 @@ struct TabBarView: View {
             case 0:
                 HomeView()
             case 1:
-                ChatView()
+                TransactionView()
             case 2:
-                SearchView(searchTitle: .constant("Terekomendasi"))
-            case 3:
-                Text("Profil")
+                ProfileView()
             default:
                 HomeView()
             }
             
-            VStack {
-                Spacer()
-                HStack {
+            if tabBarVM.isVisible {
+                VStack {
+                    Spacer()
+                    HStack {
                     TabButton(isSelected: tabBarVM.selectedTab == 0, title: "Home", icon: "home", filledIcon: "home.fill") {
                         withAnimation {
                             tabBarVM.selectedTab = 0
                         }
                     }
-                    TabButton(isSelected: tabBarVM.selectedTab == 1, title: "Chat", icon: "chat", filledIcon: "chat.fill") {
+                    TabButton(isSelected: tabBarVM.selectedTab == 1, title: "Transaksi", icon: "transaction", filledIcon: "transaction.fill") {
                         withAnimation {
                             tabBarVM.selectedTab = 1
                         }
                     }
-                    TabButton(isSelected: tabBarVM.selectedTab == 2, title: "Transaksi", icon: "transaction", filledIcon: "transaction.fill") {
+                    TabButton(isSelected: tabBarVM.selectedTab == 2, title: "Profil", icon: "profile", filledIcon: "profile.fill") {
                         withAnimation {
                             tabBarVM.selectedTab = 2
-                        }
-                    }
-                    TabButton(isSelected: tabBarVM.selectedTab == 3, title: "Profil", icon: "profile", filledIcon: "profile.fill") {
-                        withAnimation {
-                            tabBarVM.selectedTab = 3
                         }
                     }
                     
@@ -55,14 +50,20 @@ struct TabBarView: View {
                 .padding(.horizontal, 12)
                 .background(Color.white)
                 .shadow(color: Color.black.opacity(0.15), radius: 3, x: 0, y: -2)
+                }
+                .navigationTitle("")
+                .navigationBarHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
-            .navigationTitle("")
-            .navigationBarHidden(true)
-            .navigationBarBackButtonHidden(true)
+        }
+        .onAppear {
+            tabBarVM.selectedTab = 0
+            tabBarVM.show()
         }
     }
 }
 
 #Preview {
     TabBarView()
+        .environmentObject(UserManager.shared)
 }
