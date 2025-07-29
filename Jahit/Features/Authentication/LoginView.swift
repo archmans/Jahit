@@ -17,22 +17,16 @@ struct LoginView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 32) {
-                    // Logo and Title
                     logoSection
                     
-                    // Login Form
                     loginForm
                     
-                    // Login Button
                     loginButton
 
-                    // Divider
                     dividerSection
                     
-                    // Social Login Options
                     socialLoginSection
                     
-                    // Register Link
                     registerLinkSection
                 }
                 .padding(.horizontal, 24)
@@ -80,7 +74,6 @@ struct LoginView: View {
     
     private var loginForm: some View {
         VStack(spacing: 20) {
-            // Email/Phone Field
             VStack(alignment: .leading, spacing: 8) {
                 Text("Email atau Nomor Handphone")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -100,7 +93,6 @@ struct LoginView: View {
                     )
             }
             
-            // Password Field
             VStack(alignment: .leading, spacing: 8) {
                 Text("Kata Sandi")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -179,7 +171,6 @@ struct LoginView: View {
     
     private var socialLoginSection: some View {
         HStack(spacing: 20) {
-            // Google Button
             Button(action: {
                 viewModel.loginWithGoogle()
             }) {
@@ -194,7 +185,6 @@ struct LoginView: View {
             }
             .disabled(viewModel.isLoading)
             
-            // Apple Button
             Button(action: {
                 viewModel.loginWithApple()
             }) {

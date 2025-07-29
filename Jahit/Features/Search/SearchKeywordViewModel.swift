@@ -15,7 +15,6 @@ class SearchKeywordViewModel: ObservableObject {
     private var searchTask: Task<Void, Never>?
     
     func search(query: String) {
-        // Cancel previous search
         searchTask?.cancel()
         
         guard !query.isEmpty else {
@@ -26,7 +25,6 @@ class SearchKeywordViewModel: ObservableObject {
         isLoading = true
         
         searchTask = Task {
-            // Simulate network delay
             try? await Task.sleep(nanoseconds: 500_000_000)
             
             await MainActor.run {
@@ -48,18 +46,15 @@ class SearchKeywordViewModel: ObservableObject {
     private func performSearch(query: String) -> [SearchResult] {
         var results: [SearchResult] = []
         
-        // Search through all tailors and their products
         for tailor in Tailor.sampleTailors {
-            // Check if tailor name matches
             if tailor.name.lowercased().contains(query) {
                 results.append(.tailor(tailor))
             }
             
-            // Search through tailor's service items (products)
             for service in tailor.services {
                 for item in service.items {
                     if item.name.lowercased().contains(query) || 
-                       service.name.lowercased().contains(query) {
+                        service.name.lowercased().contains(query) {
                         let product = ProductSearchResult(
                             id: item.id,
                             name: item.name,
@@ -75,18 +70,15 @@ class SearchKeywordViewModel: ObservableObject {
             }
         }
         
-        // Remove duplicate tailors if they appear both as tailor match and product match
         var uniqueResults: [SearchResult] = []
         var addedTailorIds: Set<String> = []
         
-        // First add all products
         for result in results {
             if case .product = result {
                 uniqueResults.append(result)
             }
         }
         
-        // Then add tailors that don't have products in results
         for result in results {
             if case .tailor(let tailor) = result {
                 let hasProductFromTailor = uniqueResults.contains { searchResult in

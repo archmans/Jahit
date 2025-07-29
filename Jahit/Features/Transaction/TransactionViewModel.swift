@@ -15,7 +15,6 @@ class TransactionViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        // Observe UserManager changes to automatically update UI
         userManager.$currentUser
             .sink { [weak self] _ in
                 DispatchQueue.main.async {
@@ -50,7 +49,6 @@ class TransactionViewModel: ObservableObject {
     func getOngoingTransactionsSortedByRecent() -> [Transaction] {
         return userManager.getOngoingTransactions()
             .sorted { transaction1, transaction2 in
-                // Sort by most recent date (newest first)
                 return transaction1.orderDate > transaction2.orderDate
             }
     }
@@ -58,7 +56,6 @@ class TransactionViewModel: ObservableObject {
     func getCompletedTransactionsSortedByRecent() -> [Transaction] {
         return userManager.getCompletedTransactions()
             .sorted { transaction1, transaction2 in
-                // Sort by most recent date (newest first)
                 return transaction1.orderDate > transaction2.orderDate
             }
     }
@@ -66,7 +63,6 @@ class TransactionViewModel: ObservableObject {
     func getAllTransactionsSortedByRecent() -> [Transaction] {
         let allTransactions = userManager.getOngoingTransactions() + userManager.getCompletedTransactions()
         return allTransactions.sorted { transaction1, transaction2 in
-            // Sort by most recent date (newest first)
             return transaction1.orderDate > transaction2.orderDate
         }
     }

@@ -26,7 +26,6 @@ class AuthenticationViewModel: ObservableObject {
     init() {
         isAuthenticated = userManager.currentUser.isLoggedIn
         
-        // Observe UserManager state changes
         userManager.$currentUser
             .map { $0.isLoggedIn }
             .receive(on: DispatchQueue.main)
@@ -42,9 +41,7 @@ class AuthenticationViewModel: ObservableObject {
         isLoading = true
         errorMessage = ""
         
-        // Simulate API call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            // Check if email or phone already exists
             if self.userManager.isEmailRegistered(self.email) {
                 self.showErrorMessage("Email sudah terdaftar")
                 return
@@ -55,7 +52,6 @@ class AuthenticationViewModel: ObservableObject {
                 return
             }
             
-            // Success - create user account
             self.userManager.registerUser(
                 email: self.email,
                 phoneNumber: self.phoneNumber,
@@ -73,14 +69,11 @@ class AuthenticationViewModel: ObservableObject {
         isLoading = true
         errorMessage = ""
         
-        // Simulate API call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            // Try to authenticate with registered users
             let isValid = self.userManager.authenticateUser(identifier: self.emailOrPhone, password: self.password)
             
             if isValid {
                 self.clearFields()
-                // isAuthenticated will be automatically updated via Combine subscription
             } else {
                 self.showErrorMessage("Email/nomor handphone atau kata sandi salah")
             }
@@ -92,38 +85,33 @@ class AuthenticationViewModel: ObservableObject {
     func loginWithGoogle() {
         isLoading = true
         
-        // Simulate Google login
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             self.userManager.loginWithSocialProvider(
                 provider: .google,
                 email: "user@gmail.com",
                 name: "Google User",
-                phoneNumber: "081234567890" // Add mock phone number
+                phoneNumber: "081234567890"
             )
             self.isLoading = false
-            // isAuthenticated will be automatically updated via Combine subscription
         }
     }
     
     func loginWithApple() {
         isLoading = true
         
-        // Simulate Apple login
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             self.userManager.loginWithSocialProvider(
                 provider: .apple,
                 email: "user@icloud.com",
                 name: "Apple User",
-                phoneNumber: "081987654321" // Add mock phone number
+                phoneNumber: "081987654321"
             )
             self.isLoading = false
-            // isAuthenticated will be automatically updated via Combine subscription
         }
     }
     
     func logout() {
         userManager.logout()
-        // isAuthenticated will be automatically updated via Combine subscription
     }
     
     private func validateRegistrationInput() -> Bool {

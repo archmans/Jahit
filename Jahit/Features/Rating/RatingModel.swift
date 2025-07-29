@@ -13,9 +13,9 @@ struct Review: Identifiable, Codable {
     let tailorId: String
     let userId: String
     let userName: String
-    let rating: Int // 1-5 stars
+    let rating: Int
     let comment: String
-    let reviewImages: [String] // Array of image names
+    let reviewImages: [String]
     let createdDate: Date
     
     init(

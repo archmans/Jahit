@@ -26,35 +26,26 @@ struct CustomizationView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             headerView
             
-            // Content
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    // Tailor Name
                     tailorNameView
                     
                     Divider()
                     
-                    // Category
                     categoryView
                     
-                    // Item Selection
                     itemSelectionView
                     
-                    // Selected Item Card
                     if viewModel.customizationOrder.selectedItem != nil {
                         selectedItemCardView
                         
-                        // Fabric Selection
                         fabricSelectionView
                     }
                     
-                    // Description
                     descriptionView
                     
-                    // Reference Images
                     referenceImagesView
                     
                     Spacer(minLength: 100)
@@ -117,7 +108,6 @@ struct CustomizationView: View {
         )
         .onAppear {
             tabBarVM.hide()
-            // Update location each time CustomizationView appears
             userManager.forceUpdateLocation()
         }
     }
@@ -138,7 +128,6 @@ struct CustomizationView: View {
             
             Spacer()
             
-            // Cart Button
             Button(action: {
                 isCartViewPresented = true
             }) {
@@ -176,7 +165,7 @@ struct CustomizationView: View {
     private var categoryView: some View {
         HStack(spacing: 4) {
             Text(viewModel.customizationOrder.category)
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                 .foregroundColor(.black)
             
             Text("*")
@@ -209,9 +198,7 @@ struct CustomizationView: View {
     
     private var fabricSelectionView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Only show fabric selection for non-repair services
             if !viewModel.customizationOrder.isRepairService {
-                // Fabric Provider Selection
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 4) {
                         Text("Pilihan Bahan")
@@ -274,11 +261,10 @@ struct CustomizationView: View {
                     .background(Color.white)
                     .cornerRadius(12)
                 }
-                
-                // Fabric Type Selection (only when tailor provides fabric and item is selected)
+
                 if viewModel.customizationOrder.fabricProvider == .tailor,
-                   let selectedItem = viewModel.customizationOrder.selectedItem,
-                   !selectedItem.availableFabrics.isEmpty {
+                    let selectedItem = viewModel.customizationOrder.selectedItem,
+                    !selectedItem.availableFabrics.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 4) {
                             Text("Jenis Bahan")
@@ -335,8 +321,6 @@ struct CustomizationView: View {
                     }
                 }
             }
-            
-            // Price Breakdown
             priceBreakdownView
         }
         .padding(.vertical, 8)
@@ -345,10 +329,10 @@ struct CustomizationView: View {
     private var priceBreakdownView: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Rincian Harga")
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                 .foregroundColor(.black)
             
-            VStack(spacing: 4) {
+            VStack(spacing: 8) {
                 HStack {
                     Text("\(viewModel.customizationOrder.selectedItem?.name ?? "") × \(viewModel.customizationOrder.quantity)")
                         .font(.custom("PlusJakartaSans-Regular", size: 14))
@@ -359,10 +343,9 @@ struct CustomizationView: View {
                         .foregroundColor(.gray)
                 }
                 
-                // Only show fabric costs for non-repair services
                 if !viewModel.customizationOrder.isRepairService &&
-                   viewModel.customizationOrder.fabricProvider == .tailor,
-                   let fabricOption = viewModel.customizationOrder.selectedFabricOption {
+                    viewModel.customizationOrder.fabricProvider == .tailor,
+                    let fabricOption = viewModel.customizationOrder.selectedFabricOption {
                     HStack {
                         Text("Biaya bahan (\(fabricOption.type))")
                             .font(.custom("PlusJakartaSans-Regular", size: 14))
@@ -383,24 +366,19 @@ struct CustomizationView: View {
                     Spacer()
                     Text(viewModel.formattedPrice)
                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                        .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
+                        .foregroundColor(Color.black)
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(16)
             .background(Color.white)
             .cornerRadius(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-            )
         }
     }
     
     private var descriptionView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Deskripsi Pesanan (Opsional)")
-                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+            Text("Deskripsi Pesanan")
+                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                 .foregroundColor(.black)
             
             TextField("Deskripsikan pesanan Anda", text: Binding(
@@ -411,23 +389,14 @@ struct CustomizationView: View {
             .foregroundColor(.black)
             .accentColor(Color(red: 0, green: 0.37, blue: 0.92))
             .focused($isDescriptionFocused)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Simpan Deskripsi") {
-                        isDescriptionFocused = false
-                    }
-                    .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
-                }
+            .submitLabel(.done)
+            .onSubmit {
+                isDescriptionFocused = false
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .background(Color.white)
             .cornerRadius(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-            )
             .environment(\.colorScheme, .light)
         }
     }
@@ -436,7 +405,7 @@ struct CustomizationView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Referensi Gambar (Maks 10)")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                     .foregroundColor(.black)
                 
                 Spacer()
@@ -466,7 +435,7 @@ struct CustomizationView: View {
                     .cornerRadius(8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color(red: 0, green: 0.37, blue: 0.92), style: StrokeStyle(lineWidth: 2, dash: [5]))
+                            .stroke(Color(red: 0, green: 0.37, blue: 0.92), style: StrokeStyle(lineWidth: 1, dash: [5]))
                     )
                 }
                 .disabled(viewModel.isUploadingImages)
@@ -474,7 +443,6 @@ struct CustomizationView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                     ForEach(Array(viewModel.customizationOrder.referenceImages.enumerated()), id: \.offset) { index, imageName in
                         ZStack(alignment: .topTrailing) {
-                            // Try to load saved image first, fallback to bundled image
                             Group {
                                 if let uiImage = ImageManager.shared.loadImage(named: imageName) {
                                     Image(uiImage: uiImage)
@@ -535,7 +503,6 @@ struct CustomizationView: View {
     private var selectedItemCardView: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 12) {
-                // Item Image
                 if let product = viewModel.customizationOrder.selectedItem {
                     Image(product.image)
                         .resizable()
@@ -544,7 +511,6 @@ struct CustomizationView: View {
                         .clipped()
                         .cornerRadius(8)
                     
-                    // Item Details
                     VStack(alignment: .leading, spacing: 4) {
                         Text(product.name)
                             .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
@@ -558,7 +524,6 @@ struct CustomizationView: View {
                     
                     Spacer()
                     
-                    // Quantity Selection in bottom right
                     VStack(spacing: 8) {
                         Spacer()
                         
@@ -606,10 +571,6 @@ struct CustomizationView: View {
         }
         .background(Color.white)
         .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-        )
     }
     
     private var bottomSectionView: some View {

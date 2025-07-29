@@ -15,7 +15,6 @@ class LocalDatabase: ObservableObject {
            let savedTailors = try? JSONDecoder().decode([Tailor].self, from: tailorsData) {
             self.tailors = savedTailors
         } else {
-            // First time launch - use sample data
             self.tailors = Tailor.sampleTailors
             saveTailorsToStorage()
         }
@@ -57,14 +56,12 @@ class LocalDatabase: ObservableObject {
             return
         }
         
-        // Check if review already exists to avoid duplicates
         let existingReviews = tailors[index].reviews
         if existingReviews.contains(where: { $0.id == review.id }) {
             print("Review already exists for tailor \(tailorId)")
             return
         }
         
-        // Convert Review to TailorReview
         let tailorReview = TailorReview(
             id: review.id,
             userName: review.userName,
@@ -74,12 +71,10 @@ class LocalDatabase: ObservableObject {
             reviewImages: review.reviewImages
         )
         
-        // Add review to tailor
         let updatedTailor = tailors[index]
         var updatedReviews = updatedTailor.reviews
         updatedReviews.append(tailorReview)
         
-        // Update tailor with new reviews and recalculated rating
         let newRating = calculateAverageRating(reviews: updatedReviews)
         
         tailors[index] = Tailor(
@@ -97,12 +92,9 @@ class LocalDatabase: ObservableObject {
         print("Added review to tailor \(tailorId). New rating: \(newRating)")
         print("Tailor now has \(updatedReviews.count) reviews")
         
-        // Save to persistent storage
         saveTailorsToStorage()
         
-        // Trigger UI update by explicitly updating the published property
         DispatchQueue.main.async {
-            // Force the @Published property to trigger by reassigning the array
             let updatedTailors = self.tailors
             self.tailors = updatedTailors
             self.objectWillChange.send()

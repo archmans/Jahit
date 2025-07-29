@@ -20,10 +20,8 @@ struct OrderDetailView: View {
             headerView
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    // Progress Steps
                     progressStepsView
                     
-                    // Order Content
                     orderContentView
                 }
             }
@@ -69,9 +67,7 @@ struct OrderDetailView: View {
         VStack(spacing: 4) {
             ForEach(Array(viewModel.applicableStatuses.enumerated()), id: \.offset) { index, status in
                 VStack(spacing: 0) {
-                    // Main content row
                     HStack(spacing: 16) {
-                        // Step circle
                         ZStack {
                             Circle()
                                 .fill(index <= viewModel.currentStepIndex ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray.opacity(0.3))
@@ -82,7 +78,6 @@ struct OrderDetailView: View {
                                 .font(.system(size: 16))
                         }
                         
-                        // Status text
                         VStack(alignment: .leading, spacing: 4) {
                             Text(status.rawValue)
                                 .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -91,7 +86,6 @@ struct OrderDetailView: View {
                         
                         Spacer()
                         
-                        // Time
                         if index <= viewModel.currentStepIndex {
                             Text(getTimeForStatus(index: index))
                                 .font(.custom("PlusJakartaSans-Regular", size: 12))
@@ -99,10 +93,8 @@ struct OrderDetailView: View {
                         }
                     }
                     
-                    // Connector line to next step
                     if index < viewModel.applicableStatuses.count - 1 {
                         HStack {
-                            // Line aligned under the circle
                             VStack(spacing: 2) {
                                 ForEach(0..<6, id: \.self) { _ in
                                     Circle()
@@ -135,7 +127,6 @@ struct OrderDetailView: View {
                 .padding(.horizontal, 20)
             
             VStack(alignment: .leading, spacing: 20) {
-                // Items Card
                 VStack(alignment: .leading, spacing: 16) {
                     itemsListView
                 }
@@ -145,15 +136,11 @@ struct OrderDetailView: View {
                 .cornerRadius(12)
                 .padding(.horizontal, 20)
                 
-                // Order Details Card
                 VStack(alignment: .leading, spacing: 16) {
-                    // Pickup Address
                     orderDetailRow(title: "Alamat Pengiriman/Penjemputan", value: viewModel.order.pickupAddress)
                     
-                    // Payment Method
                     orderDetailRow(title: "Metode Pembayaran", value: viewModel.order.paymentMethod)
                     
-                    // Order Details
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("No. Pesanan")
@@ -166,7 +153,6 @@ struct OrderDetailView: View {
                         }
                     }
                     
-                    // Total Amount
                     HStack {
                         Text("Total Pesanan")
                             .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
@@ -178,7 +164,6 @@ struct OrderDetailView: View {
                     }
                     .padding(.top, 8)
                     
-                    // Review Section (only show if there's a review)
                     if let review = viewModel.orderReview {
                         VStack(alignment: .leading, spacing: 8) {
                             Divider()
@@ -207,7 +192,6 @@ struct OrderDetailView: View {
                 TransactionItemRowView(item: item, isLast: item.id == viewModel.transactionItems.last?.id)
             }
             
-            // Delivery Option & Cost Summary
             if let deliveryOption = viewModel.order.deliveryOption {
                 VStack(spacing: 8) {
                     Divider()
@@ -363,7 +347,6 @@ struct ItemImageView: View {
                     .resizable()
                     .aspectRatio(1, contentMode: .fill)
             } else {
-                // Fallback to bundled image if saved image not found
                 Image(imageName)
                     .resizable()
                     .aspectRatio(1, contentMode: .fill)

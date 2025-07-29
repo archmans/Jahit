@@ -15,7 +15,6 @@ struct BannerCard: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Carousel Content
             TabView(selection: $currentIndex) {
                 ForEach(0..<bannerImages.count, id: \.self) { index in
                     Image(bannerImages[index])
@@ -37,7 +36,6 @@ struct BannerCard: View {
                 stopAutoScroll()
             }
             
-            // Page Indicator
             HStack(spacing: 8) {
                 ForEach(0..<bannerImages.count, id: \.self) { index in
                     Circle()

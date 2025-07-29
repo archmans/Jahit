@@ -17,22 +17,16 @@ struct RegisterView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 32) {
-                    // Logo and Title
                     logoSection
                     
-                    // Registration Form
                     registrationForm
                     
-                    // Register Button
                     registerButton
                     
-                    // Divider
                     dividerSection
                     
-                    // Social Login Options
                     socialLoginSection
                     
-                    // Login Link
                     loginLinkSection
                 }
                 .padding(.horizontal, 24)
@@ -49,14 +43,12 @@ struct RegisterView: View {
             }
             .alert("Berhasil!", isPresented: $viewModel.showRegistrationSuccess) {
                 Button("OK") {
-                    // Clear the registration fields
                     viewModel.email = ""
                     viewModel.phoneNumber = ""
                     viewModel.password = ""
                     viewModel.registrationSuccessMessage = ""
                     viewModel.showRegistrationSuccess = false
                     
-                    // Navigate to login view with animation
                     withAnimation(.easeInOut(duration: 0.3)) {
                         showLoginView = true
                     }
@@ -97,7 +89,6 @@ struct RegisterView: View {
     
     private var registrationForm: some View {
         VStack(spacing: 20) {
-            // Email Field
             VStack(alignment: .leading, spacing: 8) {
                 Text("Email")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -117,7 +108,6 @@ struct RegisterView: View {
                     )
             }
             
-            // Phone Number Field
             VStack(alignment: .leading, spacing: 8) {
                 Text("Nomor Handphone")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -136,7 +126,6 @@ struct RegisterView: View {
                     )
             }
             
-            // Password Field
             VStack(alignment: .leading, spacing: 8) {
                 Text("Kata Sandi")
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -215,7 +204,6 @@ struct RegisterView: View {
     
     private var socialLoginSection: some View {
         HStack(spacing: 20) {
-            // Google Button
             Button(action: {
                 viewModel.loginWithGoogle()
             }) {
@@ -230,7 +218,6 @@ struct RegisterView: View {
             }
             .disabled(viewModel.isLoading)
             
-            // Apple Button
             Button(action: {
                 viewModel.loginWithApple()
             }) {

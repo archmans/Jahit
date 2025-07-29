@@ -29,9 +29,8 @@ class CustomizationViewModel: ObservableObject {
         )
         self.availableItems = service.items
         
-        // Pre-select the product if provided
         if let preSelectedProduct = preSelectedProduct,
-           let matchingItem = service.items.first(where: { $0.id == preSelectedProduct.id }) {
+            let matchingItem = service.items.first(where: { $0.id == preSelectedProduct.id }) {
             self.customizationOrder.selectedItem = matchingItem
         }
     }
@@ -59,7 +58,6 @@ class CustomizationViewModel: ObservableObject {
     func selectItem(_ item: TailorServiceItem) {
         customizationOrder.selectedItem = item
         customizationOrder.selectedFabricOption = nil
-        
         if !customizationOrder.isRepairService {
             customizationOrder.fabricProvider = .tailor
         }
@@ -76,10 +74,8 @@ class CustomizationViewModel: ObservableObject {
     }
     
     func updateFabricProvider(_ provider: FabricProvider) {
-        // Only update fabric provider for non-repair services
         if !customizationOrder.isRepairService {
             customizationOrder.fabricProvider = provider
-            // Reset fabric selection when provider changes
             if provider == .personal {
                 customizationOrder.selectedFabricOption = nil
             }
@@ -87,7 +83,6 @@ class CustomizationViewModel: ObservableObject {
     }
     
     func updateFabricOption(_ option: FabricOption) {
-        // Only update fabric option for non-repair services, or if it's a repair service with actual options (like button types)
         customizationOrder.selectedFabricOption = option
     }
     
@@ -96,11 +91,9 @@ class CustomizationViewModel: ObservableObject {
             print("Invalid customization order")
             return
         }
-        
         userManager.addCustomizationToCart(customizationOrder)
         showingCartSuccess = true
         
-        // Auto dismiss after 2 seconds
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.showingCartSuccess = false
         }
@@ -120,24 +113,19 @@ class CustomizationViewModel: ObservableObject {
     
     func uploadImages(_ images: [UIImage]) {
         guard !images.isEmpty else { return }
-        
         print("Uploading \(images.count) images")
         isUploadingImages = true
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
-            
             let savedImageNames = self.imageManager.saveImages(images)
             print("Saved \(savedImageNames.count) images with names: \(savedImageNames)")
             
             DispatchQueue.main.async {
                 self.isUploadingImages = false
-                
                 for imageName in savedImageNames {
                     self.addReferenceImage(imageName)
                 }
-                
-                // Clear selected images after upload
                 self.selectedImages.removeAll()
                 self.showingImagePicker = false
             }
@@ -150,21 +138,13 @@ class CustomizationViewModel: ObservableObject {
     
     func removeReferenceImage(at index: Int) {
         guard index < customizationOrder.referenceImages.count else { return }
-        
         let imageName = customizationOrder.referenceImages[index]
-        
-        // Delete from storage
         _ = imageManager.deleteImage(named: imageName)
-        
-        // Remove from array
         customizationOrder.referenceImages.remove(at: index)
     }
     
     func clearAllReferenceImages() {
-        // Delete all images from storage
         imageManager.deleteImages(named: customizationOrder.referenceImages)
-        
-        // Clear the array
         customizationOrder.referenceImages.removeAll()
     }
 }

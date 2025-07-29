@@ -4,15 +4,12 @@ struct ItemPickerView: View {
     @ObservedObject var viewModel: CustomizationViewModel
     @Environment(\.dismiss) private var dismiss
     
-    // Grid columns for 2-column layout
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 2)
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             headerView
             
-            // Items Grid
             ScrollView {
                 if viewModel.availableItems.isEmpty {
                     emptyStateView
@@ -24,7 +21,6 @@ struct ItemPickerView: View {
                                 isSelected: viewModel.customizationOrder.selectedItem?.id == item.id,
                                 onTap: {
                                     viewModel.selectItem(item)
-                                    // Add haptic feedback
                                     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                                     impactFeedback.impactOccurred()
                                 }
@@ -32,7 +28,7 @@ struct ItemPickerView: View {
                         }
                     }
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 100) // Space for safe area
+                    .padding(.bottom, 100)
                 }
             }
             .padding(.top, 20)
@@ -40,20 +36,18 @@ struct ItemPickerView: View {
         .background(Color.white)
         .colorScheme(.light)
         .navigationBarHidden(true)
-        .presentationDetents([.large]) // Full screen bottom sheet
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color.white)
     }
     
     private var headerView: some View {
         VStack(spacing: 12) {
-            // Drag indicator
             RoundedRectangle(cornerRadius: 2)
                 .fill(Color.gray.opacity(0.3))
                 .frame(width: 40, height: 4)
                 .padding(.top, 8)
             
-            // Title and close button
             HStack {
                 Text("Pilih Item")
                     .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
@@ -68,7 +62,6 @@ struct ItemPickerView: View {
                 .foregroundColor(.blue)
             }
             
-            // Items count indicator
             Text("\(viewModel.availableItems.count) item tersedia")
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.gray)
@@ -109,7 +102,6 @@ struct ItemCard: View {
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 12) {
-                // Item Image
                 ZStack(alignment: .topTrailing) {
                     Image(item.image)
                         .resizable()
@@ -118,7 +110,6 @@ struct ItemCard: View {
                         .clipped()
                         .cornerRadius(12)
                     
-                    // Selection indicator
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.blue)
@@ -130,7 +121,6 @@ struct ItemCard: View {
                     }
                 }
                 
-                // Item Info
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.name)
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))

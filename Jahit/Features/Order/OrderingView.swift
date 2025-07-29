@@ -24,32 +24,23 @@ struct OrderingView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             headerView
             
-            // Content
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    // Tailor Name
                     tailorNameView
                     Divider()
                     
-                    // Address
                     addressView
                     
-                    // Date Selection
                     dateSelectionView
                     
-                    // Time Selection
                     timeSelectionView
                     
-                    // Delivery Option
                     deliveryOptionView
                     
-                    // Order Summary
                     orderSummaryView
                     
-                    // Payment Method
                     paymentMethodView
                     
                     Spacer(minLength: 100)
@@ -58,7 +49,6 @@ struct OrderingView: View {
                 .padding(.top, 20)
             }
             
-            // Bottom Section
             bottomSectionView
         }
         .background(Color(red: 0.95, green: 0.95, blue: 0.95))
@@ -79,7 +69,6 @@ struct OrderingView: View {
         )
         .onAppear {
             tabBarVM.hide()
-            // Sync user's current address to the order
             if let userAddress = userManager.currentUser.address {
                 viewModel.updateAddress(userAddress)
             }
@@ -169,7 +158,6 @@ struct OrderingView: View {
                         .foregroundColor(userManager.currentUser.phoneNumber?.isEmpty != false ? .gray : .black)
                 }
                 
-                // Address with location icon on separate line
                 HStack(spacing: 8) {
                     Image("location")
                         .foregroundColor(.red)
@@ -377,7 +365,6 @@ struct OrderingView: View {
                             .foregroundColor(.black)
                     }
                     
-                    // Show fabric information if applicable
                     if let fabricProvider = item.fabricProvider {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
@@ -403,9 +390,7 @@ struct OrderingView: View {
                 }
             }
             
-            // Custom Order Details
             if !customizationOrder.description.isEmpty || !customizationOrder.referenceImages.isEmpty {
-                // Description
                 if !customizationOrder.description.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Deskripsi:")
@@ -422,7 +407,6 @@ struct OrderingView: View {
                     }
                 }
                 
-                // Reference Images
                 if !customizationOrder.referenceImages.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Gambar Referensi (\(customizationOrder.referenceImages.count)):")
@@ -437,7 +421,6 @@ struct OrderingView: View {
                                             .resizable()
                                             .aspectRatio(1, contentMode: .fill)
                                     } else {
-                                        // Fallback to bundled image if saved image not found
                                         Image(imageName)
                                             .resizable()
                                             .aspectRatio(1, contentMode: .fill)
@@ -458,7 +441,6 @@ struct OrderingView: View {
             
             Divider()
             
-            // Show delivery cost if selected
             if let deliveryOption = viewModel.selectedDeliveryOption, deliveryOption.additionalCost > 0 {
                 HStack {
                     Text("Biaya \(deliveryOption.displayName.lowercased()):")
@@ -600,7 +582,6 @@ struct AddressEditSheet: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Header with drag indicator
             VStack(spacing: 8) {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.gray.opacity(0.3))
@@ -622,13 +603,11 @@ struct AddressEditSheet: View {
             .padding(.horizontal, 20)
             .padding(.top, 20)
             
-            // Description
             Text("Masukkan nama, nomor telepon, dan alamat lengkap")
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
                 .foregroundColor(.gray)
                 .padding(.horizontal, 20)
                 
-                // Name and Phone Number fields
                 VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Nama")
@@ -672,17 +651,14 @@ struct AddressEditSheet: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                // Divider
                 Divider()
                     .padding(.horizontal, 20)
                 
-                // Address Section Title
                 Text("Alamat")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
                     .foregroundColor(.black)
                     .padding(.horizontal, 20)
                 
-                // Auto location button
                 Button(action: {
                     userManager.forceUpdateLocation()
                 }) {
@@ -729,7 +705,6 @@ struct AddressEditSheet: View {
                 .disabled(userManager.isLocationLoading)
                 .padding(.horizontal, 20)
                 
-                // Manual address input
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Atau masukkan alamat manual")
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -752,7 +727,6 @@ struct AddressEditSheet: View {
                 }
                 .padding(.horizontal, 20)
                 
-                // Show location error if any
                 if let error = userManager.locationError {
                     Text(error)
                         .font(.custom("PlusJakartaSans-Regular", size: 12))
@@ -762,7 +736,6 @@ struct AddressEditSheet: View {
                 
                 Spacer()
                 
-                // Save button
                 Button(action: {
                     onSave(addressText, nameText, phoneText)
                     dismiss()
@@ -781,13 +754,11 @@ struct AddressEditSheet: View {
             }
         .background(Color.white)
         .onChange(of: userManager.currentUser.address) { _, newAddress in
-            // Update addressText when location is updated
             if let newAddress = newAddress, !newAddress.isEmpty {
                 addressText = newAddress
             }
         }
         .onAppear {
-            // Sync current data when sheet appears
             if let currentAddress = userManager.currentUser.address, !currentAddress.isEmpty {
                 addressText = currentAddress
             }

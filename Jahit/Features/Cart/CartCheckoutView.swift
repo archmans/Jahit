@@ -42,7 +42,6 @@ struct CartCheckoutView: View {
         return formatter.string(from: pickupDate)
     }
     
-    // Group items by tailor
     var groupedItems: [String: [CartItem]] {
         Dictionary(grouping: selectedItems, by: { $0.tailorName })
     }
@@ -59,28 +58,20 @@ struct CartCheckoutView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             headerView
             
-            // Content
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    // Address
                     addressView
                     
-                    // Date Selection
                     dateSelectionView
                     
-                    // Time Selection
                     timeSelectionView
                     
-                    // Delivery Option
                     deliveryOptionView
                     
-                    // Order Summary
                     orderSummaryView
                     
-                    // Payment Method
                     paymentMethodView
                     
                     Spacer(minLength: 100)
@@ -89,7 +80,6 @@ struct CartCheckoutView: View {
                 .padding(.top, 20)
             }
             
-            // Bottom Section
             bottomSectionView
         }
         .background(Color(red: 0.95, green: 0.95, blue: 0.95))
@@ -193,7 +183,6 @@ struct CartCheckoutView: View {
             Divider()
             
             VStack(alignment: .leading, spacing: 8) {
-                // Name - Phone Number on same line
                 HStack(spacing: 8) {
                     Text(userManager.currentUser.name.isEmpty ? "Nama belum diset" : userManager.currentUser.name)
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
@@ -208,7 +197,6 @@ struct CartCheckoutView: View {
                         .foregroundColor(userManager.currentUser.phoneNumber?.isEmpty != false ? .gray : .black)
                 }
                 
-                // Address with location icon on separate line
                 HStack(spacing: 8) {
                     Image("location")
                         .foregroundColor(.red)
@@ -336,7 +324,6 @@ struct CartCheckoutView: View {
                                     .font(.custom("PlusJakartaSans-Regular", size: 12))
                                     .foregroundColor(.gray)
                             } else if option == .pickup {
-                                // For pickup, we need to get tailor location from the first item
                                 if let firstItem = selectedItems.first {
                                     let tailor = LocalDatabase.shared.getTailor(by: firstItem.tailorId)
                                     Text(tailor?.locationDescription ?? "Lokasi tidak tersedia")
@@ -432,7 +419,6 @@ struct CartCheckoutView: View {
                                 }
                             }
                             
-                            // Custom Order Details
                             if item.isCustomOrder {
                                 let hasDescription = item.customDescription != nil && !item.customDescription!.isEmpty
                                 let hasImages = !item.referenceImages.isEmpty
@@ -505,7 +491,6 @@ struct CartCheckoutView: View {
             
             Divider()
             
-            // Show delivery cost if selected
             if let deliveryOption = selectedDeliveryOption, deliveryOption.additionalCost > 0 {
                 HStack {
                     Text("Biaya \(deliveryOption.displayName.lowercased()):")
@@ -627,7 +612,6 @@ struct CartCheckoutView: View {
     }
     
     private func processOrder() {
-        // Validate required fields
         guard !selectedItems.isEmpty,
               userManager.currentUser.address != nil,
               let pickupDate = pickupDate,
@@ -638,7 +622,6 @@ struct CartCheckoutView: View {
             return
         }
         
-        // Create transaction from cart items
         let success = userManager.createTransactionFromCart(
             selectedItems: selectedItems,
             pickupDate: pickupDate,
@@ -654,11 +637,9 @@ struct CartCheckoutView: View {
             print("Pickup Time: \(pickupTime.displayName)")
             print("Payment Method: \(selectedPaymentMethod.displayName)")
             
-            // Show payment success view
             showingPaymentSuccess = true
         } else {
             print("Failed to process order")
-            // TODO: Show error alert to user
         }
     }
 }

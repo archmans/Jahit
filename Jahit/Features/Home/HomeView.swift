@@ -96,7 +96,6 @@ struct HomeView: View {
         }
         .onAppear {
             tabBarVM.show()
-            // Update location each time HomeView appears
             userManager.forceUpdateLocation()
         }
     }

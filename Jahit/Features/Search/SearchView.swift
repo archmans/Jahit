@@ -103,7 +103,6 @@ struct TailorGridItem: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Tailor Image
             Image(tailor.profileImage)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -112,20 +111,17 @@ struct TailorGridItem: View {
                 .cornerRadius(8)
             
             VStack(alignment: .leading, spacing: 4) {
-                // Tailor Name
                 Text(tailor.name)
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                     .foregroundColor(.black)
                     .lineLimit(2)
                 
-                // Starting Price
                 if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
                     Text("Mulai dari Rp \(Int(minPrice).formatted())")
                         .font(.custom("PlusJakartaSans-Regular", size: 12))
                         .foregroundColor(.black)
                 }
                 
-                // Rating
                 HStack(spacing: 4) {
                     Image(systemName: "star.fill")
                         .foregroundColor(.yellow)
@@ -135,7 +131,6 @@ struct TailorGridItem: View {
                         .foregroundColor(.gray)
                 }
                 
-                // Location
                 Text(tailor.location)
                     .font(.custom("PlusJakartaSans-Regular", size: 10))
                     .foregroundColor(.gray)
@@ -153,30 +148,25 @@ struct TailorGridItem: View {
 struct TailorGridItemSkeleton: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Image skeleton
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 120)
             
             VStack(alignment: .leading, spacing: 4) {
-                // Name skeleton
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color.gray.opacity(0.3))
                     .frame(height: 14)
                 
-                // Price skeleton
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color.gray.opacity(0.3))
                     .frame(width: 100, height: 12)
                 
-                // Rating skeleton
                 HStack(spacing: 4) {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.gray.opacity(0.3))
                         .frame(width: 60, height: 10)
                 }
                 
-                // Location skeleton
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color.gray.opacity(0.3))
                     .frame(width: 80, height: 10)

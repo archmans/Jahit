@@ -96,7 +96,6 @@ struct OngoingTransactionRow: View {
                 }
         ) {
             HStack(spacing: 16) {
-                // Dynamic tailor image
                 if let tailor = LocalDatabase.shared.getTailor(by: transaction.tailorId) {
                     Group {
                         if let uiImage = ImageManager.shared.loadImage(named: tailor.profileImage) {
@@ -174,7 +173,6 @@ struct CompletedTransactionRow: View {
                 }
         ) {
             HStack(spacing: 16) {
-                // Dynamic tailor image
                 if let tailor = LocalDatabase.shared.getTailor(by: transaction.tailorId) {
                     Group {
                         if let uiImage = ImageManager.shared.loadImage(named: tailor.profileImage) {
@@ -212,7 +210,7 @@ struct CompletedTransactionRow: View {
                 Spacer()
 
                 if let currentTransaction = userManager.currentUser.transactions.first(where: { $0.id == transaction.id }),
-                   !currentTransaction.hasReview {
+                    !currentTransaction.hasReview {
                     Button("Nilai") {
                         showingRatingPopup = true
                     }

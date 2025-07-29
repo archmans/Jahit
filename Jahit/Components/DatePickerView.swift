@@ -16,7 +16,6 @@ struct DatePickerView: View {
     init(selectedDate: Binding<Date?>, onDateSelected: @escaping (Date) -> Void) {
         self._selectedDate = selectedDate
         self.onDateSelected = onDateSelected
-        // Initialize with tomorrow's date or existing selected date
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
         self._internalDate = State(initialValue: selectedDate.wrappedValue ?? tomorrow)
     }
@@ -27,7 +26,6 @@ struct DatePickerView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // Header
             VStack(spacing: 8) {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.gray.opacity(0.3))
@@ -48,7 +46,6 @@ struct DatePickerView: View {
             }
             .padding(.horizontal, 20)
             
-            // Date Picker
             DatePicker("", selection: $internalDate, in: tomorrowDate..., displayedComponents: .date)
                 .datePickerStyle(GraphicalDatePickerStyle())
                 .environment(\.locale, Locale(identifier: "id_ID"))
@@ -58,7 +55,6 @@ struct DatePickerView: View {
                 .padding(.horizontal, 20)
                 .presentationBackground(Color.white)
             
-            // Confirm Button
             Button(action: {
                 onDateSelected(internalDate)
             }) {

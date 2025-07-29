@@ -16,10 +16,8 @@ struct CartView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             headerView
             
-            // Cart Items
             if userManager.currentUser.cart.isEmpty {
                 Spacer()
                 VStack {
@@ -173,7 +171,6 @@ struct CartView: View {
                             .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.1))
                             .cornerRadius(4)
                     
-                    // Fabric information for custom orders
                     if item.isCustomOrder && item.fabricProvider != nil {
                         if item.fabricProvider == .personal {
                             Text("Bahan pribadi")
@@ -192,7 +189,6 @@ struct CartView: View {
                             .foregroundColor(.gray)
                     }
                     
-                    // Show fabric cost if applicable
                     if item.fabricPrice > 0 {
                         HStack {
                             Text("Biaya bahan: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.fabricPrice)) ?? "Rp0")")
@@ -272,7 +268,6 @@ struct CartView: View {
                 if !userManager.currentUser.selectedCartItems.isEmpty {
                     showingCheckout = true
                 }
-                // If no items selected, button does nothing (disabled state)
             }) {
                 Text(userManager.currentUser.selectedCartItems.isEmpty ? "Pilih item terlebih dahulu" : "Lanjut ke Pembayaran")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))

@@ -132,9 +132,7 @@ extension Transaction {
         return itemNames.joined(separator: ", ")
     }
     
-    // Convert Transaction to Order for OrderDetailView compatibility
     func toOrder() -> Order {
-        // Map TransactionStatus to OrderStatus
         let orderStatus: OrderStatus = {
             switch self.status {
             case .pending:
@@ -156,7 +154,6 @@ extension Transaction {
             }
         }()
         
-        // Get first item for basic details (can be expanded for multiple items)
         let firstItem = items.first
         let allReferenceImages = items.flatMap { $0.referenceImages }
         let customDescriptions = items.compactMap { $0.customDescription }.joined(separator: "\n")
@@ -174,7 +171,7 @@ extension Transaction {
             paymentTime: self.orderDate,
             confirmationTime: self.orderDate,
             totalAmount: self.totalPrice,
-            deliveryOption: self.deliveryOption, // Use the actual delivery option from transaction
+            deliveryOption: self.deliveryOption,
             deliveryCost: self.deliveryCost,
             status: orderStatus
         )

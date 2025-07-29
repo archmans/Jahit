@@ -57,7 +57,6 @@ struct TabBarView: View {
             }
         }
         .onAppear {
-            // When user successfully logs in, start on home tab
             tabBarVM.selectedTab = 0
             tabBarVM.show()
         }

@@ -36,19 +36,15 @@ class OrderDetailViewModel: ObservableObject {
     }
     
     var applicableStatuses: [OrderStatus] {
-        // Get the original transaction to check delivery option
         guard let transaction = getOriginalTransaction() else {
             return OrderStatus.allCases
         }
         
-        // Filter statuses based on delivery option
         let baseStatuses: [OrderStatus] = [.pending, .confirmed, .pickup, .inProgress]
         
         if transaction.deliveryOption == .pickup {
-            // For pickup orders: show "Siap diambil" instead of "Pesanan sedang diantar"
             return baseStatuses + [.readyForPickup, .completed]
         } else {
-            // For delivery orders: show "Pesanan sedang diantar" instead of "Siap diambil"
             return baseStatuses + [.onDelivery, .completed]
         }
     }
@@ -61,7 +57,6 @@ class OrderDetailViewModel: ObservableObject {
     }
     
     var itemsList: [String] {
-        // Get the actual transaction to display individual items
         if let transaction = getOriginalTransaction() {
             return transaction.items.map { "\($0.name) (x\($0.quantity))" }
         }
@@ -81,7 +76,6 @@ class OrderDetailViewModel: ObservableObject {
     }
     
     func updateOrderStatus(to newStatus: OrderStatus) {
-        // Map OrderStatus back to TransactionStatus and update
         let transactionStatus: TransactionStatus = {
             switch newStatus {
             case .pending:
@@ -103,13 +97,11 @@ class OrderDetailViewModel: ObservableObject {
         
         userManager.updateTransactionStatus(transactionId: order.id, newStatus: transactionStatus)
         
-        // Update local order status
         order.status = newStatus
     }
     
     func refreshOrder() {
         isLoading = true
-        // Refresh order from transaction data
         if let transaction = getOriginalTransaction() {
             self.order = transaction.toOrder()
         }

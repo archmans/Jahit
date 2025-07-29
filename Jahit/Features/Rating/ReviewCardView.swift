@@ -12,7 +12,6 @@ struct ReviewCardView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Header with user info and rating
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Ulasan Anda")
@@ -26,7 +25,6 @@ struct ReviewCardView: View {
                 
                 Spacer()
                 
-                // Star rating
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { star in
                         Image(systemName: star <= review.rating ? "star.fill" : "star")
@@ -36,7 +34,6 @@ struct ReviewCardView: View {
                 }
             }
             
-            // Comment
             if !review.comment.isEmpty {
                 Text(review.comment)
                     .font(.custom("PlusJakartaSans-Regular", size: 14))
@@ -44,7 +41,6 @@ struct ReviewCardView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             
-            // Review images
             if !review.reviewImages.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Foto Ulasan")
@@ -80,7 +76,6 @@ struct ReviewImageView: View {
                     .resizable()
                     .aspectRatio(1, contentMode: .fill)
             } else {
-                // Fallback to bundled image if saved image not found
                 Image(imageName)
                     .resizable()
                     .aspectRatio(1, contentMode: .fill)

@@ -30,7 +30,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         loadUserFromStorage()
     }
     
-    // Generate a 9-character order number with digits and letters
     private func generateOrderNumber() -> String {
         let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         var result = ""
@@ -59,7 +58,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             hashedPassword: hashedPassword
         )
         
-        // Save to registered users list only, don't set as current user
         saveRegisteredUser(newUser)
     }
     
@@ -100,7 +98,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private func getRegisteredUsers() -> [User] {
         guard let data = userDefaults.data(forKey: registeredUsersKey),
-              let users = try? JSONDecoder().decode([User].self, from: data) else {
+                let users = try? JSONDecoder().decode([User].self, from: data) else {
             return []
         }
         return users
@@ -116,10 +114,9 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func loadUserFromStorage() {
         if let userData = userDefaults.data(forKey: userKey),
-           let user = try? JSONDecoder().decode(User.self, from: userData) {
+            let user = try? JSONDecoder().decode(User.self, from: userData) {
             currentUser = user
         } else {
-            // If no saved user data, use default user with sample transactions
             currentUser = User.defaultUser
             saveUserToStorage()
         }
@@ -140,7 +137,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     
     func requestLocationOnAppLaunch() {
-        // Only request location if we don't have it yet
         guard !currentUser.hasLocation else { 
             print("User already has location: \(currentUser.address ?? "Unknown")")
             return 
@@ -150,7 +146,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func forceUpdateLocation() {
-        // Force update location even if we already have it
         checkLocationAuthorization()
     }
     
@@ -210,7 +205,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     return
                 }
                 
-                // Format address in Indonesian style: "Jl. Nama Jalan No. XX, Desa/Kelurahan"
                 let street = placemark.thoroughfare ?? ""
                 let number = placemark.subThoroughfare ?? ""
                 let subLocality = placemark.subLocality ?? ""
@@ -218,18 +212,15 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 
                 var addressComponents: [String] = []
                 
-                // Format street address
                 if !street.isEmpty {
                     var streetPart = ""
                     
-                    // Add "Jl. " prefix if not already present
                     if !street.lowercased().hasPrefix("jl") && !street.lowercased().hasPrefix("jalan") {
                         streetPart = "Jl \(street)"
                     } else {
                         streetPart = street
                     }
                     
-                    // Add house number if available
                     if !number.isEmpty {
                         streetPart += " No. \(number)"
                     }
@@ -237,19 +228,16 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     addressComponents.append(streetPart)
                 }
                 
-                // Add sub-locality (usually village/kelurahan)
                 if !subLocality.isEmpty {
                     addressComponents.append(subLocality)
                 }
                 
-                // Add locality (usually city/district) if different from sub-locality
                 if !locality.isEmpty && locality != subLocality {
                     addressComponents.append(locality)
                 }
                 
                 let formattedAddress = addressComponents.joined(separator: ", ")
                 
-                // Update user address
                 self?.currentUser.address = formattedAddress.isEmpty ? "Unknown Location" : formattedAddress
                 self?.saveUserToStorage()
                 
@@ -264,30 +252,24 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     
     func addToCart(_ item: CartItem) {
-        // Check if tailor cart already exists
         if let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == item.tailorId }) {
-            // Check if same item already exists (including fabric selection)
             if let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { 
                 $0.itemId == item.itemId && 
                 $0.isCustomOrder == item.isCustomOrder &&
                 $0.fabricProvider == item.fabricProvider &&
                 $0.selectedFabricOption?.id == item.selectedFabricOption?.id
             }) {
-                // Update quantity for existing item with same fabric
                 currentUser.cart[tailorCartIndex].items[itemIndex].quantity += item.quantity
             } else {
-                // Add new item to existing tailor cart (different fabric or new item)
                 currentUser.cart[tailorCartIndex].items.append(item)
             }
             
-            // Update tailor's isSelectAll based on item selections
             let tailorCart = currentUser.cart[tailorCartIndex]
             let selectedItemsCount = tailorCart.items.filter { $0.isSelected }.count
             let totalItemsCount = tailorCart.items.count
             
             currentUser.cart[tailorCartIndex].isSelectAll = (selectedItemsCount == totalItemsCount && totalItemsCount > 0)
         } else {
-            // Create new tailor cart
             let newTailorCart = TailorCart(tailorId: item.tailorId, tailorName: item.tailorName, items: [item])
             currentUser.cart.append(newTailorCart)
         }
@@ -311,11 +293,9 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         currentUser.cart[tailorCartIndex].items.removeAll { $0.id == itemId }
         
-        // Remove tailor cart if no items left
         if currentUser.cart[tailorCartIndex].items.isEmpty {
             currentUser.cart.remove(at: tailorCartIndex)
         } else {
-            // Update tailor's isSelectAll based on remaining items
             let tailorCart = currentUser.cart[tailorCartIndex]
             let selectedItemsCount = tailorCart.items.filter { $0.isSelected }.count
             let totalItemsCount = tailorCart.items.count
@@ -329,7 +309,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func updateCartItemQuantity(itemId: String, tailorId: String, quantity: Int) {
         guard let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == tailorId }),
-              let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.id == itemId }) else { return }
+            let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.id == itemId }) else { return }
         
         if quantity <= 0 {
             removeFromCart(itemId: itemId, tailorId: tailorId)
@@ -341,18 +321,14 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func toggleCartItemSelection(itemId: String, tailorId: String) {
         guard let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == tailorId }),
-              let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.id == itemId }) else { return }
+            let itemIndex = currentUser.cart[tailorCartIndex].items.firstIndex(where: { $0.id == itemId }) else { return }
         
         currentUser.cart[tailorCartIndex].items[itemIndex].isSelected.toggle()
         
-        // Update tailor's isSelectAll based on item selections
         let tailorCart = currentUser.cart[tailorCartIndex]
         let selectedItemsCount = tailorCart.items.filter { $0.isSelected }.count
         let totalItemsCount = tailorCart.items.count
         
-        // If all items are selected, set isSelectAll to true
-        // If no items are selected, set isSelectAll to false
-        // If some items are selected, set isSelectAll to false (partial selection)
         currentUser.cart[tailorCartIndex].isSelectAll = (selectedItemsCount == totalItemsCount && totalItemsCount > 0)
         
         saveUserToStorage()
@@ -398,10 +374,8 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             return false
         }
         
-        // Group items by tailor
         let groupedItems = Dictionary(grouping: selectedItems, by: { $0.tailorId })
         
-        // Create a transaction for each tailor
         for (tailorId, items) in groupedItems {
             guard let firstItem = items.first else { continue }
             
@@ -430,7 +404,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             currentUser.transactions.append(transaction)
         }
         
-        // Remove items from cart
         for item in selectedItems {
             removeFromCart(itemId: item.id, tailorId: item.tailorId)
         }
@@ -452,7 +425,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             return false
         }
         
-        // Calculate prices including fabric
         let basePrice = customizationOrder.selectedItem?.price ?? 0
         let fabricPrice = (!customizationOrder.isRepairService && customizationOrder.fabricProvider == .tailor) ? 
             (customizationOrder.selectedFabricOption?.additionalPrice ?? 0) : 0
@@ -528,14 +500,12 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         currentUser.transactions[index].review = review
         saveUserToStorage()
         
-        // Trigger published property update for UI refresh
         DispatchQueue.main.async {
             self.objectWillChange.send()
         }
         
-        // Also add the review to the tailor
-        print("✅ Adding review to transaction \(review.transactionId)")
-        print("📝 Review content: \(review.rating) stars - \(review.comment)")
+        print("Adding review to transaction \(review.transactionId)")
+        print("Review content: \(review.rating) stars - \(review.comment)")
         LocalDatabase.shared.addReviewToTailor(tailorId: review.tailorId, review: review)
         
         print("✅ Review added to transaction \(review.transactionId) and tailor \(review.tailorId)")
@@ -572,12 +542,10 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func authenticateUser(identifier: String, password: String) -> Bool {
         let hashedPassword = hashPassword(password)
         
-        // Check registered users
         if let registeredUser = findRegisteredUser(identifier: identifier, password: hashedPassword) {
             var user = registeredUser
             user.isLoggedIn = true
             
-            // Ensure user always has example transactions
             if user.transactions.isEmpty {
                 user.transactions = User.defaultUser.transactions
             }

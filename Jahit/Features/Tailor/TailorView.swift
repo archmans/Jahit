@@ -35,7 +35,6 @@ struct TailorDetailView: View {
                 
                 Spacer()
                 
-                // Cart Button
                 Button(action: {
                     isCartViewPresented = true
                 }) {
@@ -90,7 +89,6 @@ struct TailorDetailView: View {
                 }
         )
         .overlay(
-            // Full-screen image preview overlay
             Group {
                 if showImagePreview, let selectedImage = selectedImageForPreview {
                     ZStack {
@@ -366,7 +364,6 @@ struct TailorDetailView: View {
                 .foregroundColor(.black)
                 .lineLimit(nil)
             
-            // Review Images
             if !review.reviewImages.isEmpty {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 12) {
                     ForEach(review.reviewImages, id: \.self) { imageName in
@@ -404,7 +401,6 @@ struct TailorDetailView: View {
     var aboutTabView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Description Section
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Deskripsi")
                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))

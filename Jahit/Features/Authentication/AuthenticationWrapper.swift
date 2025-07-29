@@ -19,7 +19,6 @@ struct AuthenticationWrapper: View {
                         showAuthenticationView = false
                     }
             } else {
-                // Authentication required
                 VStack(spacing: 20) {
                     Image("JahitLogo")
                         .resizable()

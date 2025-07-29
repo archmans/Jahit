@@ -40,7 +40,6 @@ struct ImagePicker: UIViewControllerRepresentable {
             
             print("PHPicker selected \(results.count) items")
             
-            // Clear previous selection first
             self.parent.selectedImages.removeAll()
             
             var newImages: [UIImage] = []

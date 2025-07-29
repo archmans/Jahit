@@ -14,7 +14,6 @@ struct TimePickerView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             VStack(spacing: 8) {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.gray.opacity(0.3))
@@ -36,7 +35,6 @@ struct TimePickerView: View {
             .padding(.horizontal, 20)
             .padding(.top, 8)
             
-            // Time Slots
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(TimeSlot.allCases, id: \.self) { timeSlot in

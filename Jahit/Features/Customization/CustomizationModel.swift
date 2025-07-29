@@ -47,7 +47,6 @@ struct CustomizationOrder: Identifiable {
         let basePrice = item.price * Double(quantity)
         
         var fabricPrice: Double = 0
-        // Only add fabric cost for non-repair services
         if !isRepairService && fabricProvider == .tailor, let fabricOption = selectedFabricOption {
             fabricPrice = fabricOption.additionalPrice * Double(quantity)
         }

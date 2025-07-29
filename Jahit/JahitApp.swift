@@ -17,7 +17,6 @@ struct JahitApp: App {
                 .environmentObject(userManager)
                 .background(Color.white)
                 .onAppear {
-                    // Request location only once when app launches
                     userManager.requestLocationOnAppLaunch()
                 }
         }

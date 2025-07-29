@@ -19,10 +19,8 @@ struct SearchKeywordView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header with search field
             headerView
             
-            // Results
             ScrollView {
                 if !searchText.isEmpty {
                     searchSummaryView
@@ -58,11 +56,11 @@ struct SearchKeywordView: View {
         }
         .navigationDestination(item: $selectedTailorId) { idObj in
             if let id = idObj.value, 
-               let result = viewModel.searchResults.first(where: { 
-                   if case .tailor(let tailor) = $0 { return tailor.id == id }
-                   return false
-               }),
-               case .tailor(let tailor) = result {
+                let result = viewModel.searchResults.first(where: { 
+                    if case .tailor(let tailor) = $0 { return tailor.id == id }
+                    return false
+                }),
+                case .tailor(let tailor) = result {
                 TailorDetailView(tailor: tailor)
             }
         }
@@ -199,7 +197,7 @@ struct SearchKeywordView: View {
                 case .product(let product):
                     ProductSearchCard(product: product) {
                         if let tailor = Tailor.sampleTailors.first(where: { $0.id == product.tailorId }),
-                           let service = tailor.services.first(where: { $0.name == product.category }) {
+                            let service = tailor.services.first(where: { $0.name == product.category }) {
                             selectedProductForCustomization = (product, tailor, service)
                             showingCustomization = true
                         }
@@ -221,7 +219,6 @@ struct ProductSearchCard: View {
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 8) {
-                // Product Image
                 Image(product.image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -230,18 +227,15 @@ struct ProductSearchCard: View {
                     .cornerRadius(8)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    // Product Name
                     Text(product.name)
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                         .foregroundColor(.black)
                         .lineLimit(2)
                     
-                    // Price
                     Text("Rp \(Int(product.price).formatted())")
                         .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))
                         .foregroundColor(.black)
                     
-                    // Tailor Name
                     Text(product.tailorName)
                         .font(.custom("PlusJakartaSans-Regular", size: 10))
                         .foregroundColor(.gray)
@@ -264,7 +258,6 @@ struct TailorSearchCard: View {
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 8) {
-                // Tailor Image
                 Image(tailor.profileImage)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -273,20 +266,17 @@ struct TailorSearchCard: View {
                     .cornerRadius(8)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        // Tailor Name
                         Text(tailor.name)
                             .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                             .foregroundColor(.black)
                             .lineLimit(2)
                         
-                        // Starting Price
                         if let minPrice = tailor.services.flatMap({ $0.items }).map({ $0.price }).min() {
                             Text("Mulai dari Rp \(Int(minPrice).formatted())")
                                 .font(.custom("PlusJakartaSans-Regular", size: 12))
                                 .foregroundColor(.black)
                         }
                         
-                        // Rating
                         HStack(spacing: 4) {
                             Image(systemName: "star.fill")
                                 .foregroundColor(.yellow)

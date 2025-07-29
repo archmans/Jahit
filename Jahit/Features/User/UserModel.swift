@@ -62,7 +62,6 @@ struct User: Identifiable, Codable {
         return latitude != nil && longitude != nil && address != nil
     }
     
-    // Cart related computed properties
     var totalCartItems: Int {
         return cart.reduce(0) { $0 + $1.items.count }
     }
@@ -75,7 +74,6 @@ struct User: Identifiable, Codable {
         return cart.flatMap { $0.items.filter { $0.isSelected } }
     }
     
-    // Transaction related computed properties
     var ongoingTransactions: [Transaction] {
         return transactions.filter { $0.isOngoing }
     }
@@ -90,7 +88,6 @@ extension User {
         name: "Guest User",
         address: "Location not set",
         transactions: [
-            // Completed transaction
             Transaction(
                 id: "JH7X3K9M2",
                 tailorId: "1",
@@ -131,7 +128,6 @@ extension User {
                 deliveryCost: 15000
             ),
             
-            // In progress transaction
             Transaction(
                 id: "P3K7M9Q4L",
                 tailorId: "2",
@@ -161,7 +157,6 @@ extension User {
                 deliveryCost: 15000
             ),
             
-            // Ready for pickup transaction
             Transaction(
                 id: "D5N9W2A7K",
                 tailorId: "1",
@@ -191,7 +186,6 @@ extension User {
                 deliveryCost: 15000
             ),
             
-            // Pending transaction
             Transaction(
                 id: "L7Q3X8B5R",
                 tailorId: "3",
@@ -232,7 +226,6 @@ extension User {
                 deliveryCost: 15000
             ),
             
-            // Another completed transaction
             Transaction(
                 id: "M4A9T3F7W",
                 tailorId: "2",

@@ -32,10 +32,8 @@ class OrderingViewModel: ObservableObject {
             fabricPrice: fabricPrice
         )
         
-        // Try to get user's current address, fallback to default
         let userAddress = UserManager.shared.currentUser.address ?? "Alamat belum diset"
         
-        // Get tailor location description
         let tailor = LocalDatabase.shared.getTailor(by: customizationOrder.tailorId)
         let tailorLocationDescription = tailor?.locationDescription ?? "Lokasi tidak tersedia"
         
@@ -47,7 +45,6 @@ class OrderingViewModel: ObservableObject {
             items: [orderItem]
         )
         
-        // Synchronize delivery option between selectedDeliveryOption and order.deliveryOption
         self.order.deliveryOption = self.selectedDeliveryOption
     }
     
@@ -100,21 +97,19 @@ class OrderingViewModel: ObservableObject {
     }
     
     func confirmOrder() -> Bool {
-        // Validate required fields
         guard isFormValid else {
             print("Cannot confirm order: missing required fields")
             return false
         }
         
         guard let pickupDate = order.pickupDate,
-              let pickupTime = order.pickupTime,
-              let paymentMethod = selectedPaymentMethod,
-              let deliveryOption = selectedDeliveryOption else {
+                let pickupTime = order.pickupTime,
+                let paymentMethod = selectedPaymentMethod,
+                let deliveryOption = selectedDeliveryOption else {
             print("Cannot confirm order: missing date, time, payment method, or delivery option")
             return false
         }
         
-        // Create transaction from customization order
         let success = UserManager.shared.createTransactionFromCustomization(
             customizationOrder,
             pickupDate: pickupDate,

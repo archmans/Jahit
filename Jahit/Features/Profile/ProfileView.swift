@@ -13,7 +13,6 @@ struct ProfileView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // Header
             HStack {
                 Text("Akun Saya")
                     .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
@@ -24,9 +23,7 @@ struct ProfileView: View {
             .padding(.horizontal, 20)
             .padding(.top, 20)
             
-            // Profile content
             VStack(spacing: 20) {
-                // User Info Card
                 HStack(spacing: 16) {
                     Image(systemName: "person.circle.fill")
                         .font(.system(size: 60))
@@ -55,7 +52,6 @@ struct ProfileView: View {
                 .background(Color.white)
                 .cornerRadius(16)
                 
-                // Account Settings
                 VStack(spacing: 12) {
 
                     VStack {
@@ -109,7 +105,6 @@ struct ProfileView: View {
                     .cornerRadius(16)
                 }
                 
-                // Logout Button
                 Button(action: {
                     showLogoutAlert = true
                 }) {

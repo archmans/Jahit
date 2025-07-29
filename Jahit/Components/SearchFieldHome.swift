@@ -42,7 +42,6 @@ struct SearchFieldHome: View {
                             .foregroundColor(.white)
                             .font(.system(size: 20, weight: .medium))
                         
-                        // Cart badge
                         if userManager.currentUser.totalCartItems > 0 {
                             Text("\(userManager.currentUser.totalCartItems)")
                                 .font(.custom("PlusJakartaSans-Regular", size: 12).weight(.bold))

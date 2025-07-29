@@ -19,12 +19,10 @@ class TailorViewModel: ObservableObject {
     
     init(tailor: Tailor = Tailor.sampleTailors.first!) {
         self.tailor = tailor
-        // Initialize image indices for all services
         for service in tailor.services {
             serviceImageIndices[service.id] = 0
         }
         
-        // Observe LocalDatabase changes to update tailor data
         localDatabase.$tailors
             .sink { [weak self] updatedTailors in
                 if let updatedTailor = updatedTailors.first(where: { $0.id == self?.tailor.id }) {
@@ -75,15 +73,13 @@ class TailorViewModel: ObservableObject {
     
     func goToImage(at index: Int, for serviceId: String) {
         guard let service = tailor.services.first(where: { $0.id == serviceId }), 
-              index < service.images.count else { return }
+            index < service.images.count else { return }
         serviceImageIndices[serviceId] = index
     }
     
     func contactViaWhatsApp() {
-        // Implementation for WhatsApp contact
     }
     
     func goBack() {
-        // Implementation for going back
     }
 }

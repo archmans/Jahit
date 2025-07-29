@@ -24,7 +24,6 @@ struct RatingPopupView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Header
                         VStack(spacing: 8) {
                             Text("Beri Penilaian")
                                 .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
@@ -37,7 +36,6 @@ struct RatingPopupView: View {
                         }
                         .padding(.top, 8)
                         
-                        // Star Rating
                         VStack(spacing: 12) {
                             HStack(spacing: 2) {
                                 Text("Rating")
@@ -65,7 +63,6 @@ struct RatingPopupView: View {
                         .frame(maxWidth: .infinity)
                     }
                     
-                    // Comment Section
                     VStack(spacing: 12) {
                         Text("Komentar")
                             .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
@@ -89,7 +86,6 @@ struct RatingPopupView: View {
                             .environment(\.colorScheme, .light)
                     }
                     
-                    // Image Upload Section
                     VStack(spacing: 12) {
                         HStack {
                             Text("Foto")
@@ -141,7 +137,6 @@ struct RatingPopupView: View {
                 .padding(.bottom, 20)
             }
             
-            // Bottom Button Section
             VStack(spacing: 0) {
                 Divider()
                 
@@ -187,10 +182,8 @@ struct RatingPopupView: View {
         
         isSubmitting = true
         
-        // Save images and get their names
         let imageNames = ImageManager.shared.saveImages(selectedImages)
         
-        // Create review
         let review = Review(
             transactionId: transaction.id,
             tailorId: transaction.tailorId,
@@ -201,7 +194,6 @@ struct RatingPopupView: View {
             reviewImages: imageNames
         )
         
-        // Submit review
         onSubmit(review)
         
         isSubmitting = false
