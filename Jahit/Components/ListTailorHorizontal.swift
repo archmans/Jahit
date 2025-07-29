@@ -21,7 +21,8 @@ struct ListTailorHorizontal: View {
                                 .aspectRatio(contentMode: .fill)
                                 .clipped()
                                 .cornerRadius(8)
-                            
+                                .frame(width: 120)
+
                             Text("Alfa Tailor")
                             .font(
                             Font.custom("Plus Jakarta Sans", size: 12)
