@@ -16,13 +16,16 @@ struct CartCheckoutView: View {
     @State private var pickupDate: Date? = nil
     @State private var pickupTime: TimeSlot? = nil
     @State private var selectedPaymentMethod: PaymentMethod? = nil
+    @State private var selectedDeliveryOption: DeliveryOption? = nil
     @State private var showingDatePicker = false
     @State private var showingTimePicker = false
     @State private var showingAddressSheet = false
     @State private var showingPaymentSuccess = false
     
     var totalPrice: Double {
-        return selectedItems.reduce(0) { $0 + $1.totalPrice }
+        let itemsTotal = selectedItems.reduce(0) { $0 + $1.totalPrice }
+        let deliveryCost = selectedDeliveryOption?.additionalCost ?? 0
+        return itemsTotal + deliveryCost
     }
     
     var formattedTotalPrice: String {
@@ -49,8 +52,9 @@ struct CartCheckoutView: View {
         let hasPickupDate = pickupDate != nil
         let hasPickupTime = pickupTime != nil
         let hasPaymentMethod = selectedPaymentMethod != nil
+        let hasDeliveryOption = selectedDeliveryOption != nil
         
-        return hasValidAddress && hasPickupDate && hasPickupTime && hasPaymentMethod
+        return hasValidAddress && hasPickupDate && hasPickupTime && hasPaymentMethod && hasDeliveryOption
     }
     
     var body: some View {
@@ -69,6 +73,9 @@ struct CartCheckoutView: View {
                     
                     // Time Selection
                     timeSelectionView
+                    
+                    // Delivery Option
+                    deliveryOptionView
                     
                     // Order Summary
                     orderSummaryView
@@ -297,6 +304,79 @@ struct CartCheckoutView: View {
         }
     }
     
+    private var deliveryOptionView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 2) {
+                Text("Pesanan diantar")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.black)
+                
+                Text("*")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                    .foregroundColor(.red)
+            }
+            
+            ForEach(DeliveryOption.allCases, id: \.self) { option in
+                Button(action: {
+                    selectedDeliveryOption = option
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: option == .delivery ? "truck.box" : "bag")
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
+                            .font(.system(size: 20))
+                            .frame(width: 24)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(option.description)
+                                .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                                .foregroundColor(.black)
+                            
+                            if let subtitle = option.subtitle {
+                                Text(subtitle)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.gray)
+                            } else if option == .pickup {
+                                // For pickup, we need to get tailor location from the first item
+                                if let firstItem = selectedItems.first {
+                                    let tailor = LocalDatabase.shared.getTailor(by: firstItem.tailorId)
+                                    Text(tailor?.locationDescription ?? "Lokasi tidak tersedia")
+                                        .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                        .foregroundColor(.gray)
+                                        .lineLimit(2)
+                                }
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        if option.additionalCost > 0 {
+                            Text("+\(NumberFormatter.currencyFormatter.string(from: NSNumber(value: option.additionalCost)) ?? "Rp15.000")")
+                                .font(.custom("PlusJakartaSans-Regular", size: 10).weight(.bold))
+                                .foregroundColor(.orange)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.orange.opacity(0.1))
+                                .cornerRadius(4)
+                        }
+                        
+                        Image(systemName: selectedDeliveryOption == option ? "largecircle.fill.circle" : "circle")
+                            .foregroundColor(selectedDeliveryOption == option ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
+                            .font(.system(size: 20))
+                    }
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(PlainButtonStyle())
+                
+                if option != DeliveryOption.allCases.last {
+                    Divider()
+                }
+            }
+        }
+        .padding(16)
+        .background(Color.white)
+        .cornerRadius(12)
+    }
+    
     private var orderSummaryView: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Ringkasan Pemesanan")
@@ -425,6 +505,21 @@ struct CartCheckoutView: View {
             
             Divider()
             
+            // Show delivery cost if selected
+            if let deliveryOption = selectedDeliveryOption, deliveryOption.additionalCost > 0 {
+                HStack {
+                    Text("Biaya \(deliveryOption.displayName.lowercased()):")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    
+                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: deliveryOption.additionalCost)) ?? "Rp0")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.black)
+                }
+            }
+            
             HStack {
                 Text("Total:")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
@@ -537,7 +632,8 @@ struct CartCheckoutView: View {
               userManager.currentUser.address != nil,
               let pickupDate = pickupDate,
               let pickupTime = pickupTime,
-              let selectedPaymentMethod = selectedPaymentMethod else {
+              let selectedPaymentMethod = selectedPaymentMethod,
+              let selectedDeliveryOption = selectedDeliveryOption else {
             print("Cannot process order: missing required fields")
             return
         }
@@ -547,7 +643,8 @@ struct CartCheckoutView: View {
             selectedItems: selectedItems,
             pickupDate: pickupDate,
             pickupTime: pickupTime,
-            paymentMethod: selectedPaymentMethod
+            paymentMethod: selectedPaymentMethod,
+            deliveryOption: selectedDeliveryOption
         )
         
         if success {

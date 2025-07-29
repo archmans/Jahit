@@ -13,7 +13,7 @@ class OrderingViewModel: ObservableObject {
     @Published var showingDatePicker: Bool = false
     @Published var showingTimePicker: Bool = false
     @Published var selectedPaymentMethod: PaymentMethod? = nil
-    @Published var selectedDeliveryOption: DeliveryOption? = nil
+        @Published var selectedDeliveryOption: DeliveryOption? = .delivery
     
     private let customizationOrder: CustomizationOrder
     
@@ -46,6 +46,9 @@ class OrderingViewModel: ObservableObject {
             address: userAddress,
             items: [orderItem]
         )
+        
+        // Synchronize delivery option between selectedDeliveryOption and order.deliveryOption
+        self.order.deliveryOption = self.selectedDeliveryOption
     }
     
     var formattedPickupDate: String {
@@ -105,8 +108,9 @@ class OrderingViewModel: ObservableObject {
         
         guard let pickupDate = order.pickupDate,
               let pickupTime = order.pickupTime,
-              let paymentMethod = selectedPaymentMethod else {
-            print("Cannot confirm order: missing date, time, or payment method")
+              let paymentMethod = selectedPaymentMethod,
+              let deliveryOption = selectedDeliveryOption else {
+            print("Cannot confirm order: missing date, time, payment method, or delivery option")
             return false
         }
         
@@ -115,7 +119,8 @@ class OrderingViewModel: ObservableObject {
             customizationOrder,
             pickupDate: pickupDate,
             pickupTime: pickupTime,
-            paymentMethod: paymentMethod
+            paymentMethod: paymentMethod,
+            deliveryOption: deliveryOption
         )
         
         if success {

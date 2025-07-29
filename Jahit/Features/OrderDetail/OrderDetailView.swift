@@ -67,7 +67,7 @@ struct OrderDetailView: View {
     
     private var progressStepsView: some View {
         VStack(spacing: 4) {
-            ForEach(Array(OrderStatus.allCases.enumerated()), id: \.offset) { index, status in
+            ForEach(Array(viewModel.applicableStatuses.enumerated()), id: \.offset) { index, status in
                 VStack(spacing: 0) {
                     // Main content row
                     HStack(spacing: 16) {
@@ -99,8 +99,8 @@ struct OrderDetailView: View {
                         }
                     }
                     
-                    // Connecting line (except for last item)
-                    if index < OrderStatus.allCases.count - 1 {
+                    // Connector line to next step
+                    if index < viewModel.applicableStatuses.count - 1 {
                         HStack {
                             // Line aligned under the circle
                             VStack(spacing: 2) {
@@ -205,6 +205,24 @@ struct OrderDetailView: View {
             
             ForEach(viewModel.transactionItems, id: \.id) { item in
                 TransactionItemRowView(item: item, isLast: item.id == viewModel.transactionItems.last?.id)
+            }
+            
+            // Delivery Option & Cost Summary
+            if let deliveryOption = viewModel.order.deliveryOption {
+                VStack(spacing: 8) {
+                    Divider()
+                        .padding(.vertical, 4)
+                    
+                    HStack {
+                        Text(deliveryOption == .delivery ? "Ongkos kirim" : "Ambil sendiri")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
+                            .foregroundColor(.black)
+                        Spacer()
+                        Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: viewModel.order.deliveryCost)) ?? "Rp0")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
+                            .foregroundColor(.black)
+                    }
+                }
             }
         }
     }

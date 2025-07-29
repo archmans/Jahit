@@ -19,6 +19,7 @@ enum TransactionStatus: String, Codable {
     case confirmed = "Dikonfirmasi"
     case pickup = "Pengukuran / Pengambilan Bahan"
     case inProgress = "Sedang Dikerjakan"
+    case readyForPickup = "Siap Diambil"
     case onDelivery = "Pesanan Sedang Diantar"
     case completed = "Selesai"
     case cancelled = "Dibatalkan"
@@ -96,6 +97,8 @@ struct Transaction: Identifiable, Codable {
     let orderDate: Date
     var status: TransactionStatus
     var review: Review?
+    let deliveryOption: DeliveryOption
+    let deliveryCost: Double
     
     var isCompleted: Bool {
         return status == .completed
@@ -142,6 +145,8 @@ extension Transaction {
                 return .pickup
             case .inProgress:
                 return .inProgress
+            case .readyForPickup:
+                return .readyForPickup
             case .onDelivery:
                 return .onDelivery
             case .completed:
@@ -169,6 +174,8 @@ extension Transaction {
             paymentTime: self.orderDate,
             confirmationTime: self.orderDate,
             totalAmount: self.totalPrice,
+            deliveryOption: self.deliveryOption, // Use the actual delivery option from transaction
+            deliveryCost: self.deliveryCost,
             status: orderStatus
         )
     }

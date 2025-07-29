@@ -223,7 +223,10 @@ struct RatingPopupView: View {
             paymentMethod: "GoPay",
             customerAddress: "Jl. Ganesha No. 10, Bandung",
             orderDate: Date(),
-            status: .completed
+            status: .completed,
+            review: nil,
+            deliveryOption: .delivery,
+            deliveryCost: 15000
         )
     ) { review in
         print("Review submitted: \(review)")

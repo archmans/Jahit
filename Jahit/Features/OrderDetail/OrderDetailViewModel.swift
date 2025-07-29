@@ -35,6 +35,24 @@ class OrderDetailViewModel: ObservableObject {
         return order.status.stepIndex
     }
     
+    var applicableStatuses: [OrderStatus] {
+        // Get the original transaction to check delivery option
+        guard let transaction = getOriginalTransaction() else {
+            return OrderStatus.allCases
+        }
+        
+        // Filter statuses based on delivery option
+        let baseStatuses: [OrderStatus] = [.pending, .confirmed, .pickup, .inProgress]
+        
+        if transaction.deliveryOption == .pickup {
+            // For pickup orders: show "Siap diambil" instead of "Pesanan sedang diantar"
+            return baseStatuses + [.readyForPickup, .completed]
+        } else {
+            // For delivery orders: show "Pesanan sedang diantar" instead of "Siap diambil"
+            return baseStatuses + [.onDelivery, .completed]
+        }
+    }
+    
     var hasMultipleItems: Bool {
         if let transaction = getOriginalTransaction() {
             return transaction.items.count > 1
@@ -74,6 +92,8 @@ class OrderDetailViewModel: ObservableObject {
                 return .pickup
             case .inProgress:
                 return .inProgress
+            case .readyForPickup:
+                return .readyForPickup
             case .onDelivery:
                 return .onDelivery
             case .completed:

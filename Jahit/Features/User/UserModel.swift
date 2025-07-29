@@ -125,7 +125,10 @@ extension User {
                 paymentMethod: "GoPay",
                 customerAddress: "Jl. Ganesha No. 10, Bandung",
                 orderDate: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
-                status: .completed
+                status: .completed,
+                review: nil,
+                deliveryOption: .delivery,
+                deliveryCost: 15000
             ),
             
             // In progress transaction
@@ -152,7 +155,10 @@ extension User {
                 paymentMethod: "Kartu Debit",
                 customerAddress: "Jl. Dipatiukur No. 35, Bandung",
                 orderDate: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(),
-                status: .inProgress
+                status: .inProgress,
+                review: nil,
+                deliveryOption: .delivery,
+                deliveryCost: 15000
             ),
             
             // Ready for pickup transaction
@@ -179,7 +185,10 @@ extension User {
                 paymentMethod: "GoPay",
                 customerAddress: "Jl. Ganesha No. 10, Bandung",
                 orderDate: Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date(),
-                status: .pickup
+                status: .pickup,
+                review: nil,
+                deliveryOption: .delivery,
+                deliveryCost: 15000
             ),
             
             // Pending transaction
@@ -217,7 +226,10 @@ extension User {
                 paymentMethod: "Transfer Bank",
                 customerAddress: "Jl. Asia Afrika No. 8, Bandung",
                 orderDate: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
-                status: .pending
+                status: .pending,
+                review: nil,
+                deliveryOption: .delivery,
+                deliveryCost: 15000
             ),
             
             // Another completed transaction
@@ -244,7 +256,10 @@ extension User {
                 paymentMethod: "GoPay",
                 customerAddress: "Jl. Dipatiukur No. 35, Bandung",
                 orderDate: Calendar.current.date(byAdding: .day, value: -20, to: Date()) ?? Date(),
-                status: .completed
+                status: .completed,
+                review: nil,
+                deliveryOption: .delivery,
+                deliveryCost: 15000
             )
         ]
     )

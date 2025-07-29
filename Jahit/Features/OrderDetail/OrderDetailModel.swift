@@ -20,6 +20,8 @@ struct Order {
     let paymentTime: Date
     let confirmationTime: Date
     let totalAmount: Double
+    let deliveryOption: DeliveryOption?
+    let deliveryCost: Double
     var status: OrderStatus
 }
 
@@ -28,6 +30,7 @@ enum OrderStatus: String, CaseIterable {
     case confirmed = "Pesanan dikonfirmasi"
     case pickup = "Pengukuran / Pengambilan Bahan"
     case inProgress = "Sedang dijahit"
+    case readyForPickup = "Siap diambil"
     case onDelivery = "Pesanan sedang diantar"
     case completed = "Pesanan Selesai"
     
@@ -37,6 +40,7 @@ enum OrderStatus: String, CaseIterable {
         case .confirmed: return 1
         case .pickup: return 2
         case .inProgress: return 3
+        case .readyForPickup: return 4
         case .onDelivery: return 4
         case .completed: return 5
         }
@@ -48,6 +52,7 @@ enum OrderStatus: String, CaseIterable {
         case .confirmed: return "pesanan_dikonfirmasi"
         case .pickup: return "pengukuran"
         case .inProgress: return "dijahit"
+        case .readyForPickup: return "diantar"
         case .onDelivery: return "diantar"
         case .completed: return "pesanan_selesai"
         }
@@ -68,6 +73,8 @@ extension Order {
         paymentTime: DateFormatter.orderDateFormatter.date(from: "09-05-2025 10:00") ?? Date(),
         confirmationTime: DateFormatter.orderDateFormatter.date(from: "09-05-2025 11:00") ?? Date(),
         totalAmount: 200000,
+        deliveryOption: .delivery,
+        deliveryCost: 15000,
         status: .inProgress
     )
 }

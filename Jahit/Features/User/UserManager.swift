@@ -389,7 +389,8 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         selectedItems: [CartItem],
         pickupDate: Date,
         pickupTime: TimeSlot,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        deliveryOption: DeliveryOption
     ) -> Bool {
         guard !selectedItems.isEmpty,
               let userAddress = currentUser.address else {
@@ -405,20 +406,25 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             guard let firstItem = items.first else { continue }
             
             let transactionItems = items.map { TransactionItem(from: $0) }
-            let totalPrice = items.reduce(0) { $0 + $1.totalPrice }
+            let itemsTotal = items.reduce(0) { $0 + $1.totalPrice }
+            let deliveryCost = deliveryOption.additionalCost
+            let totalWithDelivery = itemsTotal + deliveryCost
             
             let transaction = Transaction(
                 id: generateOrderNumber(),
                 tailorId: tailorId,
                 tailorName: firstItem.tailorName,
                 items: transactionItems,
-                totalPrice: totalPrice,
+                totalPrice: totalWithDelivery,
                 pickupDate: pickupDate,
                 pickupTime: pickupTime.displayName,
                 paymentMethod: paymentMethod.displayName,
                 customerAddress: userAddress,
                 orderDate: Date(),
-                status: .pending
+                status: .pending,
+                review: nil,
+                deliveryOption: deliveryOption,
+                deliveryCost: deliveryCost
             )
             
             currentUser.transactions.append(transaction)
@@ -438,7 +444,8 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         _ customizationOrder: CustomizationOrder,
         pickupDate: Date,
         pickupTime: TimeSlot,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        deliveryOption: DeliveryOption
     ) -> Bool {
         guard let userAddress = currentUser.address else {
             print("Cannot create transaction: missing address")
@@ -450,6 +457,8 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         let fabricPrice = (!customizationOrder.isRepairService && customizationOrder.fabricProvider == .tailor) ? 
             (customizationOrder.selectedFabricOption?.additionalPrice ?? 0) : 0
         let totalItemPrice = (basePrice + fabricPrice) * Double(customizationOrder.quantity)
+        let deliveryCost = deliveryOption.additionalCost
+        let finalTotalPrice = totalItemPrice + deliveryCost
         
         let transactionItem = TransactionItem(
             id: generateOrderNumber(),
@@ -471,13 +480,16 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             tailorId: customizationOrder.tailorId,
             tailorName: customizationOrder.tailorName,
             items: [transactionItem],
-            totalPrice: totalItemPrice,
+            totalPrice: finalTotalPrice,
             pickupDate: pickupDate,
             pickupTime: pickupTime.displayName,
             paymentMethod: paymentMethod.displayName,
             customerAddress: userAddress,
             orderDate: Date(),
-            status: .pending
+            status: .pending,
+            review: nil,
+            deliveryOption: deliveryOption,
+            deliveryCost: deliveryCost
         )
         
         currentUser.transactions.append(transaction)
