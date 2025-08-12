@@ -257,7 +257,9 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 $0.itemId == item.itemId && 
                 $0.isCustomOrder == item.isCustomOrder &&
                 $0.fabricProvider == item.fabricProvider &&
-                $0.selectedFabricOption?.id == item.selectedFabricOption?.id
+                $0.selectedFabricOption?.id == item.selectedFabricOption?.id &&
+                $0.customDescription == item.customDescription &&
+                $0.referenceImages == item.referenceImages
             }) {
                 currentUser.cart[tailorCartIndex].items[itemIndex].quantity += item.quantity
             } else {
@@ -290,6 +292,11 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func removeFromCart(itemId: String, tailorId: String) {
         guard let tailorCartIndex = currentUser.cart.firstIndex(where: { $0.tailorId == tailorId }) else { return }
+        
+        if let itemToRemove = currentUser.cart[tailorCartIndex].items.first(where: { $0.id == itemId }) {
+            let imageManager = ImageManager.shared
+            imageManager.deleteImages(named: itemToRemove.referenceImages)
+        }
         
         currentUser.cart[tailorCartIndex].items.removeAll { $0.id == itemId }
         
@@ -348,6 +355,13 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func clearCart() {
+        let imageManager = ImageManager.shared
+        for tailorCart in currentUser.cart {
+            for item in tailorCart.items {
+                imageManager.deleteImages(named: item.referenceImages)
+            }
+        }
+        
         currentUser.cart.removeAll()
         saveUserToStorage()
         print("Cart cleared")
@@ -369,7 +383,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         deliveryOption: DeliveryOption
     ) -> Bool {
         guard !selectedItems.isEmpty,
-              let userAddress = currentUser.address else {
+                let userAddress = currentUser.address else {
             print("Cannot create transaction: missing items or address")
             return false
         }
@@ -379,7 +393,10 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         for (tailorId, items) in groupedItems {
             guard let firstItem = items.first else { continue }
             
-            let transactionItems = items.map { TransactionItem(from: $0) }
+            let transactionItems = items.map { cartItem in
+                createTransactionItemWithCopiedImages(from: cartItem)
+            }
+            
             let itemsTotal = items.reduce(0) { $0 + $1.totalPrice }
             let deliveryCost = deliveryOption.additionalCost
             let totalWithDelivery = itemsTotal + deliveryCost
@@ -413,6 +430,37 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         return true
     }
     
+    private func createTransactionItemWithCopiedImages(from cartItem: CartItem) -> TransactionItem {
+        let imageManager = ImageManager.shared
+        var copiedReferenceImages: [String] = []
+        
+        for originalImageName in cartItem.referenceImages {
+            guard let originalImage = imageManager.loadImage(named: originalImageName) else {
+                continue
+            }
+            
+            let newImageName = "transaction_\(UUID().uuidString)"
+            if let savedName = imageManager.saveImage(originalImage, withName: newImageName) {
+                copiedReferenceImages.append(savedName)
+            }
+        }
+        
+        return TransactionItem(
+            id: cartItem.id,
+            name: cartItem.itemName,
+            category: cartItem.category,
+            quantity: cartItem.quantity,
+            basePrice: cartItem.basePrice,
+            totalPrice: cartItem.totalPrice,
+            isCustomOrder: cartItem.isCustomOrder,
+            customDescription: cartItem.customDescription,
+            referenceImages: copiedReferenceImages,
+            fabricProvider: cartItem.fabricProvider,
+            selectedFabricOption: cartItem.selectedFabricOption,
+            fabricPrice: cartItem.fabricPrice
+        )
+    }
+    
     func createTransactionFromCustomization(
         _ customizationOrder: CustomizationOrder,
         pickupDate: Date,
@@ -432,6 +480,20 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         let deliveryCost = deliveryOption.additionalCost
         let finalTotalPrice = totalItemPrice + deliveryCost
         
+        let imageManager = ImageManager.shared
+        var copiedReferenceImages: [String] = []
+        
+        for originalImageName in customizationOrder.referenceImages {
+            guard let originalImage = imageManager.loadImage(named: originalImageName) else {
+                continue
+            }
+            
+            let newImageName = "transaction_\(UUID().uuidString)"
+            if let savedName = imageManager.saveImage(originalImage, withName: newImageName) {
+                copiedReferenceImages.append(savedName)
+            }
+        }
+        
         let transactionItem = TransactionItem(
             id: generateOrderNumber(),
             name: customizationOrder.selectedItem?.name ?? customizationOrder.category,
@@ -441,7 +503,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             totalPrice: totalItemPrice,
             isCustomOrder: true,
             customDescription: customizationOrder.description.isEmpty ? nil : customizationOrder.description,
-            referenceImages: customizationOrder.referenceImages,
+            referenceImages: copiedReferenceImages,
             fabricProvider: customizationOrder.isRepairService ? nil : customizationOrder.fabricProvider,
             selectedFabricOption: customizationOrder.selectedFabricOption,
             fabricPrice: fabricPrice
@@ -545,10 +607,6 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         if let registeredUser = findRegisteredUser(identifier: identifier, password: hashedPassword) {
             var user = registeredUser
             user.isLoggedIn = true
-            
-            if user.transactions.isEmpty {
-                user.transactions = User.defaultUser.transactions
-            }
             
             currentUser = user
             saveUserToStorage()

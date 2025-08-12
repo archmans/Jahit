@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct CartItem: Identifiable, Codable, Hashable {
     let id: String
@@ -70,6 +71,8 @@ extension CartItem {
         let fabricPrice = (!order.isRepairService && order.fabricProvider == .tailor) ? 
             (order.selectedFabricOption?.additionalPrice ?? 0) : 0
         
+        let copiedReferenceImages = copyReferenceImages(order.referenceImages)
+        
         return CartItem(
             tailorId: order.tailorId,
             tailorName: order.tailorName,
@@ -81,11 +84,29 @@ extension CartItem {
             basePrice: selectedItem.price,
             isCustomOrder: true,
             customDescription: order.description.isEmpty ? nil : order.description,
-            referenceImages: order.referenceImages,
+            referenceImages: copiedReferenceImages,
             fabricProvider: order.isRepairService ? nil : order.fabricProvider,
             selectedFabricOption: order.selectedFabricOption,
             fabricPrice: fabricPrice
         )
+    }
+    
+    private static func copyReferenceImages(_ originalImages: [String]) -> [String] {
+        var copiedImages: [String] = []
+        let imageManager = ImageManager.shared
+        
+        for originalImageName in originalImages {
+            guard let originalImage = imageManager.loadImage(named: originalImageName) else {
+                continue
+            }
+            
+            let newImageName = "cart_\(UUID().uuidString)"
+            if let savedName = imageManager.saveImage(originalImage, withName: newImageName) {
+                copiedImages.append(savedName)
+            }
+        }
+        
+        return copiedImages
     }
 }
 

@@ -26,13 +26,13 @@ struct Order {
 }
 
 enum OrderStatus: String, CaseIterable {
-    case pending = "Menunggu Konfirmasi"
+    case pending = "Menunggu konfirmasi"
     case confirmed = "Pesanan dikonfirmasi"
-    case pickup = "Pengukuran / Pengambilan Bahan"
+    case pickup = "Pengukuran / Pengambilan bahan"
     case inProgress = "Sedang dijahit"
     case readyForPickup = "Siap diambil"
     case onDelivery = "Pesanan sedang diantar"
-    case completed = "Pesanan Selesai"
+    case completed = "Pesanan selesai"
     
     var stepIndex: Int {
         switch self {

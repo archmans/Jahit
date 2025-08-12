@@ -15,12 +15,12 @@ enum TransactionTab: String, CaseIterable, Identifiable {
 }
 
 enum TransactionStatus: String, Codable {
-    case pending = "Menunggu Konfirmasi"
+    case pending = "Menunggu konfirmasi"
     case confirmed = "Dikonfirmasi"
-    case pickup = "Pengukuran / Pengambilan Bahan"
-    case inProgress = "Sedang Dikerjakan"
-    case readyForPickup = "Siap Diambil"
-    case onDelivery = "Pesanan Sedang Diantar"
+    case pickup = "Pengukuran / Pengambilan bahan"
+    case inProgress = "Sedang dikerjakan"
+    case readyForPickup = "Siap diambil"
+    case onDelivery = "Pesanan sedang diantar"
     case completed = "Selesai"
     case cancelled = "Dibatalkan"
 }

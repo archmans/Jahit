@@ -289,7 +289,7 @@ struct OrderingView: View {
     private var bottomSectionView: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("Total Price")
+                Text("Total")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
                     .foregroundColor(.black)
                 

@@ -11,8 +11,8 @@ struct BannerCard: View {
     @State private var currentIndex = 0
     @State private var timer: Timer?
 
-    private let bannerImages = ["banner", "banner", "banner"]
-    
+    private let bannerImages = ["info_1", "info_2"]
+
     var body: some View {
         VStack(spacing: 0) {
             TabView(selection: $currentIndex) {

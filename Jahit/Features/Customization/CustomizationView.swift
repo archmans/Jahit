@@ -88,6 +88,11 @@ struct CustomizationView: View {
         } message: {
             Text("Item berhasil ditambahkan ke keranjang")
         }
+        .onChange(of: viewModel.showingCartSuccess) { _, isShowing in
+            if !isShowing {
+                isDescriptionFocused = false
+            }
+        }
         .navigationBarHidden(true)
         .onTapGesture {
             isDescriptionFocused = false
@@ -580,18 +585,18 @@ struct CustomizationView: View {
             }) {
                 HStack(spacing: 8) {
                     Image(systemName: "plus")
-                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
+                        .foregroundColor(viewModel.customizationOrder.isValid ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                         .font(.system(size: 16))
                     
                     Image(systemName: "cart")
-                        .foregroundColor(viewModel.customizationOrder.selectedItem != nil ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
+                        .foregroundColor(viewModel.customizationOrder.isValid ? Color(red: 0, green: 0.37, blue: 0.92) : .gray)
                         .font(.system(size: 16))
                 }
                 .padding(16)
-                .background((viewModel.customizationOrder.selectedItem != nil ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray).opacity(0.1))
+                .background((viewModel.customizationOrder.isValid ? Color(red: 0, green: 0.37, blue: 0.92) : Color.gray).opacity(0.1))
                 .cornerRadius(8)
             }
-            .disabled(viewModel.customizationOrder.selectedItem == nil)
+            .disabled(!viewModel.customizationOrder.isValid)
             
             Button(action: {
                 viewModel.proceedToOrder()

@@ -24,8 +24,15 @@ struct CartCheckoutView: View {
     
     var totalPrice: Double {
         let itemsTotal = selectedItems.reduce(0) { $0 + $1.totalPrice }
-        let deliveryCost = selectedDeliveryOption?.additionalCost ?? 0
-        return itemsTotal + deliveryCost
+        let numberOfTailors = groupedItems.keys.count
+        let totalDeliveryCost = Double(numberOfTailors) * (selectedDeliveryOption?.additionalCost ?? 0)
+        
+        return itemsTotal + totalDeliveryCost
+    }
+    
+    var totalDeliveryCost: Double {
+        let numberOfTailors = groupedItems.keys.count
+        return Double(numberOfTailors) * (selectedDeliveryOption?.additionalCost ?? 0)
     }
     
     var formattedTotalPrice: String {
@@ -293,6 +300,20 @@ struct CartCheckoutView: View {
                             }
                         }
                         
+                        if let deliveryOption = selectedDeliveryOption, deliveryOption.additionalCost > 0 {
+                            HStack {
+                                Text("Biaya \(deliveryOption.displayName.lowercased()):")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.blue)
+                                
+                                Spacer()
+                                
+                                Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: deliveryOption.additionalCost)) ?? "Rp0")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 12))
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        
                         if tailorName != groupedItems.keys.sorted().last {
                             Divider()
                                 .background(Color.black)
@@ -302,20 +323,6 @@ struct CartCheckoutView: View {
                 }
                 
                 Divider()
-                
-                if let deliveryOption = selectedDeliveryOption, deliveryOption.additionalCost > 0 {
-                    HStack {
-                        Text("Biaya \(deliveryOption.displayName.lowercased()):")
-                            .font(.custom("PlusJakartaSans-Regular", size: 14))
-                            .foregroundColor(.black)
-                        
-                        Spacer()
-                        
-                        Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: deliveryOption.additionalCost)) ?? "Rp0")
-                            .font(.custom("PlusJakartaSans-Regular", size: 14))
-                            .foregroundColor(.black)
-                    }
-                }
                 
                 HStack {
                     Text("Total:")

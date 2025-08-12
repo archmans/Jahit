@@ -19,11 +19,11 @@ struct PaymentSuccessView: View {
                 .font(.system(size: 100))
                 .foregroundColor(.green)
             
-            Text("Pembayaran Berhasil!")
+            Text("Pesanan Berhasil Dibuat!")
                 .font(.custom("PlusJakartaSans-Regular", size: 24).weight(.bold))
                 .foregroundColor(.black)
             
-            Text("Pesananmu akan segera diproses oleh penjahit.")
+            Text("Setelah dikonfirmasi, penjahit akan mendatangimu untuk melakukan pengukuran.")
                 .font(.custom("PlusJakartaSans-Regular", size: 16))
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)

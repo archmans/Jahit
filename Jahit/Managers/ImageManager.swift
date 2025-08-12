@@ -49,6 +49,19 @@ class ImageManager: ObservableObject {
         return savedImageNames
     }
     
+    func saveImages(_ images: [UIImage], withPrefix prefix: String) -> [String] {
+        var savedImageNames: [String] = []
+        
+        for (index, image) in images.enumerated() {
+            let imageName = "\(prefix)\(UUID().uuidString)_\(index)"
+            if let savedName = saveImage(image, withName: imageName) {
+                savedImageNames.append(savedName)
+            }
+        }
+        
+        return savedImageNames
+    }
+    
     func loadImage(named name: String) -> UIImage? {
         let imageURL = documentsDirectory.appendingPathComponent("\(name).jpg")
         

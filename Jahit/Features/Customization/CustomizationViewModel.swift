@@ -96,7 +96,26 @@ class CustomizationViewModel: ObservableObject {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.showingCartSuccess = false
+            self.resetOrder()
         }
+    }
+    
+    func resetOrder() {
+        customizationOrder.selectedItem = nil
+        customizationOrder.description = ""
+        customizationOrder.quantity = 1
+        customizationOrder.fabricProvider = .tailor
+        customizationOrder.selectedFabricOption = nil
+        
+        clearAllReferenceImages()
+        
+        selectedImages.removeAll()
+        showingItemPicker = false
+        showingImagePicker = false
+        showingOrdering = false
+        isUploadingImages = false
+        
+        print("Customization order reset successfully")
     }
     
     func proceedToOrder() {
@@ -118,7 +137,9 @@ class CustomizationViewModel: ObservableObject {
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
-            let savedImageNames = self.imageManager.saveImages(images)
+            
+            let sessionId = UUID().uuidString.prefix(8)
+            let savedImageNames = self.imageManager.saveImages(images, withPrefix: "custom_\(sessionId)_")
             print("Saved \(savedImageNames.count) images with names: \(savedImageNames)")
             
             DispatchQueue.main.async {

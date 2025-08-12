@@ -10,13 +10,6 @@ import SwiftUI
 struct OptionalStringIdentifiable: Identifiable, Equatable, Hashable {
     let value: String?
     var id: String? { value }
-    
-    static func == (lhs: OptionalStringIdentifiable, rhs: OptionalStringIdentifiable) -> Bool {
-        lhs.value == rhs.value
-    }
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(value)
-    }
 }
 
 struct HomeView: View {
