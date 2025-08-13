@@ -473,7 +473,7 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             return false
         }
         
-        let basePrice = customizationOrder.selectedItem?.price ?? 0
+        let basePrice = customizationOrder.selectedItem?.basePrice ?? 0
         let fabricPrice = (!customizationOrder.isRepairService && customizationOrder.fabricProvider == .tailor) ? 
             (customizationOrder.selectedFabricOption?.additionalPrice ?? 0) : 0
         let totalItemPrice = (basePrice + fabricPrice) * Double(customizationOrder.quantity)

@@ -128,10 +128,6 @@ struct OngoingTransactionRow: View {
                         .font(.subheadline)
                         .foregroundColor(.gray)
                         .lineLimit(2)
-                    Text(transaction.totalPrice.idrFormatted)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.black)
                     
                     Text(transaction.status.rawValue)
                         .font(.caption)

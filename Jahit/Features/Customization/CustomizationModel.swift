@@ -24,6 +24,28 @@ struct CustomizationOrder: Identifiable {
     var fabricProvider: FabricProvider = .tailor
     var selectedFabricOption: FabricOption?
     
+    var priceEstimate: PriceEstimate? {
+        guard let item = selectedItem else { return nil }
+        
+        let baseCost = item.basePrice
+        var fabricCost: Double = 0
+        
+        if !isRepairService && fabricProvider == .tailor, let fabricOption = selectedFabricOption {
+            fabricCost = fabricOption.additionalPrice
+        }
+        
+        let totalBasePrice = (baseCost + fabricCost) * Double(quantity)
+        let minPrice = totalBasePrice
+        let maxPrice = totalBasePrice + (totalBasePrice * 0.3)
+        
+        return PriceEstimate(
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            basePrice: baseCost * Double(quantity),
+            fabricPrice: fabricCost * Double(quantity)
+        )
+    }
+    
     var isValid: Bool {
         guard selectedItem != nil else { return false }
         
@@ -44,7 +66,7 @@ struct CustomizationOrder: Identifiable {
     
     var totalPrice: Double {
         guard let item = selectedItem else { return 0 }
-        let basePrice = item.price * Double(quantity)
+        let basePrice = item.basePrice * Double(quantity)
         
         var fabricPrice: Double = 0
         if !isRepairService && fabricProvider == .tailor, let fabricOption = selectedFabricOption {

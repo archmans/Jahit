@@ -45,7 +45,7 @@ class CustomizationViewModel: ObservableObject {
     
     var formattedBasePrice: String {
         guard let item = customizationOrder.selectedItem else { return "Rp0" }
-        let basePrice = item.price * Double(customizationOrder.quantity)
+        let basePrice = item.basePrice * Double(customizationOrder.quantity)
         return NumberFormatter.currencyFormatter.string(from: NSNumber(value: basePrice)) ?? "Rp0"
     }
     

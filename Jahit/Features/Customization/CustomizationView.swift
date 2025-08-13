@@ -333,7 +333,7 @@ struct CustomizationView: View {
     
     private var priceBreakdownView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Rincian Harga")
+            Text("Estimasi Harga")
                 .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                 .foregroundColor(.black)
             
@@ -365,13 +365,23 @@ struct CustomizationView: View {
                 Divider()
                 
                 HStack {
-                    Text("Total")
+                    Text("Estimasi Total")
                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
                         .foregroundColor(.black)
                     Spacer()
-                    Text(viewModel.formattedPrice)
-                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                        .foregroundColor(Color.black)
+                    HStack(alignment: .center, spacing: 4) {
+                        if let estimate = viewModel.customizationOrder.priceEstimate {
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(estimate.formattedRange)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                    .foregroundColor(Color.black)
+                            }
+                        } else {
+                            Text(viewModel.formattedPrice)
+                                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                .foregroundColor(Color.black)
+                        }
+                    }
                 }
             }
             .padding(16)
@@ -522,7 +532,7 @@ struct CustomizationView: View {
                             .foregroundColor(.black)
                             .lineLimit(2)
                         
-                        Text("Harga jasa: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.price)) ?? "Rp0")")
+                        Text("Estimasi jasa: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: product.basePrice)) ?? "Rp0")")
                             .font(.custom("PlusJakartaSans-Regular", size: 12))
                             .foregroundColor(.gray)
                     }
@@ -601,7 +611,7 @@ struct CustomizationView: View {
             Button(action: {
                 viewModel.proceedToOrder()
             }) {
-                Text("Pembayaran")
+                Text("Pemesanan")
                     .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)

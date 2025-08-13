@@ -20,6 +20,21 @@ class OrderDetailViewModel: ObservableObject {
     }
     
     var formattedTotalAmount: String {
+        // Calculate total estimate from transaction items
+        if let transaction = getOriginalTransaction() {
+            let minTotal = transaction.items.reduce(0) { $0 + $1.priceEstimate.minPrice }
+            let maxTotal = transaction.items.reduce(0) { $0 + $1.priceEstimate.maxPrice }
+            let deliveryCost = transaction.deliveryCost
+            
+            let finalMinTotal = minTotal + deliveryCost
+            let finalMaxTotal = maxTotal + deliveryCost
+            
+            let minString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: finalMinTotal)) ?? "Rp0"
+            let maxString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: finalMaxTotal)) ?? "Rp0"
+            
+            return "\(minString) - \(maxString)"
+        }
+        
         return NumberFormatter.currencyFormatter.string(from: NSNumber(value: order.totalAmount)) ?? "Rp0"
     }
     

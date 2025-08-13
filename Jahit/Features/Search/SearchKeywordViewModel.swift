@@ -59,7 +59,7 @@ class SearchKeywordViewModel: ObservableObject {
                             id: item.id,
                             name: item.name,
                             image: item.image,
-                            price: item.price,
+                            price: item.basePrice,
                             tailorId: tailor.id,
                             tailorName: tailor.name,
                             category: service.name

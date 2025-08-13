@@ -40,6 +40,20 @@ struct TransactionItem: Identifiable, Codable {
     let selectedFabricOption: FabricOption?
     let fabricPrice: Double
     
+    var priceEstimate: PriceEstimate {
+        let baseCost = basePrice
+        let fabricCost = fabricPrice
+        let minPrice = (baseCost + fabricCost) * Double(quantity)
+        let maxPrice = minPrice + (minPrice * 0.3)
+        
+        return PriceEstimate(
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            basePrice: baseCost * Double(quantity),
+            fabricPrice: fabricCost * Double(quantity)
+        )
+    }
+    
     init(
         id: String,
         name: String,

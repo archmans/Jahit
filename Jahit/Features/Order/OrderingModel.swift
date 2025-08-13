@@ -29,21 +29,29 @@ struct Ordering: Identifiable {
 struct OrderSummaryItem {
     let name: String
     let quantity: Int
-    let price: Double
+    let basePrice: Double
     let fabricProvider: FabricProvider?
     let selectedFabricOption: FabricOption?
     let fabricPrice: Double
     
+    var priceEstimate: PriceEstimate {
+        let baseCost = basePrice
+        let fabricCost = fabricPrice
+        let minPrice = (baseCost + fabricCost) * Double(quantity)
+        let maxPrice = minPrice + (minPrice * 0.3)
+        
+        return PriceEstimate(
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            basePrice: baseCost * Double(quantity),
+            fabricPrice: fabricCost * Double(quantity)
+        )
+    }
+    
     var totalPrice: Double {
-        return Double(quantity) * (price + fabricPrice)
-    }
-    
-    var basePrice: Double {
-        return Double(quantity) * price
-    }
-    
-    var totalFabricPrice: Double {
-        return Double(quantity) * fabricPrice
+        let baseCost = Double(quantity) * basePrice
+        let fabricCost = Double(quantity) * fabricPrice
+        return baseCost + fabricCost
     }
 }
 

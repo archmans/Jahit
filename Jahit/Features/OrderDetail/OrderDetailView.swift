@@ -154,13 +154,15 @@ struct OrderDetailView: View {
                     }
                     
                     HStack {
-                        Text("Total Pesanan")
+                        Text("Estimasi Total")
                             .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                             .foregroundColor(.black)
                         Spacer()
-                        Text(viewModel.formattedTotalAmount)
-                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                            .foregroundColor(.black)
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(viewModel.formattedTotalAmount)
+                                .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                .foregroundColor(.black)
+                        }
                     }
                     .padding(.top, 8)
                     
@@ -273,15 +275,10 @@ struct TransactionItemRowView: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")
+                    Text(item.priceEstimate.formattedRange)
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.semibold))
                         .foregroundColor(.black)
                     
-                    if item.fabricPrice > 0 {
-                        Text("(termasuk bahan)")
-                            .font(.custom("PlusJakartaSans-Regular", size: 10))
-                            .foregroundColor(.gray)
-                    }
                 }
             }
             

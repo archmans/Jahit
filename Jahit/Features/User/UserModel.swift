@@ -70,6 +70,26 @@ struct User: Identifiable, Codable {
         return cart.reduce(0) { $0 + $1.totalPrice }
     }
     
+    var totalCartPriceEstimate: PriceEstimate {
+        let selectedItems = selectedCartItems
+        
+        if selectedItems.isEmpty {
+            return PriceEstimate(minPrice: 0, maxPrice: 0, basePrice: 0, fabricPrice: 0)
+        }
+        
+        let minTotal = selectedItems.reduce(0) { $0 + $1.priceEstimate.minPrice }
+        let maxTotal = selectedItems.reduce(0) { $0 + $1.priceEstimate.maxPrice }
+        let baseTotal = selectedItems.reduce(0) { $0 + $1.priceEstimate.basePrice }
+        let fabricTotal = selectedItems.reduce(0) { $0 + $1.priceEstimate.fabricPrice }
+        
+        return PriceEstimate(
+            minPrice: minTotal,
+            maxPrice: maxTotal,
+            basePrice: baseTotal,
+            fabricPrice: fabricTotal
+        )
+    }
+    
     var selectedCartItems: [CartItem] {
         return cart.flatMap { $0.items.filter { $0.isSelected } }
     }

@@ -163,14 +163,6 @@ struct CartView: View {
                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
                         .foregroundColor(.black)
                     
-                    Text(item.category)
-                        .font(.custom("PlusJakartaSans-Regular", size: 12))
-                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color(red: 0, green: 0.37, blue: 0.92).opacity(0.1))
-                            .cornerRadius(4)
-                    
                     if item.isCustomOrder && item.fabricProvider != nil {
                         if item.fabricProvider == .personal {
                             Text("Bahan pribadi")
@@ -197,7 +189,7 @@ struct CartView: View {
                         }
                     }
                     
-                    Text("Total: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")")
+                    Text(item.priceEstimate.formattedRange)
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.bold))
                         .foregroundColor(.black)
                 }
@@ -253,15 +245,17 @@ struct CartView: View {
     private var bottomCheckoutView: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Total (\(userManager.currentUser.selectedCartItems.count) item)")
+                Text("Estimasi (\(userManager.currentUser.selectedCartItems.count) item)")
                     .font(.custom("PlusJakartaSans-Regular", size: 16))
                     .foregroundColor(.gray)
                 
                 Spacer()
                 
-                Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: userManager.currentUser.totalCartPrice)) ?? "Rp0")
-                    .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
-                    .foregroundColor(.black)
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(userManager.currentUser.totalCartPriceEstimate.formattedRange)
+                        .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
+                        .foregroundColor(.black)
+                }
             }
             
             Button(action: {

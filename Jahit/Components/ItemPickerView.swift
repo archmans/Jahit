@@ -129,7 +129,7 @@ struct ItemCard: View {
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.price)) ?? "Rp0")
+                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.basePrice)) ?? "Rp0")
                         .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.bold))
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity, alignment: .leading)

@@ -21,6 +21,20 @@ struct CartItem: Identifiable, Codable, Hashable {
     var selectedFabricOption: FabricOption?
     var fabricPrice: Double = 0
     
+    var priceEstimate: PriceEstimate {
+        let baseCost = basePrice
+        let fabricCost = fabricPrice
+        let minPrice = (baseCost + fabricCost) * Double(quantity)
+        let maxPrice = minPrice + (minPrice * 0.3)
+        
+        return PriceEstimate(
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            basePrice: baseCost * Double(quantity),
+            fabricPrice: fabricCost * Double(quantity)
+        )
+    }
+    
     var totalPrice: Double {
         let baseCost = Double(quantity) * basePrice
         let fabricCost = Double(quantity) * fabricPrice
@@ -81,7 +95,7 @@ extension CartItem {
             itemId: selectedItem.id,
             image: selectedItem.image,
             quantity: order.quantity,
-            basePrice: selectedItem.price,
+            basePrice: selectedItem.basePrice,
             isCustomOrder: true,
             customDescription: order.description.isEmpty ? nil : order.description,
             referenceImages: copiedReferenceImages,

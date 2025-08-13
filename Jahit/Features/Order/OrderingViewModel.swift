@@ -15,7 +15,7 @@ class OrderingViewModel: ObservableObject {
     @Published var selectedPaymentMethod: PaymentMethod? = nil
         @Published var selectedDeliveryOption: DeliveryOption? = .delivery
     
-    private let customizationOrder: CustomizationOrder
+    @Published private var customizationOrder: CustomizationOrder
     
     init(customizationOrder: CustomizationOrder) {
         self.customizationOrder = customizationOrder
@@ -26,7 +26,7 @@ class OrderingViewModel: ObservableObject {
         let orderItem = OrderSummaryItem(
             name: customizationOrder.selectedItem?.name ?? "Unknown Item",
             quantity: customizationOrder.quantity,
-            price: customizationOrder.selectedItem?.price ?? 0,
+            basePrice: customizationOrder.selectedItem?.basePrice ?? 0,
             fabricProvider: customizationOrder.isRepairService ? nil : customizationOrder.fabricProvider,
             selectedFabricOption: customizationOrder.selectedFabricOption,
             fabricPrice: fabricPrice
@@ -60,6 +60,38 @@ class OrderingViewModel: ObservableObject {
     
     var formattedTotalPrice: String {
         return NumberFormatter.currencyFormatter.string(from: NSNumber(value: order.totalAmount)) ?? "Rp0"
+    }
+    
+    var formattedTotalPriceEstimate: String {
+        guard let itemEstimate = customizationOrder.priceEstimate else {
+            return "Rp0 - Rp0"
+        }
+        
+        let deliveryCost = order.deliveryOption?.additionalCost ?? 0
+        
+        let minTotal = itemEstimate.minPrice + deliveryCost
+        let maxTotal = itemEstimate.maxPrice + deliveryCost
+        
+        let minString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: minTotal)) ?? "Rp0"
+        let maxString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: maxTotal)) ?? "Rp0"
+        
+        return "\(minString) - \(maxString)"
+    }
+    
+    var currentOrderItems: [OrderSummaryItem] {
+        let fabricPrice = (!customizationOrder.isRepairService && customizationOrder.fabricProvider == .tailor) ? 
+            (customizationOrder.selectedFabricOption?.additionalPrice ?? 0) : 0
+        
+        let orderItem = OrderSummaryItem(
+            name: customizationOrder.selectedItem?.name ?? "Unknown Item",
+            quantity: customizationOrder.quantity,
+            basePrice: customizationOrder.selectedItem?.basePrice ?? 0,
+            fabricProvider: customizationOrder.isRepairService ? nil : customizationOrder.fabricProvider,
+            selectedFabricOption: customizationOrder.selectedFabricOption,
+            fabricPrice: fabricPrice
+        )
+        
+        return [orderItem]
     }
     
     func updatePickupDate(_ date: Date) {

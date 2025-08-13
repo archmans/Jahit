@@ -160,7 +160,7 @@ struct OrderingView: View {
                     .font(.custom("PlusJakartaSans-Regular", size: 14).weight(.medium))
                     .foregroundColor(.black)
                 
-                ForEach(viewModel.order.items, id: \.name) { item in
+                ForEach(Array(viewModel.currentOrderItems.enumerated()), id: \.offset) { index, item in
                     VStack(spacing: 8) {
                         HStack {
                             Text("\(item.name)")
@@ -173,9 +173,14 @@ struct OrderingView: View {
                                 .foregroundColor(.black)
                             Spacer()
                             
-                            Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "")
-                                .font(.custom("PlusJakartaSans-Regular", size: 14))
-                                .foregroundColor(.black)
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(item.priceEstimate.formattedRange)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+                                    .foregroundColor(.black)
+                                Text("*estimasi")
+                                    .font(.custom("PlusJakartaSans-Regular", size: 10))
+                                    .foregroundColor(.gray)
+                            }
                         }
                         
                         if let fabricProvider = item.fabricProvider {
@@ -191,7 +196,7 @@ struct OrderingView: View {
                                             .foregroundColor(.orange)
                                         
                                         if item.fabricPrice > 0 {
-                                            Text("Biaya bahan: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalFabricPrice)) ?? "Rp0")")
+                                            Text("Biaya bahan: \(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.fabricPrice * Double(item.quantity))) ?? "Rp0")")
                                                 .font(.custom("PlusJakartaSans-Regular", size: 11))
                                                 .foregroundColor(.gray)
                                         }
@@ -256,7 +261,7 @@ struct OrderingView: View {
                 
                 if let deliveryOption = viewModel.selectedDeliveryOption, deliveryOption.additionalCost > 0 {
                     HStack {
-                        Text("Biaya \(deliveryOption.displayName.lowercased()):")
+                        Text("Biaya \(deliveryOption.displayName.lowercased())")
                             .font(.custom("PlusJakartaSans-Regular", size: 14))
                             .foregroundColor(.black)
                         
@@ -269,15 +274,17 @@ struct OrderingView: View {
                 }
                 
                 HStack {
-                    Text("Total:")
+                    Text("Estimasi Total")
                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                         .foregroundColor(.black)
                     
                     Spacer()
                     
-                    Text(viewModel.formattedTotalPrice)
-                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                        .foregroundColor(.black)
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(viewModel.formattedTotalPriceEstimate)
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                            .foregroundColor(.black)
+                    }
                 }
             }
             .padding(16)
@@ -289,13 +296,15 @@ struct OrderingView: View {
     private var bottomSectionView: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("Total")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-                    .foregroundColor(.black)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Estimasi Total")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                        .foregroundColor(.black)
+                }
                 
                 Spacer()
                 
-                Text(viewModel.formattedTotalPrice)
+                Text(viewModel.formattedTotalPriceEstimate)
                     .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
                     .foregroundColor(.black)
             }

@@ -32,8 +32,23 @@ struct TailorServiceItem: Identifiable, Hashable, Codable {
     let id: String
     let name: String
     let image: String
-    let price: Double
+    let basePrice: Double
     let availableFabrics: [FabricOption]
+    
+    func calculatePriceEstimate(selectedFabric: FabricOption?) -> PriceEstimate {
+        let baseCost = basePrice
+        let fabricCost = selectedFabric?.additionalPrice ?? 0
+        
+        let minPrice = baseCost + fabricCost
+        let maxPrice = minPrice + (minPrice * 0.3)
+        
+        return PriceEstimate(
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            basePrice: baseCost,
+            fabricPrice: fabricCost
+        )
+    }
 }
 
 struct FabricOption: Identifiable, Hashable, Codable {
@@ -41,6 +56,17 @@ struct FabricOption: Identifiable, Hashable, Codable {
     let type: String
     let description: String
     let additionalPrice: Double
+}
+
+struct PriceEstimate: Codable {
+    let minPrice: Double
+    let maxPrice: Double
+    let basePrice: Double
+    let fabricPrice: Double
+    
+    var formattedRange: String {
+        return "Rp \(Int(minPrice).formatted()) - Rp \(Int(maxPrice).formatted())"
+    }
 }
 
 struct TailorReview: Identifiable, Hashable, Codable {
@@ -78,7 +104,7 @@ extension Tailor {
                             id: "i1", 
                             name: "Jas", 
                             image: "jas", 
-                            price: 150000,
+                            basePrice: 150000,
                             availableFabrics: [
                                 FabricOption(id: "f1", type: "Wol", description: "Bahan wol premium untuk jas formal", additionalPrice: 50000),
                                 FabricOption(id: "f2", type: "Polyester", description: "Bahan sintetis tahan lama", additionalPrice: 30000),
@@ -89,7 +115,7 @@ extension Tailor {
                             id: "i2", 
                             name: "Kemeja", 
                             image: "kemeja", 
-                            price: 95000,
+                            basePrice: 95000,
                             availableFabrics: [
                                 FabricOption(id: "f4", type: "Katun", description: "Bahan katun yang nyaman", additionalPrice: 25000),
                                 FabricOption(id: "f5", type: "Polyester", description: "Bahan anti kusut", additionalPrice: 30000),
@@ -100,7 +126,7 @@ extension Tailor {
                             id: "i3", 
                             name: "Jaket", 
                             image: "jaket", 
-                            price: 200000,
+                            basePrice: 200000,
                             availableFabrics: [
                                 FabricOption(id: "f7", type: "Denim", description: "Bahan denim tebal dan kuat", additionalPrice: 35000),
                                 FabricOption(id: "f8", type: "Polyester", description: "Bahan tahan air", additionalPrice: 30000),
@@ -111,7 +137,7 @@ extension Tailor {
                             id: "i4", 
                             name: "Cardigan", 
                             image: "cardigan", 
-                            price: 120000,
+                            basePrice: 120000,
                             availableFabrics: [
                                 FabricOption(id: "f10", type: "Katun", description: "Bahan katun lembut", additionalPrice: 25000),
                                 FabricOption(id: "f11", type: "Wol", description: "Bahan wol yang hangat", additionalPrice: 50000)
@@ -121,7 +147,7 @@ extension Tailor {
                             id: "i5", 
                             name: "Kerudung", 
                             image: "kerudung", 
-                            price: 80000,
+                            basePrice: 80000,
                             availableFabrics: [
                                 FabricOption(id: "f12", type: "Sutra", description: "Bahan sutra yang elegan", additionalPrice: 60000),
                                 FabricOption(id: "f13", type: "Polyester", description: "Bahan praktis dan mudah dirawat", additionalPrice: 30000)
@@ -140,7 +166,7 @@ extension Tailor {
                             id: "i6", 
                             name: "Celana Bahan", 
                             image: "celana_bahan", 
-                            price: 95000,
+                            basePrice: 95000,
                             availableFabrics: [
                                 FabricOption(id: "f14", type: "Wol", description: "Bahan wol untuk celana formal", additionalPrice: 50000),
                                 FabricOption(id: "f15", type: "Polyester", description: "Bahan anti kusut", additionalPrice: 30000),
@@ -151,7 +177,7 @@ extension Tailor {
                             id: "i7", 
                             name: "Celana Denim", 
                             image: "celana_denim", 
-                            price: 100000,
+                            basePrice: 100000,
                             availableFabrics: [
                                 FabricOption(id: "f17", type: "Denim", description: "Bahan denim original", additionalPrice: 35000),
                                 FabricOption(id: "f18", type: "Denim", description: "Bahan denim stretch", additionalPrice: 40000)
@@ -161,7 +187,7 @@ extension Tailor {
                             id: "i8", 
                             name: "Rok", 
                             image: "rok", 
-                            price: 85000,
+                            basePrice: 85000,
                             availableFabrics: [
                                 FabricOption(id: "f19", type: "Katun", description: "Bahan katun yang adem", additionalPrice: 25000),
                                 FabricOption(id: "f20", type: "Polyester", description: "Bahan yang mudah dirawat", additionalPrice: 30000),
@@ -181,7 +207,7 @@ extension Tailor {
                             id: "i9", 
                             name: "Perbaikan Sobek", 
                             image: "robek", 
-                            price: 35000,
+                            basePrice: 35000,
                             availableFabrics: [
                                 FabricOption(id: "f22", type: "Sesuai Asli", description: "Menggunakan bahan sesuai pakaian asli", additionalPrice: 0)
                             ]
@@ -190,7 +216,7 @@ extension Tailor {
                             id: "i10", 
                             name: "Mengecilkan Ukuran", 
                             image: "alterasi", 
-                            price: 45000,
+                            basePrice: 45000,
                             availableFabrics: [
                                 FabricOption(id: "f23", type: "Sesuai Asli", description: "Tidak memerlukan bahan tambahan", additionalPrice: 0)
                             ]
@@ -199,7 +225,7 @@ extension Tailor {
                             id: "i11", 
                             name: "Ganti Kancing", 
                             image: "kancing", 
-                            price: 15000,
+                            basePrice: 15000,
                             availableFabrics: [
                                 FabricOption(id: "f24", type: "Kancing Plastik", description: "Kancing plastik standar", additionalPrice: 5000),
                                 FabricOption(id: "f25", type: "Kancing Kayu", description: "Kancing kayu premium", additionalPrice: 10000),
@@ -233,7 +259,7 @@ extension Tailor {
                             id: "i12", 
                             name: "Jas", 
                             image: "jas", 
-                            price: 180000,
+                            basePrice: 180000,
                             availableFabrics: [
                                 FabricOption(id: "f27", type: "Wol", description: "Bahan wol premium", additionalPrice: 50000),
                                 FabricOption(id: "f28", type: "Sutra", description: "Bahan sutra mewah", additionalPrice: 60000)
@@ -243,7 +269,7 @@ extension Tailor {
                             id: "i13", 
                             name: "Kemeja", 
                             image: "kemeja", 
-                            price: 95000,
+                            basePrice: 95000,
                             availableFabrics: [
                                 FabricOption(id: "f29", type: "Katun", description: "Bahan katun berkualitas", additionalPrice: 25000),
                                 FabricOption(id: "f30", type: "Linen", description: "Bahan linen premium", additionalPrice: 40000)
@@ -253,7 +279,7 @@ extension Tailor {
                             id: "i14", 
                             name: "Jaket", 
                             image: "jaket", 
-                            price: 200000,
+                            basePrice: 200000,
                             availableFabrics: [
                                 FabricOption(id: "f31", type: "Denim", description: "Bahan denim tebal", additionalPrice: 35000),
                                 FabricOption(id: "f32", type: "Wol", description: "Bahan wol hangat", additionalPrice: 50000)
@@ -263,7 +289,7 @@ extension Tailor {
                             id: "i15", 
                             name: "Cardigan", 
                             image: "cardigan", 
-                            price: 120000,
+                            basePrice: 120000,
                             availableFabrics: [
                                 FabricOption(id: "f33", type: "Katun", description: "Bahan katun lembut", additionalPrice: 25000),
                                 FabricOption(id: "f34", type: "Wol", description: "Bahan wol berkualitas", additionalPrice: 50000)
@@ -273,7 +299,7 @@ extension Tailor {
                             id: "i16", 
                             name: "Kerudung", 
                             image: "kerudung", 
-                            price: 80000,
+                            basePrice: 80000,
                             availableFabrics: [
                                 FabricOption(id: "f35", type: "Sutra", description: "Bahan sutra halus", additionalPrice: 60000),
                                 FabricOption(id: "f36", type: "Polyester", description: "Bahan praktis", additionalPrice: 30000)
@@ -292,7 +318,7 @@ extension Tailor {
                             id: "i17", 
                             name: "Celana Bahan", 
                             image: "celana_bahan", 
-                            price: 95000,
+                            basePrice: 95000,
                             availableFabrics: [
                                 FabricOption(id: "f37", type: "Wol", description: "Bahan wol untuk celana formal", additionalPrice: 50000),
                                 FabricOption(id: "f38", type: "Polyester", description: "Bahan anti kusut", additionalPrice: 30000)
@@ -302,7 +328,7 @@ extension Tailor {
                             id: "i18", 
                             name: "Celana Denim", 
                             image: "celana_denim", 
-                            price: 100000,
+                            basePrice: 100000,
                             availableFabrics: [
                                 FabricOption(id: "f39", type: "Denim", description: "Bahan denim berkualitas", additionalPrice: 35000)
                             ]
@@ -311,7 +337,7 @@ extension Tailor {
                             id: "i19", 
                             name: "Rok", 
                             image: "rok", 
-                            price: 85000,
+                            basePrice: 85000,
                             availableFabrics: [
                                 FabricOption(id: "f40", type: "Katun", description: "Bahan katun nyaman", additionalPrice: 25000),
                                 FabricOption(id: "f41", type: "Linen", description: "Bahan linen elegan", additionalPrice: 40000)
@@ -344,7 +370,7 @@ extension Tailor {
                             id: "i20", 
                             name: "Dress Pendek", 
                             image: "dress_pendek", 
-                            price: 200000,
+                            basePrice: 200000,
                             availableFabrics: [
                                 FabricOption(id: "f42", type: "Katun", description: "Bahan katun untuk dress kasual", additionalPrice: 25000),
                                 FabricOption(id: "f43", type: "Sutra", description: "Bahan sutra untuk dress formal", additionalPrice: 60000),
@@ -355,7 +381,7 @@ extension Tailor {
                             id: "i21", 
                             name: "Dress Panjang", 
                             image: "dress_panjang", 
-                            price: 250000,
+                            basePrice: 250000,
                             availableFabrics: [
                                 FabricOption(id: "f45", type: "Sutra", description: "Bahan sutra mewah", additionalPrice: 60000),
                                 FabricOption(id: "f46", type: "Polyester", description: "Bahan polyester elegan", additionalPrice: 30000),
@@ -366,7 +392,7 @@ extension Tailor {
                             id: "i22", 
                             name: "Gamis", 
                             image: "gamis", 
-                            price: 220000,
+                            basePrice: 220000,
                             availableFabrics: [
                                 FabricOption(id: "f48", type: "Katun", description: "Bahan katun untuk gamis sehari-hari", additionalPrice: 25000),
                                 FabricOption(id: "f49", type: "Sutra", description: "Bahan sutra untuk gamis pesta", additionalPrice: 60000)
@@ -376,7 +402,7 @@ extension Tailor {
                             id: "i23", 
                             name: "Jumpsuit", 
                             image: "jumpsuit", 
-                            price: 230000,
+                            basePrice: 230000,
                             availableFabrics: [
                                 FabricOption(id: "f50", type: "Denim", description: "Bahan denim untuk jumpsuit kasual", additionalPrice: 35000),
                                 FabricOption(id: "f51", type: "Polyester", description: "Bahan polyester untuk jumpsuit formal", additionalPrice: 30000)
@@ -409,7 +435,7 @@ extension Tailor {
                             id: "i24", 
                             name: "Jas", 
                             image: "jas", 
-                            price: 150000,
+                            basePrice: 150000,
                             availableFabrics: [
                                 FabricOption(id: "f52", type: "Wol", description: "Bahan wol berkualitas", additionalPrice: 50000),
                                 FabricOption(id: "f53", type: "Polyester", description: "Bahan polyester ekonomis", additionalPrice: 30000)
@@ -419,7 +445,7 @@ extension Tailor {
                             id: "i25", 
                             name: "Kemeja", 
                             image: "kemeja", 
-                            price: 95000,
+                            basePrice: 95000,
                             availableFabrics: [
                                 FabricOption(id: "f54", type: "Katun", description: "Bahan katun standar", additionalPrice: 25000),
                                 FabricOption(id: "f55", type: "Polyester", description: "Bahan anti kusut", additionalPrice: 30000)
@@ -429,7 +455,7 @@ extension Tailor {
                             id: "i26", 
                             name: "Jaket", 
                             image: "jaket", 
-                            price: 200000,
+                            basePrice: 200000,
                             availableFabrics: [
                                 FabricOption(id: "f56", type: "Denim", description: "Bahan denim standar", additionalPrice: 35000),
                                 FabricOption(id: "f57", type: "Polyester", description: "Bahan polyester tahan air", additionalPrice: 30000)
@@ -439,7 +465,7 @@ extension Tailor {
                             id: "i27", 
                             name: "Cardigan", 
                             image: "cardigan", 
-                            price: 120000,
+                            basePrice: 120000,
                             availableFabrics: [
                                 FabricOption(id: "f58", type: "Katun", description: "Bahan katun lembut", additionalPrice: 25000),
                                 FabricOption(id: "f59", type: "Wol", description: "Bahan wol hangat", additionalPrice: 50000)
@@ -449,7 +475,7 @@ extension Tailor {
                             id: "i28", 
                             name: "Kerudung", 
                             image: "kerudung", 
-                            price: 80000,
+                            basePrice: 80000,
                             availableFabrics: [
                                 FabricOption(id: "f60", type: "Polyester", description: "Bahan polyester praktis", additionalPrice: 30000),
                                 FabricOption(id: "f61", type: "Sutra", description: "Bahan sutra premium", additionalPrice: 60000)
@@ -468,7 +494,7 @@ extension Tailor {
                             id: "i29", 
                             name: "Celana Bahan", 
                             image: "celana_bahan", 
-                            price: 95000,
+                            basePrice: 95000,
                             availableFabrics: [
                                 FabricOption(id: "f62", type: "Wol", description: "Bahan wol untuk celana formal", additionalPrice: 50000),
                                 FabricOption(id: "f63", type: "Polyester", description: "Bahan polyester ekonomis", additionalPrice: 30000)
@@ -478,7 +504,7 @@ extension Tailor {
                             id: "i30", 
                             name: "Celana Denim", 
                             image: "celana_denim", 
-                            price: 100000,
+                            basePrice: 100000,
                             availableFabrics: [
                                 FabricOption(id: "f64", type: "Denim", description: "Bahan denim standar", additionalPrice: 35000)
                             ]
@@ -487,7 +513,7 @@ extension Tailor {
                             id: "i31", 
                             name: "Rok", 
                             image: "rok", 
-                            price: 85000,
+                            basePrice: 85000,
                             availableFabrics: [
                                 FabricOption(id: "f65", type: "Katun", description: "Bahan katun nyaman", additionalPrice: 25000),
                                 FabricOption(id: "f66", type: "Polyester", description: "Bahan polyester mudah dirawat", additionalPrice: 30000)

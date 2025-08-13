@@ -39,6 +39,24 @@ struct CartCheckoutView: View {
         return NumberFormatter.currencyFormatter.string(from: NSNumber(value: totalPrice)) ?? "Rp0"
     }
     
+    var formattedTotalPriceEstimate: String {
+        let minTotal = selectedItems.reduce(0) { total, item in
+            return total + item.priceEstimate.minPrice
+        }
+        let maxTotal = selectedItems.reduce(0) { total, item in
+            return total + item.priceEstimate.maxPrice
+        }
+        
+        let deliveryCost = totalDeliveryCost
+        let minTotalWithDelivery = minTotal + deliveryCost
+        let maxTotalWithDelivery = maxTotal + deliveryCost
+        
+        let minString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: minTotalWithDelivery)) ?? "Rp0"
+        let maxString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: maxTotalWithDelivery)) ?? "Rp0"
+        
+        return "\(minString) - \(maxString)"
+    }
+    
     var formattedPickupDate: String {
         guard let pickupDate = pickupDate else {
             return "Belum dipilih"
@@ -171,7 +189,7 @@ struct CartCheckoutView: View {
                     .font(.system(size: 24, weight: .medium))
             }
             
-            Text("Pembayaran")
+            Text("Pemesanan")
                 .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
                 .foregroundColor(.black)
             
@@ -210,9 +228,11 @@ struct CartCheckoutView: View {
                                     
                                     Spacer()
                                     
-                                    Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: item.totalPrice)) ?? "Rp0")
-                                        .font(.custom("PlusJakartaSans-Regular", size: 14))
-                                        .foregroundColor(.black)
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text(item.priceEstimate.formattedRange)
+                                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                                            .foregroundColor(.black)
+                                    }
                                 }
                                 
                                 if let fabricProvider = item.fabricProvider {
@@ -304,13 +324,13 @@ struct CartCheckoutView: View {
                             HStack {
                                 Text("Biaya \(deliveryOption.displayName.lowercased()):")
                                     .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.black)
                                 
                                 Spacer()
                                 
                                 Text(NumberFormatter.currencyFormatter.string(from: NSNumber(value: deliveryOption.additionalCost)) ?? "Rp0")
                                     .font(.custom("PlusJakartaSans-Regular", size: 12))
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.black)
                             }
                         }
                         
@@ -325,15 +345,17 @@ struct CartCheckoutView: View {
                 Divider()
                 
                 HStack {
-                    Text("Total:")
+                    Text("Estimasi Total")
                         .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                         .foregroundColor(.black)
                     
                     Spacer()
                     
-                    Text(formattedTotalPrice)
-                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                        .foregroundColor(.black)
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(formattedTotalPriceEstimate)
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                            .foregroundColor(.black)
+                    }
                 }
             }
             .padding(16)
@@ -345,13 +367,15 @@ struct CartCheckoutView: View {
     private var bottomSectionView: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("Total Price")
-                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
-                    .foregroundColor(.black)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Estimasi Total")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                        .foregroundColor(.black)
+                }
                 
                 Spacer()
                 
-                Text(formattedTotalPrice)
+                Text(formattedTotalPriceEstimate)
                     .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
                     .foregroundColor(.black)
             }
