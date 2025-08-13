@@ -119,10 +119,13 @@ extension User {
                         category: "Atasan",
                         quantity: 1,
                         basePrice: 150000,
-                        totalPrice: 150000,
+                        totalPrice: 200000,
                         isCustomOrder: true,
                         customDescription: "Blazer formal untuk acara resmi, warna navy dengan kancing emas",
-                        referenceImages: ["blazer", "atasan"]
+                        referenceImages: ["blazer", "atasan"],
+                        fabricProvider: .tailor,
+                        selectedFabricOption: FabricOption(id: "1", type: "Wool Premium", description: "Bahan wool berkualitas tinggi", additionalPrice: 50000),
+                        fabricPrice: 50000
                     ),
                     TransactionItem(
                         id: "BR6Y2N8X1",
@@ -130,13 +133,16 @@ extension User {
                         category: "Bawahan",
                         quantity: 1,
                         basePrice: 100000,
-                        totalPrice: 100000,
+                        totalPrice: 130000,
                         isCustomOrder: false,
                         customDescription: nil,
-                        referenceImages: ["bawahan"]
+                        referenceImages: ["bawahan"],
+                        fabricProvider: .tailor,
+                        selectedFabricOption: FabricOption(id: "2", type: "Cotton Premium", description: "Bahan katun premium dengan tekstur halus", additionalPrice: 30000),
+                        fabricPrice: 30000
                     )
                 ],
-                totalPrice: 250000,
+                totalPrice: 330000,
                 pickupDate: Calendar.current.date(byAdding: .day, value: -3, to: Date()) ?? Date(),
                 pickupTime: "14:00",
                 paymentMethod: "GoPay",
@@ -145,7 +151,9 @@ extension User {
                 status: .completed,
                 review: nil,
                 deliveryOption: .delivery,
-                deliveryCost: 15000
+                deliveryCost: 15000,
+                finalPrice: 185000,
+                isPriceConfirmed: true
             ),
             
             Transaction(
@@ -174,7 +182,9 @@ extension User {
                 status: .inProgress,
                 review: nil,
                 deliveryOption: .delivery,
-                deliveryCost: 15000
+                deliveryCost: 15000,
+                finalPrice: 200000,
+                isPriceConfirmed: true
             ),
             
             Transaction(
@@ -203,7 +213,9 @@ extension User {
                 status: .pickup,
                 review: nil,
                 deliveryOption: .delivery,
-                deliveryCost: 15000
+                deliveryCost: 15000,
+                finalPrice: nil,
+                isPriceConfirmed: false
             ),
             
             Transaction(
@@ -243,7 +255,9 @@ extension User {
                 status: .pending,
                 review: nil,
                 deliveryOption: .delivery,
-                deliveryCost: 15000
+                deliveryCost: 15000,
+                finalPrice: nil,
+                isPriceConfirmed: false
             ),
             
             Transaction(
@@ -272,7 +286,9 @@ extension User {
                 status: .completed,
                 review: nil,
                 deliveryOption: .delivery,
-                deliveryCost: 15000
+                deliveryCost: 15000,
+                finalPrice: 315000,
+                isPriceConfirmed: true
             )
         ]
     )

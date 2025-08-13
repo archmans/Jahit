@@ -415,7 +415,9 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 status: .pending,
                 review: nil,
                 deliveryOption: deliveryOption,
-                deliveryCost: deliveryCost
+                deliveryCost: deliveryCost,
+                finalPrice: nil,
+                isPriceConfirmed: false
             )
             
             currentUser.transactions.append(transaction)
@@ -523,7 +525,9 @@ class UserManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             status: .pending,
             review: nil,
             deliveryOption: deliveryOption,
-            deliveryCost: deliveryCost
+            deliveryCost: deliveryCost,
+            finalPrice: nil,
+            isPriceConfirmed: false
         )
         
         currentUser.transactions.append(transaction)

@@ -10,6 +10,9 @@ import SwiftUI
 struct OrderDetailView: View {
     @StateObject private var viewModel: OrderDetailViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showPriceConfirmation = false
+    @State private var showRejectAlert = false
+    @State private var proposedFinalPrice: String = ""
     
     init(order: Order? = nil) {
         self._viewModel = StateObject(wrappedValue: OrderDetailViewModel(order: order ?? Order.sampleOrder))
@@ -23,11 +26,30 @@ struct OrderDetailView: View {
                     progressStepsView
                     
                     orderContentView
+                    
+                    if viewModel.order.status == .cancelled {
+                        orderCancelledSection
+                    }
+                    
+                    if viewModel.order.status == .pickup && !viewModel.order.isPriceConfirmed {
+                        priceConfirmationSection
+                    }
                 }
             }
         }
         .background(Color(red: 0.95, green: 0.95, blue: 0.95))
         .navigationBarHidden(true)
+        .sheet(isPresented: $showPriceConfirmation) {
+            priceConfirmationSheet
+        }
+        .alert("Tolak Harga", isPresented: $showRejectAlert) {
+            Button("Batal", role: .cancel) { }
+            Button("Ya, Tolak", role: .destructive) {
+                viewModel.rejectPrice()
+            }
+        } message: {
+            Text("Apakah Anda yakin ingin menolak harga ini? Pesanan akan dibatalkan dan tidak dapat dikembalikan.")
+        }
         .gesture(
             DragGesture()
                 .onEnded { value in
@@ -153,18 +175,24 @@ struct OrderDetailView: View {
                         }
                     }
                     
-                    HStack {
-                        Text("Estimasi Total")
-                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
-                            .foregroundColor(.black)
-                        Spacer()
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text(viewModel.formattedTotalAmount)
+                    if !shouldShowFixedPrice {
+                        HStack {
+                            Text("Estimasi Total")
                                 .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
                                 .foregroundColor(.black)
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(viewModel.formattedTotalAmount)
+                                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                                    .foregroundColor(.black)
+                            }
                         }
+                        .padding(.top, 8)
                     }
-                    .padding(.top, 8)
+                    
+                    if shouldShowFixedPrice {
+                        fixedPriceSection
+                    }
                     
                     if let review = viewModel.orderReview {
                         VStack(alignment: .leading, spacing: 8) {
@@ -232,6 +260,214 @@ struct OrderDetailView: View {
             return viewModel.formattedConfirmationTime
         default:
             return viewModel.formattedConfirmationTime
+        }
+    }
+    
+    private var priceConfirmationSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Penjahit telah menyelesaikan pengukuran dan menetapkan harga final untuk pesanan Anda.")
+                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+                    .foregroundColor(.gray)
+                
+                HStack {
+                    Text("Harga Final:")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                        .foregroundColor(.black)
+                    Spacer()
+                    Text(viewModel.formattedProposedFinalPrice)
+                        .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
+                        .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
+                }
+                
+                HStack(spacing: 12) {
+                    Button(action: {
+                        showRejectAlert = true
+                    }) {
+                        Text("Tolak")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.red.opacity(0.1))
+                            .cornerRadius(8)
+                    }
+                    
+                    Button(action: {
+                        showPriceConfirmation = true
+                    }) {
+                        Text("Terima")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color(red: 0, green: 0.37, blue: 0.92))
+                            .cornerRadius(8)
+                    }
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 20)
+            .background(Color.white)
+            .cornerRadius(12)
+            .padding(.horizontal, 20)
+        }
+        .padding(.bottom, 20)
+        .padding(.top, 20)
+    }
+    
+    private var orderCancelledSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.red)
+                        .font(.system(size: 24))
+                    
+                    Text("Pesanan Dibatalkan")
+                        .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.semibold))
+                        .foregroundColor(.red)
+                }
+                
+                Text("Pesanan ini telah dibatalkan karena harga yang diajukan tidak dapat diterima. Tidak ada biaya yang dikenakan untuk pesanan yang dibatalkan.")
+                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+                    .foregroundColor(.gray)
+                
+                Text("Jika Anda memiliki pertanyaan, silakan hubungi penjahit atau layanan pelanggan.")
+                    .font(.custom("PlusJakartaSans-Regular", size: 14))
+                    .foregroundColor(.gray)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 20)
+            .background(Color.red.opacity(0.05))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.red.opacity(0.2), lineWidth: 1)
+            )
+            .cornerRadius(12)
+        }
+        .padding(.vertical, 20)
+        .padding(.horizontal, 20)
+    }
+    
+    private var priceConfirmationSheet: some View {
+        VStack(spacing: 0) {
+            RoundedRectangle(cornerRadius: 2.5)
+                .fill(Color.gray.opacity(0.4))
+                .frame(width: 40, height: 5)
+                .padding(.top, 8)
+            
+            VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Konfirmasi Harga")
+                        .font(.custom("PlusJakartaSans-Regular", size: 20).weight(.bold))
+                        .foregroundColor(.black)
+                    
+                    Text("Dengan menerima harga ini, Anda setuju untuk melanjutkan pesanan dengan harga final yang telah ditetapkan.")
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundColor(.gray)
+                }
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Detail Harga:")
+                        .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                        .foregroundColor(.black)
+                    
+                    HStack {
+                        Text("Estimasi Sebelumnya:")
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text(viewModel.formattedTotalAmount)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14))
+                            .foregroundColor(.gray)
+                    }
+                    
+                    HStack {
+                        Text("Harga Final:")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                        Text(viewModel.formattedProposedFinalPrice)
+                            .font(.custom("PlusJakartaSans-Regular", size: 18).weight(.bold))
+                            .foregroundColor(Color(red: 0, green: 0.37, blue: 0.92))
+                    }
+                }
+                .padding(.all, 16)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
+                
+                Spacer()
+                
+                VStack(spacing: 12) {
+                    Button(action: {
+                        viewModel.confirmPrice(viewModel.proposedFinalPrice)
+                        showPriceConfirmation = false
+                    }) {
+                        Text("Konfirmasi & Lanjutkan")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color(red: 0, green: 0.37, blue: 0.92))
+                            .cornerRadius(12)
+                    }
+                    
+                    Button(action: {
+                        showPriceConfirmation = false
+                    }) {
+                        Text("Batal")
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.medium))
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 20)
+        }
+        .background(Color.white)
+        .presentationDetents([.height(400)])
+        .presentationDragIndicator(.hidden)
+    }
+    
+    private var shouldShowFixedPrice: Bool {
+        return viewModel.order.isPriceConfirmed && 
+                viewModel.order.finalPrice != nil &&
+                (viewModel.order.status == .pickup || 
+                viewModel.order.status == .inProgress || 
+                viewModel.order.status == .readyForPickup || 
+                viewModel.order.status == .onDelivery || 
+                viewModel.order.status == .completed)
+    }
+    
+    private var fixedPriceSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Divider()
+                .padding(.vertical, 8)
+            
+            HStack {
+                Text("Harga Final")
+                    .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                    .foregroundColor(.black)
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    if let finalPrice = viewModel.order.finalPrice {
+                        let totalWithDelivery = finalPrice + viewModel.order.deliveryCost
+                        let formattedPrice = NumberFormatter.currencyFormatter.string(from: NSNumber(value: totalWithDelivery)) ?? "Rp0"
+                        Text(formattedPrice)
+                            .font(.custom("PlusJakartaSans-Regular", size: 16).weight(.bold))
+                            .foregroundColor(.black)
+                    }
+                }
+            }
+            .padding(.top, 8)
+            
+            Text("Harga telah dikonfirmasi dan tidak akan berubah")
+                .font(.custom("PlusJakartaSans-Regular", size: 12))
+                .foregroundColor(.gray)
         }
     }
 }

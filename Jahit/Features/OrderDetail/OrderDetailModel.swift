@@ -23,6 +23,8 @@ struct Order {
     let deliveryOption: DeliveryOption?
     let deliveryCost: Double
     var status: OrderStatus
+    var finalPrice: Double?
+    var isPriceConfirmed: Bool
 }
 
 enum OrderStatus: String, CaseIterable {
@@ -33,6 +35,7 @@ enum OrderStatus: String, CaseIterable {
     case readyForPickup = "Siap diambil"
     case onDelivery = "Pesanan sedang diantar"
     case completed = "Pesanan selesai"
+    case cancelled = "Pesanan dibatalkan"
     
     var stepIndex: Int {
         switch self {
@@ -43,6 +46,7 @@ enum OrderStatus: String, CaseIterable {
         case .readyForPickup: return 4
         case .onDelivery: return 4
         case .completed: return 5
+        case .cancelled: return -1
         }
     }
     
@@ -55,6 +59,7 @@ enum OrderStatus: String, CaseIterable {
         case .readyForPickup: return "diantar"
         case .onDelivery: return "diantar"
         case .completed: return "pesanan_selesai"
+        case .cancelled: return "xmark.circle"
         }
     }
 }
@@ -75,7 +80,9 @@ extension Order {
         totalAmount: 200000,
         deliveryOption: .delivery,
         deliveryCost: 15000,
-        status: .inProgress
+        status: .pickup,
+        finalPrice: nil,
+        isPriceConfirmed: false
     )
 }
 

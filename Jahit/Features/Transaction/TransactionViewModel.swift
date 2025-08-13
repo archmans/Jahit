@@ -16,7 +16,7 @@ class TransactionViewModel: ObservableObject {
     
     init() {
         userManager.$currentUser
-            .sink { [weak self] _ in
+            .sink { [weak self] (user: User) in
                 DispatchQueue.main.async {
                     self?.objectWillChange.send()
                 }

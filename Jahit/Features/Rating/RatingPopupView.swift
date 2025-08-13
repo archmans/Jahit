@@ -218,7 +218,9 @@ struct RatingPopupView: View {
             status: .completed,
             review: nil,
             deliveryOption: .delivery,
-            deliveryCost: 15000
+            deliveryCost: 15000,
+            finalPrice: nil,
+            isPriceConfirmed: false
         )
     ) { review in
         print("Review submitted: \(review)")

@@ -113,6 +113,8 @@ struct Transaction: Identifiable, Codable {
     var review: Review?
     let deliveryOption: DeliveryOption
     let deliveryCost: Double
+    var finalPrice: Double?
+    var isPriceConfirmed: Bool
     
     var isCompleted: Bool {
         return status == .completed
@@ -164,7 +166,7 @@ extension Transaction {
             case .completed:
                 return .completed
             case .cancelled:
-                return .pending
+                return .cancelled
             }
         }()
         
@@ -187,7 +189,9 @@ extension Transaction {
             totalAmount: self.totalPrice,
             deliveryOption: self.deliveryOption,
             deliveryCost: self.deliveryCost,
-            status: orderStatus
+            status: orderStatus,
+            finalPrice: self.finalPrice,
+            isPriceConfirmed: self.isPriceConfirmed
         )
     }
 }

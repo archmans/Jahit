@@ -19,23 +19,49 @@ class OrderDetailViewModel: ObservableObject {
         self.order = order
     }
     
+    private func calculateTotalAmount(for transaction: Transaction) -> Double {
+        return transaction.items.reduce(0) { total, item in
+            total + item.priceEstimate.minPrice
+        }
+    }
+    
+    private func calculateMaxTotalAmount(for transaction: Transaction) -> Double {
+        return transaction.items.reduce(0) { total, item in
+            total + item.priceEstimate.maxPrice
+        }
+    }
+    
     var formattedTotalAmount: String {
-        // Calculate total estimate from transaction items
-        if let transaction = getOriginalTransaction() {
-            let minTotal = transaction.items.reduce(0) { $0 + $1.priceEstimate.minPrice }
-            let maxTotal = transaction.items.reduce(0) { $0 + $1.priceEstimate.maxPrice }
-            let deliveryCost = transaction.deliveryCost
-            
-            let finalMinTotal = minTotal + deliveryCost
-            let finalMaxTotal = maxTotal + deliveryCost
-            
-            let minString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: finalMinTotal)) ?? "Rp0"
-            let maxString = NumberFormatter.currencyFormatter.string(from: NSNumber(value: finalMaxTotal)) ?? "Rp0"
-            
-            return "\(minString) - \(maxString)"
+        if let finalPrice = order.finalPrice, order.isPriceConfirmed {
+            let totalWithDelivery = finalPrice + order.deliveryCost
+            return NumberFormatter.currencyFormatter.string(from: NSNumber(value: totalWithDelivery)) ?? "Rp0"
         }
         
-        return NumberFormatter.currencyFormatter.string(from: NSNumber(value: order.totalAmount)) ?? "Rp0"
+        if let transaction = getOriginalTransaction() {
+            let minTotal = calculateTotalAmount(for: transaction) + order.deliveryCost
+            let maxTotal = calculateMaxTotalAmount(for: transaction) + order.deliveryCost
+            
+            let minFormatted = NumberFormatter.currencyFormatter.string(from: NSNumber(value: minTotal)) ?? "Rp0"
+            let maxFormatted = NumberFormatter.currencyFormatter.string(from: NSNumber(value: maxTotal)) ?? "Rp0"
+            
+            return "\(minFormatted) - \(maxFormatted)"
+        }
+        
+        return "Rp0"
+    }
+    
+    var proposedFinalPrice: Double {
+        if let transaction = getOriginalTransaction() {
+            let minTotal = calculateTotalAmount(for: transaction)
+            let maxTotal = calculateMaxTotalAmount(for: transaction)
+            let avgTotal = (minTotal + maxTotal) / 2
+            return avgTotal + order.deliveryCost
+        }
+        return 0
+    }
+    
+    var formattedProposedFinalPrice: String {
+        return NumberFormatter.currencyFormatter.string(from: NSNumber(value: proposedFinalPrice)) ?? "Rp0"
     }
     
     var formattedPaymentTime: String {
@@ -107,6 +133,8 @@ class OrderDetailViewModel: ObservableObject {
                 return .onDelivery
             case .completed:
                 return .completed
+            case .cancelled:
+                return .cancelled
             }
         }()
         
@@ -124,6 +152,34 @@ class OrderDetailViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.isLoading = false
         }
+    }
+    
+    func confirmPrice(_ finalPrice: Double) {
+        guard let transaction = getOriginalTransaction(),
+              let index = userManager.currentUser.transactions.firstIndex(where: { $0.id == transaction.id }) else {
+            return
+        }
+        
+        userManager.currentUser.transactions[index].finalPrice = finalPrice
+        userManager.currentUser.transactions[index].isPriceConfirmed = true
+        userManager.currentUser.transactions[index].status = .inProgress
+        userManager.saveUserToStorage()
+        
+        order.finalPrice = finalPrice
+        order.isPriceConfirmed = true
+        order.status = .inProgress
+    }
+    
+    func rejectPrice() {
+        guard let transaction = getOriginalTransaction(),
+                let index = userManager.currentUser.transactions.firstIndex(where: { $0.id == transaction.id }) else {
+            return
+        }
+        
+        userManager.currentUser.transactions[index].status = .cancelled
+        userManager.saveUserToStorage()
+        
+        order.status = .cancelled
     }
     
     func goBack() {
